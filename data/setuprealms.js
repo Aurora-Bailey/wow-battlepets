@@ -11,18 +11,19 @@ class Setup {
     let db = await wow_battlepets.getDB()
 
     let us = await wowapi.realmStatus('US')
+    console.log('us', us.length)
     let eu = await wowapi.realmStatus('EU')
+    console.log('eu', eu.length)
     let kr = await wowapi.realmStatus('KR')
+    console.log('kr', kr.length)
     let tw = await wowapi.realmStatus('TW')
+    console.log('tw', tw.length)
+
     us.forEach(realm => {realm.region = "US"})
     eu.forEach(realm => {realm.region = "EU"})
     kr.forEach(realm => {realm.region = "KR"})
     tw.forEach(realm => {realm.region = "TW"})
 
-    console.log(us.length)
-    console.log(eu.length)
-    console.log(kr.length)
-    console.log(tw.length)
 
     // Merge realms
     let realms = us.concat(eu, kr, tw)

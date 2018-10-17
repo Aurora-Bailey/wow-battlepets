@@ -18,6 +18,8 @@ sudo apt-get install git; git clone https://github.com/gbradthompson/wow-battlep
 
 screen
 
+cd data/
+
 node setuprealms.js
 
 node scrape.js
