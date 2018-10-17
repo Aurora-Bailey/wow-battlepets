@@ -12,7 +12,7 @@ class WoWAPI {
 
   async auctions (region, server) {
     let token = await this.authenticate()
-    let response_token = await axios.get(`https://${region.toLowerCase()}.api.blizzard.com/wow/auction/data/${server}?access_token=${token}`)
+    let response_token = await axios.get(`https://${region.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(server)}?access_token=${token}`)
     let response_auction = await axios.get(response_token.data.files[0].url)
     return response_auction.data.auctions
   }
