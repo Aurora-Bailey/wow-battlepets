@@ -63,13 +63,26 @@ function buyoutHereSellAllThere (here, there) {
   stats.profit = numberWithCommas(stats.profit/10000)
   return stats
 }
-console.log(buyoutHereSellAllThere('tichondrius', 'illidan'))
-console.log(buyoutHereSellAllThere('tichondrius', 'aggramar'))
-console.log(buyoutHereSellAllThere('aggramar', 'illidan'))
-console.log(buyoutHereSellAllThere('aggramar', 'tichondrius'))
-console.log(buyoutHereSellAllThere('illidan', 'tichondrius'))
-console.log(buyoutHereSellAllThere('illidan', 'aggramar'))
+console.log('tichrondrius -> illidan', buyoutHereSellAllThere('tichondrius', 'illidan'))
+console.log('tichrondruid -> aggramar', buyoutHereSellAllThere('tichondrius', 'aggramar'))
+console.log('aggramar -> illidan', buyoutHereSellAllThere('aggramar', 'illidan'))
+console.log('aggramar -> tichrondruis', buyoutHereSellAllThere('aggramar', 'tichondrius'))
+console.log('illidan -> tichondruis', buyoutHereSellAllThere('illidan', 'tichondrius'))
+console.log('illidan -> aggramar', buyoutHereSellAllThere('illidan', 'aggramar'))
 
+function level25Pricing (petId) {
+  let numFound = 0
+  let priceTotal = 0
+  Object.keys(data).forEach(server => {
+    data[server].filter(pet => pet.petSpeciesId === petId).filter(pet => pet.petLevel === 25).forEach(pet => {
+      numFound++
+      priceTotal += pet.buyout
+    })
+  })
+  let mean = priceTotal/numFound
+  return {numFound, mean: numberWithCommas(mean/10000)}
+}
+// console.log(level25Pricing(1907))
 
 function numberWithCommas (x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
