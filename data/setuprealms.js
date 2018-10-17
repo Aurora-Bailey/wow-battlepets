@@ -19,6 +19,11 @@ class Setup {
     kr.forEach(realm => {realm.region = "KR"})
     tw.forEach(realm => {realm.region = "TW"})
 
+    console.log(us.length)
+    console.log(eu.length)
+    console.log(kr.length)
+    console.log(tw.length)
+
     // Merge realms
     let realms = us.concat(eu, kr, tw)
     realms.forEach(realm => {
