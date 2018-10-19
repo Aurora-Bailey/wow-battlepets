@@ -24,7 +24,7 @@ class Scrape {
         new DriftlessInterval(() => {
           this.saveAuctions(ah).catch(error => {
             this.outstandingQueries--
-            console.log(chalk.redBright('error:') + ah.id + chalk.gray(' - ' + this.outstandingQueries))
+            console.log(chalk.redBright('error:') + ah.id + chalk.gray(' os:' + this.outstandingQueries))
             db.collections('error_logs').insertOne({ah, error})
           })
         }, this.timeBeweenScrapesMS)
@@ -35,8 +35,9 @@ class Scrape {
 
   async saveAuctions (auctionHouse) {
     // pull data from wow api
+    let startTime = Date.now()
     this.outstandingQueries++
-    console.log(chalk.yellowBright('pull:') + auctionHouse.id + chalk.gray(' - ' + this.outstandingQueries))
+    console.log(chalk.yellowBright('pull:') + auctionHouse.id + chalk.gray(' os:' + this.outstandingQueries))
     let auctions = await wowapi.auctions(auctionHouse.region, auctionHouse.slug)
     let battlepetAuctions = auctions.filter(auc => typeof auc.petSpeciesId !== 'undefined')
 
@@ -56,7 +57,8 @@ class Scrape {
         queue--
         if (queue === 0) {
           this.outstandingQueries--
-          console.log(chalk.greenBright('done:') + auctionHouse.id + chalk.gray(' - ' + this.outstandingQueries))
+          let queryTime = Date.now() - startTime
+          console.log(chalk.greenBright('done:') + auctionHouse.id + chalk.gray(' os:' + this.outstandingQueries) + chalk.magenta(' ms:' + queryTime))
         }
       })
     })
