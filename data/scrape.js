@@ -24,8 +24,8 @@ class Scrape {
         new DriftlessInterval(() => {
           this.saveAuctions(ah).catch(error => {
             this.outstandingQueries--
-            console.log(chalk.redBright('error:') + ah.id + chalk.cyan(' os:' + this.outstandingQueries))
-            db.collection('error_logs').insertOne({auction_house: ah, error: error.code})
+            // console.log(chalk.redBright('error:') + ah.id + chalk.cyan(' os:' + this.outstandingQueries))
+            db.collection('error_logs').insertOne({auction_house: ah, error: error.response})
             console.log(error)
           })
         }, this.timeBeweenScrapesMS)
