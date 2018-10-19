@@ -47,6 +47,7 @@ class Setup {
     let queue = auctionHouses.length + realms.length
     let auction_index = await db.collection('auction_houses').createIndex('id', {unique: true, name: 'auction_id'})
     let realm_index = await db.collection('realms').createIndex('id', {unique: true, name: 'realm_id'})
+    let auctions = await db.collection('auctions').createIndex('id', {unique: true, name: 'auction_id'})
     auctionHouses.forEach(house => {
       db.collection('auction_houses').updateOne({id: house.id}, {$set: house}, {upsert: true}).catch(console.error).then(() => {
         queue--
