@@ -26,6 +26,7 @@ class Scrape {
             this.outstandingQueries--
             console.log(chalk.redBright('error:') + ah.id + chalk.cyan(' os:' + this.outstandingQueries))
             db.collection('error_logs').insertOne({auction_house: ah, error: error.code})
+            console.log(error)
           })
         }, this.timeBeweenScrapesMS)
       }, i * scrapeStagger)
