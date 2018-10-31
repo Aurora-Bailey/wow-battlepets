@@ -39,7 +39,16 @@ class Scrape {
     let startTime = Date.now()
     this.outstandingQueries++
     console.log(chalk.yellowBright('pull:') + auctionHouse.id + chalk.cyan(' os:' + this.outstandingQueries))
-    let auctions = await wowapi.auctions(auctionHouse.region, auctionHouse.slug)
+
+    // ** pull data from wow
+    try {
+      var auctions = await wowapi.auctions(auctionHouse.region, auctionHouse.slug)
+    } catch (e) {
+      // reset ah if error is found, we dont want corrupt data
+      db.collection('auctions_live').deleteOne({auction_house: auctionHouse.id})
+      throw e
+    }
+    // ** data pulled from wow
     let battlepetAuctions = auctions.filter(auc => typeof auc.petSpeciesId !== 'undefined')
 
     // add extra data
@@ -50,21 +59,68 @@ class Scrape {
       auction.last_seen = Date.now()
     })
 
-    // save in database
+    // load old data
     let db = await wow_battlepets.getDB()
-    let queue = battlepetAuctions.length
-    battlepetAuctions.forEach(auction => {
-      db.collection('auctions').updateOne({id: auction.id}, {$set: auction}, {upsert: true}).catch(console.error).then(() => {
-        queue--
-        if (queue === 0) {
-          this.outstandingQueries--
-          let queryTime = Date.now() - startTime
-          console.log(chalk.greenBright('done:') + auctionHouse.id + chalk.cyan(' os:' + this.outstandingQueries) + chalk.magenta(' ms:' + queryTime))
+    let oldAuctions = await db.collection('auctions_live').find({auction_house: auctionHouse.id}).toArray()
+
+    // old auctions found
+    if (oldAuctions.length > 0 && oldAuctions[0].auctions.length > 0) {
+
+      // Build lookup table
+      let newLookupID = {}
+      let newLookupSpecies = {}
+      let oldLookupID = {}
+      let oldLookupSpecies = {}
+      battlepetAuctions.forEach(pet => {
+        newLookupID[pet.id] = pet
+        if (typeof newLookupSpecies[pet.petSpeciesId] === 'undefined') newLookupSpecies[pet.petSpeciesId] = []
+        newLookupSpecies[pet.petSpeciesId].push(pet)
+      })
+      oldAuctions[0].auctions.forEach(pet => {
+        oldLookupID[pet.id] = pet
+        if (typeof oldLookupSpecies[pet.petSpeciesId] === 'undefined') oldLookupSpecies[pet.petSpeciesId] = []
+        oldLookupSpecies[pet.petSpeciesId].push(pet)
+      })
+
+      // Lable new missing expired and sold
+      battlepetAuctions.forEach(pet => {
+        if (typeof oldLookupID[pet.id] === 'undefined') pet.new = true
+      })
+      oldAuctions[0].auctions.forEach(pet => {
+        if (typeof newLookupID[pet.id] === 'undefined') pet.missing = true
+        if (pet.missing === true) {
+          if (pet.timeLeft === 'SHORT' || pet.timeLeft === 'MEDIUM') {
+            pet.expired = true
+          } else {
+            if (typeof newLookupSpecies[pet.petSpeciesId] !== 'undefined') {
+              newLookupSpecies[pet.petSpeciesId].forEach(petLookup => {
+                if (petLookup.new === true && petLookup.owner === pet.owner) pet.canceled = true
+              })
+            }
+            if (pet.canceled !== true) pet.sold = true
+          }
         }
       })
-    })
 
-    return true
+      // save to database
+      oldAuctions[0].auctions.forEach(pet => {
+        if (pet.expired === true) db.collection('auctions_expired').insertOne(pet)
+        if (pet.canceled === true) db.collection('auctions_canceled').insertOne(pet)
+        if (pet.sold === true) db.collection('auctions_sold').insertOne(pet)
+      })
+
+    }
+
+    // over write old data with new
+    db.collection('auctions_live').updateOne({auction_house: auctionHouse.id}, {$set: {auctions: battlepetAuctions}}, {upsert: true}).then(() => {
+      this.outstandingQueries--
+      let queryTime = Date.now() - startTime
+      console.log(chalk.greenBright('done:') + auctionHouse.id + chalk.cyan(' os:' + this.outstandingQueries) + chalk.magenta(' ms:' + queryTime))
+    }).catch(() => {
+      this.outstandingQueries--
+      let queryTime = Date.now() - startTime
+      console.log(chalk.greenBright('done:') + auctionHouse.id + chalk.cyan(' os:' + this.outstandingQueries) + chalk.magenta(' ms:' + queryTime) + ' -error')
+    })
   }
 }
 
