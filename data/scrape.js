@@ -64,7 +64,7 @@ class Scrape {
     let oldAuctions = await db.collection('auctions_live').find({auction_house: auctionHouse.id}).toArray()
 
     // old auctions found
-    if (oldAuctions.length > 0 && oldAuctions[0].auctions.length > 0) {
+    if (oldAuctions.length > 0 && oldAuctions[0].auctions.length > 0 && oldAuctions[0].auctions[0].last_seen > Date.now() - (1000*60*60)) { // seen in the last hour
 
       // Build lookup table
       let newLookupID = {}
@@ -109,6 +109,8 @@ class Scrape {
         if (pet.sold === true) db.collection('auctions_sold').insertOne(pet)
       })
 
+    } else {
+      console.log(chalk.yellowRed('skip:') + 'skipping bad data.')
     }
 
     // over write old data with new
