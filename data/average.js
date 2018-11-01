@@ -6,6 +6,13 @@ const chalk = require('chalk')
 class Average {
   constructor () {
     this.timezoneOffset = 6
+
+    setTimeout(() => {
+      new DriftlessInterval(() => {
+        this.start().catch(console.error)
+      }, (1000*60*60*24))
+    }, 1212000 + this.getStartTomorrowTimestamp() - Date.now())
+    console.log('timeout set for', 1212000 + this.getStartTomorrowTimestamp() - Date.now())
   }
 
   async start () {
@@ -230,4 +237,3 @@ class Average {
 }
 
 let average = new Average()
-average.start().catch(console.error)
