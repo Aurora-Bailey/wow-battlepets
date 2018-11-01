@@ -110,7 +110,7 @@ class Scrape {
       })
 
     } else {
-      console.log(chalk.yellowRed('skip:') + 'skipping bad data.')
+      console.log(chalk.redBright('skip:') + 'skipping bad data.')
     }
 
     // over write old data with new
