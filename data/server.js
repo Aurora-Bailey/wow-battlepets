@@ -47,6 +47,7 @@ app.get('/buy', async function (req, res) {
 
   let buyable = auctionsLive.filter(pet => {
     if (pet.buyout > req.query.maxbuyout) return false
+    if (pet.buyout < 0) return false
     if (typeof averageRegionData[pet.petSpeciesId] === 'undefined') return false
     if (typeof averageRegionData[pet.petSpeciesId]['1'] === 'undefined') return false
     if (typeof averageRegionData[pet.petSpeciesId]['1']['sold_median'] === 'undefined') return false
@@ -67,7 +68,6 @@ app.get('/buy', async function (req, res) {
       pet.realm_percent = (100/pet.buyout) * pet.realm_margin
       if (req.query.minmargin > pet.region_margin) return false
       if (req.query.minpercent > pet.region_percent) return false
-      if (isNaN(pet.region_percent)) return false
       return true
     }
     return false
