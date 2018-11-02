@@ -19,7 +19,8 @@ app.get('/realms', async function (req, res) {
 
 app.get('/buy', async function (req, res) {
   if (typeof req.query.maxbuyout === 'undefined') req.query.maxbuyout = 10000000000000
-  if (typeof req.query.minmargin === 'undefined') req.query.minmargin = 1
+  if (typeof req.query.minmargin === 'undefined') req.query.minmargin = 0
+  if (typeof req.query.minpercent === 'undefined') req.query.minpercent = 0
   console.log('buy', req.query.ah + '-' + req.query.region)
   let db = await wow_battlepets.getDB()
   let auctionsLiveParent = await db.collection('auctions_live').find({auction_house: req.query.ah + '-' + req.query.region}).toArray()
@@ -65,6 +66,7 @@ app.get('/buy', async function (req, res) {
       pet.realm_margin = pet.realm_sold_median - pet.buyout
       pet.realm_percent = (100/pet.buyout) * pet.realm_margin
       if (pet.region_margin < req.query.minmargin) return false
+      if (pet.region_percent < req.query.minpercent) return false
       return true
     }
     return false

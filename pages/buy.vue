@@ -11,6 +11,7 @@
           <v-autocomplete :items="realmList" v-model="realm" label="Realm"></v-autocomplete>
           <v-text-field label="Max Buyout (gold)" v-model="maxBuyout"></v-text-field>
           <v-text-field label="Min Margin (gold)" v-model="minMargin"></v-text-field>
+          <v-text-field label="Min percent gain" v-model="minPercent"></v-text-field>
           <!-- <br>
           Region: {{region}}
           <br>
@@ -93,6 +94,7 @@
       return {
         maxBuyout: 5000,
         minMargin: 500,
+        minPercent: 50,
         region: 'US',
         realm: 'Aggramar',
         regions: ['US', 'EU', 'KR', 'TW'],
@@ -101,7 +103,7 @@
     },
     methods: {
       async auctionListings (event) {
-        let list = await this.$axios.$get(`http://54.244.210.52:3303/buy?ah=${this.auctionHouse}&region=${this.region}&maxbuyout=${this.maxBuyout * 10000}&minmargin=${this.minMargin * 10000}`)
+        let list = await this.$axios.$get(`http://54.244.210.52:3303/buy?ah=${this.auctionHouse}&region=${this.region}&maxbuyout=${this.maxBuyout * 10000}&minmargin=${this.minMargin * 10000}&minpercent=${this.minPercent}`)
         this.listings = list.map(item => {
           let {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num} = item
           return {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num}
