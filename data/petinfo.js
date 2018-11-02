@@ -47,4 +47,4 @@ class PetInfo {
   }
 }
 
-module.exports = new PetInfo
+module.exports = new PetInfo()

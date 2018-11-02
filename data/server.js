@@ -1,6 +1,7 @@
 const MongoDB = require('./mongodb.js')
 const petinfo = require('./petinfo.js')
 const wow_battlepets = new MongoDB('wow_battlepets')
+const wowapi = require('./wow-api.js')
 const express = require('express')
 const app = express()
 
@@ -22,6 +23,68 @@ app.get('/health', async function (req, res) {
   let db = await wow_battlepets.getDB()
   let health = await db.collection('auction_house_health').find({}).toArray()
   res.send(JSON.stringify(health))
+})
+
+
+
+
+
+
+
+app.get('/collection', async function (req, res) {
+  console.log('collection')
+  let pets = await wowapi.characterPets (req.query.region, req.query.realm, req.query.character)
+  let db = await wow_battlepets.getDB()
+  let averageRegionParent = await db.collection('average_region').find({region: req.query.region}).toArray()
+  if (averageRegionParent.length === 0) {res.send(JSON.stringify({error: 'region averages not found', code: 1502, query: req.query})); return false}
+  let averageRegionData = averageRegionParent[0].data
+
+  // add name and icon
+  for (var index in pets) {
+    if (pets.hasOwnProperty(index)) {
+      try {
+        pets[index].name = await petinfo.petIdName(pets[index].speciesId)
+        pets[index].icon = await petinfo.petIdImage(pets[index].speciesId)
+      } catch (e) {
+        pets[index].name = 'error'
+        pets[index].icon = 'error'
+      }
+    }
+  }
+
+  // remove unknown
+  pets = pets.filter(pet => {
+    if (pet.level !== 25) pet.level = 1
+    pet.level = '' + pet.level
+    if (pet.name === 'error') return false
+    if (typeof averageRegionData[pet.speciesId] === 'undefined') return false
+    if (typeof averageRegionData[pet.speciesId][pet.level] === 'undefined') return false
+    if (typeof averageRegionData[pet.speciesId][pet.level]['sold_median'] === 'undefined') return false
+    return true
+  })
+
+  pets.forEach(pet => {
+    pet.sold_median = averageRegionData[pet.speciesId][pet.level]['sold_median']
+    pet.sold_num = averageRegionData[pet.speciesId][pet.level]['sold_num']
+  })
+
+
+  res.send(JSON.stringify(pets))
+})
+
+
+
+
+
+app.get('/sell', async function (req, res) {
+  console.log('sell in realms')
+  let pets = await wowapi.characterPets (req.query.region, req.query.realm, req.query.character)
+  // let db = await wow_battlepets.getDB()
+  // let averageRegionParent = await db.collection('average_region').find({region: req.query.region}).toArray()
+  // if (averageRegionParent.length === 0) {res.send(JSON.stringify({error: 'region averages not found', code: 1502, query: req.query})); return false}
+  // let averageRegionData = averageRegionParent[0].data
+
+  res.send(JSON.stringify(pets))
 })
 
 app.get('/buy', async function (req, res) {

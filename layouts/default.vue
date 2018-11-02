@@ -90,6 +90,7 @@
           { icon: 'apps', title: 'Welcome', to: '/' },
           { icon: 'shopping_cart', title: 'Buy', to: '/buy' },
           { icon: 'attach_money', title: 'Sell', to: '/sell' },
+          { icon: 'attach_money', title: 'Collection', to: '/collection' },
           { icon: 'local_hospital', title: 'AH Health', to: '/health' }
         ],
         miniVariant: false,

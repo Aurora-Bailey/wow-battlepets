@@ -10,7 +10,6 @@
           <v-select :items="regions" v-model="region" label="Region"></v-select>
           <v-autocomplete :items="realmList" v-model="realm" label="Realm"></v-autocomplete>
           <v-text-field label="Character Name" v-model="characterName"></v-text-field>
-          <v-autocomplete :items="realmList" v-model="sellRealm" multiple chips label="Sell Realms"></v-autocomplete>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -54,11 +53,6 @@
       },
       auctionHouse () {
         return this.auctionSlug[this.realm]
-      },
-      sellSLUG () {
-        return this.sellRealm.map(sr => {
-          return this.auctionSlug[sr]
-        })
       }
     },
     data () {
@@ -66,14 +60,14 @@
         characterName: 'Napri',
         region: 'US',
         realm: 'Aggramar',
-        sellRealm: ['Aggramar', 'Thrall', 'Illidan', 'Stormrage', 'Area 52', 'Tichondrius'],
-        regions: ['US', 'EU', 'KR', 'TW']
+        regions: ['US', 'EU', 'KR', 'TW'],
+        listings: []
       }
     },
     methods: {
       async submitData (event) {
         console.log('asdf')
-        let list = await this.$axios.$get(`http://54.244.210.52:3303/sell?region=${this.region}&realm=${this.realm}&character=${this.characterName}&sellrealm=${this.sellSLUG.join('+')}`)
+        let list = await this.$axios.$get(`http://54.244.210.52:3303/collection?region=${this.region}&realm=${this.realm}&character=${this.characterName}`)
         this.listings = list.map(item => {
           let {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num} = item
           return {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num}

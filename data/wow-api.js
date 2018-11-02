@@ -43,8 +43,8 @@ class WoWAPI {
 
   async characterPets (region, realm, character) {
     let token = await this.authenticate()
-    let response_realm = await axios.get(`https://${region.toLowerCase()}.api.blizzard.com/wow/character/${realm}/${character}?fields=pets&access_token=${token}`)
-    return response_realm.data.pets.collected.map(pet => { return { name: pet.name, speciesId: pet.stats.speciesId, level: pet.stats.level}})
+    let response = await axios.get(`https://${region.toLowerCase()}.api.blizzard.com/wow/character/${realm}/${character}?fields=pets&access_token=${token}`)
+    return response.data.pets.collected.map(pet => { return { speciesId: pet.stats.speciesId, breedId: pet.stats.breedId, level: pet.stats.level, guid: pet.battlePetGuid}})
   }
 }
 
