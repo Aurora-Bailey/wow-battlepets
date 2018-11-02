@@ -38,7 +38,7 @@ class Average {
 
       // realm/auction house health
       let auctionHouseId = pet.auction_house + '-' + pet.region
-      if (typeof auctionHouseHealth[auctionHouseId] === 'undefined') auctionHouseHealth[auctionHouseId] = {}
+      if (typeof auctionHouseHealth[auctionHouseId] === 'undefined') auctionHouseHealth[auctionHouseId] = {region: pet.region, ah: pet.auction_house}
       if (typeof auctionHouseHealth[auctionHouseId]['sold_num'] === 'undefined') auctionHouseHealth[auctionHouseId]['sold_num'] = 0
       if (typeof auctionHouseHealth[auctionHouseId]['sold_buyout_sum'] === 'undefined') auctionHouseHealth[auctionHouseId]['sold_buyout_sum'] = 0
       auctionHouseHealth[auctionHouseId]['sold_num']++
@@ -55,7 +55,7 @@ class Average {
 
       // realm/auction house health
       let auctionHouseId = pet.auction_house + '-' + pet.region
-      if (typeof auctionHouseHealth[auctionHouseId] === 'undefined') auctionHouseHealth[auctionHouseId] = {}
+      if (typeof auctionHouseHealth[auctionHouseId] === 'undefined') auctionHouseHealth[auctionHouseId] = {region: pet.region, ah: pet.auction_house}
       if (typeof auctionHouseHealth[auctionHouseId]['expired_num'] === 'undefined') auctionHouseHealth[auctionHouseId]['expired_num'] = 0
       if (typeof auctionHouseHealth[auctionHouseId]['expired_buyout_sum'] === 'undefined') auctionHouseHealth[auctionHouseId]['expired_buyout_sum'] = 0
       auctionHouseHealth[auctionHouseId]['expired_num']++
@@ -72,7 +72,7 @@ class Average {
 
       // realm/auction house health
       let auctionHouseId = pet.auction_house + '-' + pet.region
-      if (typeof auctionHouseHealth[auctionHouseId] === 'undefined') auctionHouseHealth[auctionHouseId] = {}
+      if (typeof auctionHouseHealth[auctionHouseId] === 'undefined') auctionHouseHealth[auctionHouseId] = {region: pet.region, ah: pet.auction_house}
       if (typeof auctionHouseHealth[auctionHouseId]['canceled_num'] === 'undefined') auctionHouseHealth[auctionHouseId]['canceled_num'] = 0
       if (typeof auctionHouseHealth[auctionHouseId]['canceled_buyout_sum'] === 'undefined') auctionHouseHealth[auctionHouseId]['canceled_buyout_sum'] = 0
       auctionHouseHealth[auctionHouseId]['canceled_num']++
