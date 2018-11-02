@@ -47,7 +47,7 @@ app.get('/buy', async function (req, res) {
 
   let buyable = auctionsLive.filter(pet => {
     if (pet.buyout > req.query.maxbuyout) return false
-    if (pet.buyout < 0) return false
+    if (pet.buyout == 0) return false
     if (typeof averageRegionData[pet.petSpeciesId] === 'undefined') return false
     if (typeof averageRegionData[pet.petSpeciesId]['1'] === 'undefined') return false
     if (typeof averageRegionData[pet.petSpeciesId]['1']['sold_median'] === 'undefined') return false
