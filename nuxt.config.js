@@ -18,6 +18,12 @@ export default {
   css: [
     '~/assets/style/app.styl'
   ],
+  modules: [
+    '@nuxtjs/axios',
+  ],
+  axios: {
+    // proxyHeaders: false
+  },
   /*
   ** Customize the progress bar color
   */

@@ -11,8 +11,10 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.3.4",
     "axios": "^0.18.0",
     "chalk": "^2.4.1",
+    "express": "^4.16.4",
     "mongodb": "^3.1.8",
     "nuxt": "^2.1.0",
     "vuetify": "^1.2.6"

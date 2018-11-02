@@ -88,7 +88,8 @@
         fixed: false,
         items: [
           { icon: 'apps', title: 'Welcome', to: '/' },
-          { icon: 'bubble_chart', title: 'Inspire', to: '/inspire' }
+          { icon: 'shopping_cart', title: 'Buy', to: '/buy' },
+          { icon: 'attach_money', title: 'Sell', to: '/sell' }
         ],
         miniVariant: false,
         right: true,
