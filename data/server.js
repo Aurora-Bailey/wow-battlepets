@@ -65,8 +65,8 @@ app.get('/buy', async function (req, res) {
       pet.region_percent = (100/pet.buyout) * pet.region_margin
       pet.realm_margin = pet.realm_sold_median - pet.buyout
       pet.realm_percent = (100/pet.buyout) * pet.realm_margin
-      if (pet.region_margin && pet.region_margin < req.query.minmargin) return false
-      if (pet.region_percent && pet.region_percent < req.query.minpercent) return false
+      if (pet.region_margin === null || pet.region_margin < req.query.minmargin) return false
+      if (pet.region_percent === null || pet.region_percent < req.query.minpercent) return false
       return true
     }
     return false
