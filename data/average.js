@@ -5,6 +5,7 @@ const chalk = require('chalk')
 
 class Average {
   constructor () {
+    this.start().catch(console.error) // run imediatley
     setTimeout(() => {
       new DriftlessInterval(() => {
         this.start().catch(console.error)
@@ -24,6 +25,7 @@ class Average {
     let soldSplitToRealm = {}
     let expiredSplitToRealm = {}
     let canceledSplitToRealm = {}
+    let auctionHouseHealth = {}
 
     sold.forEach(pet => {
       if (pet.petLevel !== 1 && pet.petLevel !== 25) return false
@@ -33,6 +35,14 @@ class Average {
       if (typeof soldSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId] === 'undefined') soldSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId] = {}
       if (typeof soldSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId][pet.petLevel] === 'undefined') soldSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId][pet.petLevel] = []
       soldSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId][pet.petLevel].push(pet)
+
+      // realm/auction house health
+      let auctionHouseId = pet.auction_house + '-' + pet.region
+      if (typeof auctionHouseHealth[auctionHouseId] === 'undefined') auctionHouseHealth[auctionHouseId] = {}
+      if (typeof auctionHouseHealth[auctionHouseId]['sold_num'] === 'undefined') auctionHouseHealth[auctionHouseId]['sold_num'] = 0
+      if (typeof auctionHouseHealth[auctionHouseId]['sold_buyout_sum'] === 'undefined') auctionHouseHealth[auctionHouseId]['sold_buyout_sum'] = 0
+      auctionHouseHealth[auctionHouseId]['sold_num']++
+      auctionHouseHealth[auctionHouseId]['sold_buyout_sum'] += pet.buyout
     })
     expired.forEach(pet => {
       if (pet.petLevel !== 1 && pet.petLevel !== 25) return false
@@ -42,6 +52,14 @@ class Average {
       if (typeof expiredSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId] === 'undefined') expiredSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId] = {}
       if (typeof expiredSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId][pet.petLevel] === 'undefined') expiredSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId][pet.petLevel] = []
       expiredSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId][pet.petLevel].push(pet)
+
+      // realm/auction house health
+      let auctionHouseId = pet.auction_house + '-' + pet.region
+      if (typeof auctionHouseHealth[auctionHouseId] === 'undefined') auctionHouseHealth[auctionHouseId] = {}
+      if (typeof auctionHouseHealth[auctionHouseId]['expired_num'] === 'undefined') auctionHouseHealth[auctionHouseId]['expired_num'] = 0
+      if (typeof auctionHouseHealth[auctionHouseId]['expired_buyout_sum'] === 'undefined') auctionHouseHealth[auctionHouseId]['expired_buyout_sum'] = 0
+      auctionHouseHealth[auctionHouseId]['expired_num']++
+      auctionHouseHealth[auctionHouseId]['expired_buyout_sum'] += pet.buyout
     })
     canceled.forEach(pet => {
       if (pet.petLevel !== 1 && pet.petLevel !== 25) return false
@@ -51,6 +69,14 @@ class Average {
       if (typeof canceledSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId] === 'undefined') canceledSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId] = {}
       if (typeof canceledSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId][pet.petLevel] === 'undefined') canceledSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId][pet.petLevel] = []
       canceledSplitToRealm[pet.region][pet.auction_house][pet.petSpeciesId][pet.petLevel].push(pet)
+
+      // realm/auction house health
+      let auctionHouseId = pet.auction_house + '-' + pet.region
+      if (typeof auctionHouseHealth[auctionHouseId] === 'undefined') auctionHouseHealth[auctionHouseId] = {}
+      if (typeof auctionHouseHealth[auctionHouseId]['canceled_num'] === 'undefined') auctionHouseHealth[auctionHouseId]['canceled_num'] = 0
+      if (typeof auctionHouseHealth[auctionHouseId]['canceled_buyout_sum'] === 'undefined') auctionHouseHealth[auctionHouseId]['canceled_buyout_sum'] = 0
+      auctionHouseHealth[auctionHouseId]['canceled_num']++
+      auctionHouseHealth[auctionHouseId]['canceled_buyout_sum'] += pet.buyout
     })
 
     // split data into regions
@@ -219,6 +245,11 @@ class Average {
     })
     Object.keys(buildAveragesRegion).forEach(region => {
       db.collection('average_region').updateOne({region: region}, {$set: {region: region, age: Date.now(), data: buildAveragesRegion[region]}}, {upsert: true}).then(() => {console.log('done ' + region)})
+    })
+    Object.keys(auctionHouseHealth).forEach(house => {
+      auctionHouseHealth[house].age = Date.now()
+      auctionHouseHealth[house].ahid = house
+      db.collection('auction_house_health').updateOne({ahid: house}, {$set: auctionHouseHealth[house]}, {upsert: true}).then(() => {console.log('health', house)})
     })
   }
 

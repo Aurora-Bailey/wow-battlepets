@@ -17,6 +17,13 @@ app.get('/realms', async function (req, res) {
   res.send(JSON.stringify(realms))
 })
 
+app.get('/health', async function (req, res) {
+  console.log('get realms')
+  let db = await wow_battlepets.getDB()
+  let health = await db.collection('auction_house_health').find({}).toArray()
+  res.send(JSON.stringify(health))
+})
+
 app.get('/buy', async function (req, res) {
   if (typeof req.query.maxbuyout === 'undefined') req.query.maxbuyout = 10000000000000
   if (typeof req.query.minmargin === 'undefined') req.query.minmargin = 0
