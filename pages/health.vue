@@ -7,6 +7,7 @@
       <v-card >
         <v-card-title class="headline">Auction House Health</v-card-title>
         <v-card-text>
+          <v-select :items="regions" v-model="region" label="Region"></v-select>
           <v-data-table
             :headers="statsHeadings"
             :items="stats"
@@ -17,9 +18,9 @@
               <td>{{props.item.auctionHouse}}</td>
               <td v-html="goldStyling(props.item.marketCap)"></td>
               <td>{{props.item.volume}}</td>
-              <td>{{props.item.percentSold}}</td>
-              <td>{{props.item.percentExpired}}</td>
-              <td>{{props.item.percentCanceled}}</td>
+              <td>{{Math.round(props.item.percentSold)}}%</td>
+              <td>{{Math.round(props.item.percentExpired)}}%</td>
+              <td>{{Math.round(props.item.percentCanceled)}}%</td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -58,8 +59,10 @@
         else return []
       },
       stats () {
-        return this.health.map(h => {
-          let auctionHouse = h.ahid
+        return this.health.filter(h => {
+          return h.region === this.region
+        }).map(h => {
+          let auctionHouse = h.ah
           let marketCap = h.sold_buyout_sum + h.expired_buyout_sum + h.canceled_buyout_sum
           let volume = h.sold_num + h.expired_num + h.canceled_num
           let percentSold = (100/volume) * h.sold_num
@@ -71,6 +74,8 @@
     },
     data () {
       return {
+        region: 'US',
+        regions: ['US', 'EU', 'KR', 'TW']
       }
     },
     methods: {
