@@ -135,8 +135,8 @@ app.get('/buy', async function (req, res) {
         pet.region_sold_num_1 = 0
       }
       else {
-        pet.region_sold_median_1 = averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_median']
-        pet.region_sold_num_1 = averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_num']
+        pet.region_sold_median_1 = averageRegionData[pet.petSpeciesId]['1']['sold_median']
+        pet.region_sold_num_1 = averageRegionData[pet.petSpeciesId]['1']['sold_num']
       }
       pet.region_sold_median = averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_median']
       pet.region_sold_num = averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_num']
