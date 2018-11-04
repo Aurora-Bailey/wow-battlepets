@@ -119,19 +119,27 @@ app.get('/buy', async function (req, res) {
     if (pet.buyout > req.query.maxbuyout) return false
     if (pet.buyout == 0) return false
     if (typeof averageRegionData[pet.petSpeciesId] === 'undefined') return false
-    if (typeof averageRegionData[pet.petSpeciesId]['1'] === 'undefined') return false
-    if (typeof averageRegionData[pet.petSpeciesId]['1']['sold_median'] === 'undefined') return false
-    if (pet.buyout < averageRegionData[pet.petSpeciesId]['1']['sold_median'] * 0.95) {
-      if (liveRealmData[pet.petSpeciesId] && liveRealmData[pet.petSpeciesId]['1'] && liveRealmData[pet.petSpeciesId]['1']['undercut']) pet.realm_undercut = liveRealmData[pet.petSpeciesId]['1']['undercut']
+    if (typeof averageRegionData[pet.petSpeciesId][pet.petLevel] === 'undefined') return false
+    if (typeof averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_median'] === 'undefined') return false
+    if (pet.buyout < averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_median'] * 0.95) {
+      if (liveRealmData[pet.petSpeciesId] && liveRealmData[pet.petSpeciesId][pet.petLevel] && liveRealmData[pet.petSpeciesId][pet.petLevel]['undercut']) pet.realm_undercut = liveRealmData[pet.petSpeciesId][pet.petLevel]['undercut']
       else pet.realm_undercut = 0
-      if (liveRealmData[pet.petSpeciesId] && liveRealmData[pet.petSpeciesId]['1'] && liveRealmData[pet.petSpeciesId]['1']['num']) pet.realm_num = liveRealmData[pet.petSpeciesId]['1']['num']
+      if (liveRealmData[pet.petSpeciesId] && liveRealmData[pet.petSpeciesId][pet.petLevel] && liveRealmData[pet.petSpeciesId][pet.petLevel]['num']) pet.realm_num = liveRealmData[pet.petSpeciesId][pet.petLevel]['num']
       else pet.realm_num = 0
-      if (averageRealmData[pet.petSpeciesId] && averageRealmData[pet.petSpeciesId]['1'] && averageRealmData[pet.petSpeciesId]['1']['sold_median']) pet.realm_sold_median = averageRealmData[pet.petSpeciesId]['1']['sold_median']
+      if (averageRealmData[pet.petSpeciesId] && averageRealmData[pet.petSpeciesId][pet.petLevel] && averageRealmData[pet.petSpeciesId][pet.petLevel]['sold_median']) pet.realm_sold_median = averageRealmData[pet.petSpeciesId][pet.petLevel]['sold_median']
       else pet.realm_sold_median = 0
-      if (averageRealmData[pet.petSpeciesId] && averageRealmData[pet.petSpeciesId]['1'] && averageRealmData[pet.petSpeciesId]['1']['sold_num']) pet.realm_sold_num = averageRealmData[pet.petSpeciesId]['1']['sold_num']
+      if (averageRealmData[pet.petSpeciesId] && averageRealmData[pet.petSpeciesId][pet.petLevel] && averageRealmData[pet.petSpeciesId][pet.petLevel]['sold_num']) pet.realm_sold_num = averageRealmData[pet.petSpeciesId][pet.petLevel]['sold_num']
       else pet.realm_sold_num = 0
-      pet.region_sold_median = averageRegionData[pet.petSpeciesId]['1']['sold_median']
-      pet.region_sold_num = averageRegionData[pet.petSpeciesId]['1']['sold_num']
+      if (typeof averageRegionData[pet.petSpeciesId]['1'] === 'undefined' || typeof averageRegionData[pet.petSpeciesId]['1']['sold_median'] === 'undefined'){
+        pet.region_sold_median_1 = 0
+        pet.region_sold_num_1 = 0
+      }
+      else {
+        pet.region_sold_median_1 = averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_median']
+        pet.region_sold_num_1 = averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_num']
+      }
+      pet.region_sold_median = averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_median']
+      pet.region_sold_num = averageRegionData[pet.petSpeciesId][pet.petLevel]['sold_num']
       pet.region_margin = pet.region_sold_median - pet.buyout
       pet.region_percent = (100/pet.buyout) * pet.region_margin
       pet.realm_margin = pet.realm_sold_median - pet.buyout

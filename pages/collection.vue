@@ -16,6 +16,28 @@
           <v-btn color="primary" @click="submitData">Continue</v-btn>
         </v-card-actions>
       </v-card>
+      <v-card v-if="listings.length > 0" class="mt-5">
+        <v-card-title class="headline">Listings <v-spacer></v-spacer> <span class="pr-5" v-html="goldStyling(totalValue)"></span></v-card-title>
+        <v-card-text>
+          <v-data-table
+            :headers="listingsHeadings"
+            :items="listings"
+            class="elevation-1"
+            :rows-per-page-items="[ 50, 100, 500 ]"
+          >
+            <template slot="items" slot-scope="props">
+              <td><img :src="props.item.icon"></td>
+              <td>{{ props.item.name }}</td>
+              <td>{{ props.item.speciesId }}</td>
+              <td>{{ props.item.breedId }}</td>
+              <td>{{ props.item.level }}</td>
+              <td>{{ props.item.guid }}</td>
+              <td>{{ props.item.sold_num }}</td>
+              <td v-html="goldStyling(props.item.sold_median)"></td>
+            </template>
+          </v-data-table>
+        </v-card-text>
+      </v-card>
     </v-flex>
   </v-layout>
 </template>
@@ -53,6 +75,13 @@
       },
       auctionHouse () {
         return this.auctionSlug[this.realm]
+      },
+      listingsHeadings () {
+        if (this.listings.length > 0) return Object.keys(this.listings[0]).map(head => {return {value: head, text: head}})
+        else return []
+      },
+      totalValue () {
+        return this.listings.reduce((a, b) => { return a + b.sold_median}, 0)
       }
     },
     data () {
@@ -68,9 +97,9 @@
       async submitData (event) {
         console.log('asdf')
         let list = await this.$axios.$get(`http://54.244.210.52:3303/collection?region=${this.region}&realm=${this.realm}&character=${this.characterName}`)
-        this.listings = list.map(item => {
-          let {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num} = item
-          return {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num}
+        this.listings = list.map(li => {
+          let {icon, name, speciesId, breedId, level, guid, sold_num, sold_median} = li
+          return {icon, name, speciesId, breedId, level, guid, sold_num, sold_median}
         })
       },
       numberWithCommas (x) {

@@ -36,6 +36,7 @@
             <template slot="items" slot-scope="props">
               <td><img :src="props.item.icon"></td>
               <td>{{ props.item.name }}</td>
+              <td>{{ props.item.petLevel }}</td>
               <td v-html="goldStyling(props.item.buyout)"></td>
               <td v-html="goldStyling(props.item.region_sold_median)"></td>
               <td v-html="goldStyling(props.item.region_margin)"></td>
@@ -105,8 +106,8 @@
       async auctionListings (event) {
         let list = await this.$axios.$get(`http://54.244.210.52:3303/buy?ah=${this.auctionHouse}&region=${this.region}&maxbuyout=${this.maxBuyout * 10000}&minmargin=${this.minMargin * 10000}&minpercent=${this.minPercent}`)
         this.listings = list.map(item => {
-          let {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num} = item
-          return {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num}
+          let {icon, name, petLevel, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num} = item
+          return {icon, name, petLevel, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num}
         })
       },
       numberWithCommas (x) {
