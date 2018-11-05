@@ -1,6 +1,6 @@
-const MongoDB = require('./mongodb.js')
+const MongoDB = require('./lib/mongodb.js')
 const wow_battlepets = new MongoDB('wow_battlepets')
-const wowapi = require('./wow-api.js')
+const wowapi = require('./lib/wow-api.js')
 
 class Setup {
   constructor () {

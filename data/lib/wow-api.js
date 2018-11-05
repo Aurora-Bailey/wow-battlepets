@@ -1,5 +1,5 @@
 const axios = require('axios')
-const credentials = require('./credentials.json')
+const credentials = require('../credentials.json')
 
 let version = 0.1
 

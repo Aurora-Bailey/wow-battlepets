@@ -1,6 +1,6 @@
-const MongoDB = require('./mongodb.js')
+const MongoDB = require('./lib/mongodb.js')
 const wow_battlepets = new MongoDB('wow_battlepets')
-const DriftlessInterval = require('./driftlessinterval')
+const DriftlessInterval = require('./lib/driftlessinterval')
 const chalk = require('chalk')
 
 class Average {

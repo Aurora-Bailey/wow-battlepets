@@ -73,11 +73,8 @@
     methods: {
       async submitData (event) {
         console.log('asdf')
-        let list = await this.$axios.$get(`http://54.244.210.52:3303/sell?region=${this.region}&realm=${this.realm}&character=${this.characterName}&sellrealm=${this.sellSLUG.join('+')}`)
-        this.listings = list.map(item => {
-          let {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num} = item
-          return {icon, name, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num}
-        })
+        let list = await this.$axios.$get(`http://localhost:3303/sell?region=${this.region}&realm=${this.realm}&character=${this.characterName}&sellrealm=${this.sellRealm.join('*')}`)
+        this.listings = list
       },
       numberWithCommas (x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

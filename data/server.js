@@ -1,7 +1,7 @@
-const MongoDB = require('./mongodb.js')
-const petinfo = require('./petinfo.js')
+const MongoDB = require('./lib/mongodb.js')
+const petinfo = require('./lib/petinfo.js')
 const wow_battlepets = new MongoDB('wow_battlepets')
-const wowapi = require('./wow-api.js')
+const wowapi = require('./lib/wow-api.js')
 const express = require('express')
 const app = express()
 
@@ -78,6 +78,8 @@ app.get('/collection', async function (req, res) {
 
 app.get('/sell', async function (req, res) {
   console.log('sell in realms')
+  let sellRealms = req.query.sellrealm.split('*')
+  console.log(sellRealms)
   let pets = await wowapi.characterPets (req.query.region, req.query.realm, req.query.character)
   // let db = await wow_battlepets.getDB()
   // let averageRegionParent = await db.collection('average_region').find({region: req.query.region}).toArray()
