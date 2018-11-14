@@ -30,7 +30,7 @@ class Realm {
     return {ahid, slug, regionTag}
   }
 
-  async updateRealms (stage = 1) {
+  async buildRealmDatabase (stage = 1) {
     console.log(chalk.magenta('ur: stage=' + stage))
     let db = await kaisBattlepets.getDB()
 
@@ -157,7 +157,7 @@ class Realm {
     } else {
       console.log(chalk.green('// 10 second timeout before trying again'))
       await this._timeout(10000)
-      return await this.updateRealms(stage)
+      return await this.buildRealmDatabase(stage)
     }
   }
 
@@ -174,4 +174,4 @@ class Realm {
 module.exports = new Realm()
 
 let x = new Realm()
-x.updateRealms().then(console.log).catch(console.error)
+x.buildRealmDatabase().then(console.log).catch(console.error)
