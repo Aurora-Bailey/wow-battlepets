@@ -84,18 +84,21 @@ class Auction {
     await db.collection('auctionsLive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsLive').createIndex('ahid', {name: 'ahid'})
     await db.collection('auctionsLive').createIndex('new', {name: 'new'})
+    await db.collection('auctionsLive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
     await db.collection('auctionsLive').deleteMany({ahid})
     await db.collection('auctionsLive').insertMany(auctionsLive)
 
     await db.collection('auctionsArchive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsArchive').createIndex('ahid', {name: 'ahid'})
     await db.collection('auctionsArchive').createIndex('status', {name: 'status'})
+    await db.collection('auctionsArchive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
     if (auctionsMissing.length > 0) await db.collection('auctionsArchive').insertMany(auctionsMissing)
     return true
   }
 
 
   _ownerReposted (auctions, owner, petSpeciesId) {
+    if (!auctions) return false
     let repost = false
     auctions.forEach(auction => {
       if (auction.owner === owner && auction.petSpeciesId === petSpeciesId && auction.new === true) repost = true
