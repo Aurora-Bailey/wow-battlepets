@@ -35,6 +35,9 @@ class Auction {
     console.log(chalk.magenta('uah: ahid=' + ahid))
     let db = await kaisBattlepets.getDB()
     let auctionsLive = await wow.getAuctions(ahid)
+    auctionsLive = auctionsLive.filter(auc => {
+      return typeof auc.petSpeciesId !== 'undefined'
+    })
     let auctionsOld = await db.collection('auctionsLive').find({ahid}).toArray()
     let auctionsMissing = []
 
@@ -80,12 +83,12 @@ class Auction {
     await db.collection('auctionsLive').createIndex('ahid', {name: 'ahid'})
     await db.collection('auctionsLive').createIndex('new', {name: 'new'})
     await db.collection('auctionsLive').deleteMany({ahid})
-    await db.collection('auctionsLive').insertMany(auctions)
+    await db.collection('auctionsLive').insertMany(auctionsLive)
 
     await db.collection('auctionsArchive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsArchive').createIndex('ahid', {name: 'ahid'})
     await db.collection('auctionsArchive').createIndex('status', {name: 'status'})
-    await db.collection('auctionsArchive').insertMany(auctionsMissing)
+    if (auctionsMissing.length > 0) await db.collection('auctionsArchive').insertMany(auctionsMissing)
     return true
   }
 

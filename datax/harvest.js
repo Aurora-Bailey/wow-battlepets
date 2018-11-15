@@ -7,7 +7,7 @@ class Harvest {
   }
 
   async start () {
-    await realm.buildRealmDatabase()
+    await realm.buildRealmDatabase(2)
     await auction.setupLoop()
     return 'Running!'
   }
