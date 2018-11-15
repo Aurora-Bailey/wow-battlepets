@@ -1,5 +1,6 @@
 const MongoDB = require('./mongodb.js')
 const kaisBattlepets = new MongoDB('kaisBattlepets')
+const lib = require('./lib.js')
 const wow = require('./wow.js')
 const chalk = require('chalk')
 const md5 = require('md5')
@@ -8,26 +9,6 @@ const slugify = require('slugify')
 class Realm {
   constructor () {
 
-  }
-
-  async realmAuctionHouse (realmId) {
-    console.log(chalk.magenta('grah: realmId=' + realmId))
-    let db = await kaisBattlepets.getDB()
-    let ahi = await db.collection('auctionHouseIndex').find({connected: realmId}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
-    if (ahi.length > 0) return ahi[0] // auction house already exists
-
-    // Make a new auction house
-    await db.collection('auctionHouseIndex').createIndex('ahid', {unique: true, name: 'ahid'})
-    await db.collection('auctionHouseIndex').createIndex('slug', {name: 'slug'})
-    await db.collection('auctionHouseIndex').createIndex('regionTag', {name: 'regionTag'})
-    await db.collection('auctionHouseIndex').createIndex('connected', {name: 'connected'})
-    let ri = await db.collection('realmIndex').find({connected: realmId}, {projection: {_id: 0, id: 1, slug: 1, regionTag: 1}}).toArray()
-    let slug = ri.map(e => e.slug).sort().shift()
-    let connected = ri.map(e => e.id)
-    let regionTag = ri[0].regionTag
-    let ahid = 'AH' + md5(slug + regionTag).substring(0, 6).toUpperCase()
-    await db.collection('auctionHouseIndex').insertOne({ahid, slug, regionTag, connected})
-    return {ahid, slug, regionTag}
   }
 
   async buildRealmDatabase (stage = 1) {
@@ -141,7 +122,7 @@ class Realm {
           let rwah = realmsWithoutAuctionHouse[index]
           try {
             await this._timeout(50)
-            let auctionHouse = await this.realmAuctionHouse(rwah.id)
+            let auctionHouse = await lib.realmAuctionHouse(rwah.id)
             await db.collection('realmIndex').updateOne({id: rwah.id}, {$set: {dataStage: 5, ahid: auctionHouse.ahid}})
           } catch (e) {
             console.log('Error on #', rwah.id)

@@ -1,5 +1,6 @@
 const MongoDB = require('./mongodb.js')
 const kaisBattlepets = new MongoDB('kaisBattlepets')
+const lib = require('./lib.js')
 const chalk = require('chalk')
 const md5 = require('md5')
 const wow = require('./wow.js')
@@ -17,21 +18,21 @@ class Auction {
 
   async setupLoop () {
     console.log(chalk.magenta('sl: null'))
-    let ahl = await this.auctionHouseList()
+    let ahl = await lib.auctionHouseList()
     let crawlStagger = this.crawlTimespanMS / ahl.length
     ahl.forEach((ah, i) => {
       new LockedInterval(() => {
-        this.updateAuctionHouse(ah.ahid).catch(e => {
+        this._updateAuctionHouse(ah.ahid).catch(e => {
           console.log(chalk.green('// Update auction house failed! Trying a second time.'))
           console.error(e)
-          this.updateAuctionHouse(ah.ahid).catch(console.error)
+          this._updateAuctionHouse(ah.ahid).catch(console.error)
         })
       }, this.crawlIntervalMS, i * crawlStagger)
     })
     return true
   }
 
-  async updateAuctionHouse (ahid) {
+  async _updateAuctionHouse (ahid) {
     console.log(chalk.magenta('uah: ahid=' + ahid))
     let db = await kaisBattlepets.getDB()
     let auctionsLive = await wow.getAuctions(ahid)
@@ -85,6 +86,7 @@ class Auction {
     await db.collection('auctionsLive').createIndex('ahid', {name: 'ahid'})
     await db.collection('auctionsLive').createIndex('new', {name: 'new'})
     await db.collection('auctionsLive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
+    await db.collection('auctionsLive').createIndex('lastSeen', {name: 'lastSeen'})
     await db.collection('auctionsLive').deleteMany({ahid})
     await db.collection('auctionsLive').insertMany(auctionsLive)
 
@@ -92,10 +94,10 @@ class Auction {
     await db.collection('auctionsArchive').createIndex('ahid', {name: 'ahid'})
     await db.collection('auctionsArchive').createIndex('status', {name: 'status'})
     await db.collection('auctionsArchive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
+    await db.collection('auctionsArchive').createIndex('lastSeen', {name: 'lastSeen'})
     if (auctionsMissing.length > 0) await db.collection('auctionsArchive').insertMany(auctionsMissing)
     return true
   }
-
 
   _ownerReposted (auctions, owner, petSpeciesId) {
     if (!auctions) return false
@@ -104,21 +106,6 @@ class Auction {
       if (auction.owner === owner && auction.petSpeciesId === petSpeciesId && auction.new === true) repost = true
     })
     return repost
-  }
-
-  async auctionHouse(ahid) {
-    console.log(chalk.magenta('ah: ahid=' + ahid))
-    let db = await kaisBattlepets.getDB()
-    let ahi = await db.collection('auctionHouseIndex').find({ahid: ahid}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
-    if (ahi.length > 0) return ahi[0] // auction house already exists
-    else throw {error: 'Auction house not found!'}
-  }
-
-  async auctionHouseList() {
-    console.log(chalk.magenta('ahl: null'))
-    let db = await kaisBattlepets.getDB()
-    let ahi = await db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
-    return ahi
   }
 }
 

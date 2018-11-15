@@ -1,5 +1,6 @@
 const MongoDB = require('./mongodb.js')
 const kaisBattlepets = new MongoDB('kaisBattlepets')
+const lib = require('./lib.js')
 const axios = require('axios')
 const credentials = require('./credentials.json')
 const chalk = require('chalk')
@@ -44,7 +45,7 @@ class Wow {
   }
 
   async getAuctions (ahid) {
-    let auctionHouse = await this.auctionHouse(ahid)
+    let auctionHouse = await lib.auctionHouse(ahid)
     let token = await this.authenticate()
     console.log(chalk.cyan(`wow-api: https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`))
     let response_token = await axios.get(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`, {headers: {'Authorization': "bearer " + token}})
@@ -66,14 +67,6 @@ class Wow {
     console.log(chalk.cyan(`wow-api: https://${region.toLowerCase()}.api.blizzard.com/wow/character/${realm}/${character}?fields=pets`))
     let response = await axios.get(`https://${region.toLowerCase()}.api.blizzard.com/wow/character/${realm}/${character}?fields=pets`, {headers: {'Authorization': "bearer " + token}})
     return response.data.pets.collected
-  }
-
-  async auctionHouse(ahid) {
-    console.log(chalk.magenta('ah: ahid=' + ahid))
-    let db = await kaisBattlepets.getDB()
-    let ahi = await db.collection('auctionHouseIndex').find({ahid: ahid}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
-    if (ahi.length > 0) return ahi[0] // auction house already exists
-    else throw {error: 'Auction house not found!'}
   }
 }
 
