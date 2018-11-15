@@ -1,16 +1,16 @@
 const MongoDB = require('./mongodb.js')
 const kaisBattlepets = new MongoDB('kaisBattlepets')
-const wow_battlepets = new MongoDB('wow_battlepets')
 const wow = require('./wow.js')
 const chalk = require('chalk')
 const md5 = require('md5')
+const slugify = require('slugify')
 
 class Realm {
   constructor () {
 
   }
 
-  async getRealmAuctionHouse (realmId) {
+  async realmAuctionHouse (realmId) {
     console.log(chalk.magenta('grah: realmId=' + realmId))
     let db = await kaisBattlepets.getDB()
     let ahi = await db.collection('auctionHouseIndex').find({connected: realmId}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
@@ -80,6 +80,7 @@ class Realm {
             await this._timeout(1000)
             var response = await wow.getMediaString(rwfd.key.href)
             response.dataStage = 2
+            response.slug = slugify(response.slug)
             await db.collection('realmIndex').updateOne({id: rwfd.id}, {$set: response})
           } catch (e) {
             console.log('Error on #', rwfd.id)
@@ -140,7 +141,7 @@ class Realm {
           let rwah = realmsWithoutAuctionHouse[index]
           try {
             await this._timeout(50)
-            let auctionHouse = await this.getRealmAuctionHouse(rwah.id)
+            let auctionHouse = await this.realmAuctionHouse(rwah.id)
             await db.collection('realmIndex').updateOne({id: rwah.id}, {$set: {dataStage: 5, ahid: auctionHouse.ahid}})
           } catch (e) {
             console.log('Error on #', rwah.id)
@@ -172,6 +173,3 @@ class Realm {
 }
 
 module.exports = new Realm()
-
-let x = new Realm()
-x.buildRealmDatabase().then(console.log).catch(console.error)
