@@ -68,7 +68,9 @@ class Auction {
       if (!auction.live) {
         auctionsMissing.push(auction)
         // auction has been sold canceled or expired.
-        if (auction.timeLeft === 'SHORT' || auction.timeLeft === 'MEDIUM') {
+        if (auction.lastSeen < Date.now() - (1000*60*60*1.5)) {
+          auction.status = 'timeskip'
+        } else if (auction.timeLeft === 'SHORT' || auction.timeLeft === 'MEDIUM') {
           auction.status = 'expired'
         } else if (this._ownerReposted(auctionsLiveSpeciesIdLookup[auction.petSpeciesId], auction.owner, auction.petSpeciesId)) {
           auction.status = 'canceled'
