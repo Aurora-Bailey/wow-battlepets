@@ -5,6 +5,12 @@ const md5 = require('md5')
 
 class Lib {
   constructor () {
+    this.cacheRealmAuctionHouse = {}
+
+    this.cacheAuctionHouse = {}
+    this.cacheAuctionHouseList = null
+
+    this.cacheSpeciesAverage = {}
   }
 
   /*
@@ -12,9 +18,15 @@ class Lib {
   */
   async realmAuctionHouse (realmId) {
     console.log(chalk.magenta('realmAuctionHouse: ' + realmId))
+    if (this.cacheRealmAuctionHouse[realmId]) return this.cacheRealmAuctionHouse[realmId]
+
+    // find acution house
     let db = await kaisBattlepets.getDB()
-    let ahi = await db.collection('auctionHouseIndex').find({connected: realmId}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
-    if (ahi.length > 0) return ahi[0] // auction house already exists
+    let ahi = await db.collection('auctionHouseIndex').findOne({connected: realmId}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}})
+    if (ahi !== null) {
+      this.cacheRealmAuctionHouse[realmId] = ahi
+      return this.realmAuctionHouse(realmId)
+    }
 
     // Make a new auction house
     await db.collection('auctionHouseIndex').createIndex('ahid', {unique: true, name: 'ahid'})
@@ -27,7 +39,7 @@ class Lib {
     let regionTag = ri[0].regionTag
     let ahid = 'AH' + md5(slug + regionTag).substring(0, 6).toUpperCase()
     await db.collection('auctionHouseIndex').insertOne({ahid, slug, regionTag, connected})
-    return {ahid, slug, regionTag}
+    return await this.realmAuctionHouse(realmId)
   }
 
   /*
@@ -35,17 +47,23 @@ class Lib {
   */
   async auctionHouse(ahid) {
     console.log(chalk.magenta('ah: ahid=' + ahid))
+    if (this.cacheAuctionHouse[ahid]) return this.cacheAuctionHouse[ahid]
+
     let db = await kaisBattlepets.getDB()
-    let ahi = await db.collection('auctionHouseIndex').find({ahid: ahid}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
-    if (ahi.length > 0) return ahi[0] // auction house already exists
-    else throw {error: 'Auction house not found!'}
+    let ahi = await db.collection('auctionHouseIndex').findOne({ahid: ahid}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}})
+    if (ahi === null) throw {error: 'Auction house not found!'}
+    this.cacheAuctionHouse[ahid] = ahi
+    return await this.auctionHouse(ahid)
   }
 
   async auctionHouseList() {
     console.log(chalk.magenta('ahl: null'))
+    if (this.cacheAuctionHouseList) return this.cacheAuctionHouseList
+
     let db = await kaisBattlepets.getDB()
     let ahi = await db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
-    return ahi
+    this.cacheAuctionHouseList = ahi
+    return await this.auctionHouseList()
   }
 
   /*
@@ -53,9 +71,14 @@ class Lib {
   */
   async speciesAverage (speciesId) {
     console.log(chalk.magenta('speciesAverage: ' + speciesId))
+    if (this.cacheSpeciesAverage[speciesId]) return this.cacheSpeciesAverage[speciesId]
+
     let db = await kaisBattlepets.getDB()
     let results = await db.collection('average').findOne({psid: speciesId})
-    if (results !== null) return results
+    if (results !== null) {
+      this.cacheSpeciesAverage[speciesId] = results
+      return await this.speciesAverage(speciesId)
+    }
 
     // species not found
     await this._newSpeciesAverageFound(speciesId)
