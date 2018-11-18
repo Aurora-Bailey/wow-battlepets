@@ -6,10 +6,8 @@ const md5 = require('md5')
 class Lib {
   constructor () {
     this.cacheRealmAuctionHouse = {}
-
     this.cacheAuctionHouse = {}
     this.cacheAuctionHouseList = null
-
     this.cacheSpeciesAverage = {}
   }
 
@@ -46,7 +44,7 @@ class Lib {
   /// Auction
   */
   async auctionHouse(ahid) {
-    console.log(chalk.magenta('ah: ahid=' + ahid))
+    console.log(chalk.magenta('auctionHouse: ' + ahid))
     if (this.cacheAuctionHouse[ahid]) return this.cacheAuctionHouse[ahid]
 
     let db = await kaisBattlepets.getDB()
@@ -57,7 +55,7 @@ class Lib {
   }
 
   async auctionHouseList() {
-    console.log(chalk.magenta('ahl: null'))
+    console.log(chalk.magenta('auctionHouseList: null'))
     if (this.cacheAuctionHouseList) return this.cacheAuctionHouseList
 
     let db = await kaisBattlepets.getDB()
@@ -89,7 +87,10 @@ class Lib {
     let db = await kaisBattlepets.getDB()
     await db.collection('average').createIndex('psid', {unique: true, name: 'psid'})
     await db.collection('average').createIndex('lastUpdate', {name: 'lastUpdate'})
-    await db.collection('average').insertOne({psid: speciesId, lastUpdate: 0})
+    await db.collection('average').insertOne({
+      psid: speciesId,
+      lastUpdate: 0
+    })
     return true
   }
 

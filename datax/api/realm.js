@@ -12,7 +12,7 @@ class Realm {
   }
 
   async buildRealmDatabase (stage = 1) {
-    console.log(chalk.magenta('ur: stage=' + stage))
+    console.log(chalk.magenta('buildRealmDatabase: ' + stage))
     let db = await kaisBattlepets.getDB()
 
     await db.collection('realmIndex').createIndex('id', {unique: true, name: 'realmId'})
