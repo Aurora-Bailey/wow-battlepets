@@ -7,80 +7,166 @@ const LockedInterval = require('./lockedinterval.js')
 
 class Average {
   constructor () {
-    this.maxAuctionsPulled = 10000
+    this.daysToAverage = 30
   }
 
   async setupLoop () {
+    await this._updateAverageUpdate()
     new LockedInterval(() => {
-      this._updateOldest().catch(console.log)
-    }, 10000, 0)
+      this._updateAverageUpdate().catch(console.error)
+    }, 1000*60*60, 0)
+    new LockedInterval(() => {
+      this._updateOldest().catch(console.error)
+    }, 1000*60, 0)
+    return true
+  }
+
+  async speciesAverage (speciesId, level, region, ahid) {
+    console.log(chalk.magenta('speciesAverage: ' + speciesId))
+    let db = await kaisBattlepets.getDB()
+    let results = await db.collection('average').findOne({psid: speciesId, petLevel: level, region: region, ahid: ahid})
+    if (results !== null) return results
+
+    // species not found
+    return await this._packageData([], {speciesId, level, region, ahid})
+  }
+
+  async _updateAverageUpdate () {
+    // this is a soultion to keep track of species and when to update the average
+    console.log(chalk.magenta('_updateAverageUpdate: null'))
+    let db = await kaisBattlepets.getDB()
+    let psids = await db.collection('auctionsLive').distinct('petSpeciesId', {})
+    psids.forEach(id => {
+      db.collection('averageUpdate').insertOne({psid: id, lastUpdate: Date.now()}).catch(() => {})
+    })
+    await db.collection('averageUpdate').createIndex('psid', {unique: true, name: 'psid'})
+    await db.collection('averageUpdate').createIndex('lastUpdate', {name: 'lastUpdate'})
     return true
   }
 
   async _updateOldest () {
     console.log(chalk.magenta('_updateOldest: null'))
     let db = await kaisBattlepets.getDB()
-    let oldestAverage = await db.collection('average').findOne({}, {sort: {lastUpdate: 1}, projection: {_id: 1, psid: 1}})
-    return await this._updateSpeciesId(oldestAverage.psid)
+    let oldestAverage = await db.collection('averageUpdate').findOne({}, {sort: {lastUpdate: 1}, projection: {_id: 1, psid: 1}})
+    if (oldestAverage === null) return false
+    let updateId = await this._updateSpeciesId(oldestAverage.psid)
+    await db.collection('averageUpdate').updateOne({psid: oldestAverage.psid}, {$set: {lastUpdate: Date.now()}})
+    return updateId
   }
 
   async _updateSpeciesId (speciesId) {
     console.log(chalk.magenta('_updateSpeciesId: ' + speciesId))
+    var daysMS = this.daysToAverage * 24 * 60 * 60 * 1000
     let db = await kaisBattlepets.getDB()
-
-    await db.collection('average').updateOne({psid: speciesId}, {$set: {lastUpdate: Date.now()}})
-  }
-
-  async _crunchSpeciesAverage (speciesId, days) {
-    console.log(chalk.magenta('_crunchSpeciesAverage: ' + speciesId))
-    let daysMS = days * 24 * 60 * 60 * 1000
-    let db = await kaisBattlepets.getDB()
-    let results = await db.collection('auctionsArchive').find({petSpeciesId: speciesId, lastSeen: {$gte: Date.now() - daysMS}}, {sort: {lastSeen: -1}, limit: this.maxAuctionsPulled, projection: {
+    let results = await db.collection('auctionsArchive').find({petSpeciesId: speciesId, lastSeen: {$gte: Date.now() - daysMS}}, {sort: {lastSeen: -1}, projection: {
       _id: 0,
       buyout: 1,
       petSpeciesId: 1,
-      petBreed: 1,
       petLevel: 1,
-      aid: 1,
       ahid: 1,
-      lastsSeen: 1,
+      lastSeen: 1,
       status: 1
     }}).toArray()
+    if (results.length === 0) return false
 
-    let data = {
-      sold: {
-        mean: 0,
-        median: 0,
-        mode: 0,
-        spread: 0,
-        standardDeviation: 0,
-        high: 0,
-        low: 0,
-        num: 0
-      },
-      canceled: {
-        mean: 0,
-        median: 0,
-        mode: 0,
-        spread: 0,
-        standardDeviation: 0,
-        high: 0,
-        low: 0,
-        num: 0
-      },
-      expired: {
-        mean: 0,
-        median: 0,
-        mode: 0,
-        spread: 0,
-        standardDeviation: 0,
-        high: 0,
-        low: 0,
-        num: 0
+    var regionAuctions = {}
+    var auctionHouseAuctions = {}
+    for (var index in results) {
+      let auction = results[index]
+      let ah = await lib.auctionHouse(auction.ahid)
+      if (typeof regionAuctions[ah.regionTag] === 'undefined') regionAuctions[ah.regionTag] = []
+      if (typeof auctionHouseAuctions[auction.ahid] === 'undefined') auctionHouseAuctions[auction.ahid] = []
+      regionAuctions[ah.regionTag].push(auction)
+      auctionHouseAuctions[auction.ahid].push(auction)
+    }
+    for (var region in regionAuctions) {
+      if (regionAuctions.hasOwnProperty(region)) {
+        let l1 = regionAuctions[region].filter(a => a.petLevel === 1)
+        let l25 = regionAuctions[region].filter(a => a.petLevel === 25)
+        await db.collection('average').updateOne(
+          {psid: speciesId, petLevel: 1, region: region, ahid: null},
+          {$set: this._packageData(l1, {lastUpdate: Date.now(), psid: speciesId, petLevel: 1, region: region, ahid: null})},
+          {upsert: true}
+        )
+        await db.collection('average').updateOne(
+          {psid: speciesId, petLevel: 25, region: region, ahid: null},
+          {$set: this._packageData(l25, {lastUpdate: Date.now(), psid: speciesId, petLevel: 25, region: region, ahid: null})},
+          {upsert: true}
+        )
       }
     }
+    for (var ah in auctionHouseAuctions) {
+      if (auctionHouseAuctions.hasOwnProperty(ah)) {
+        let l1 = auctionHouseAuctions[ah].filter(a => a.petLevel === 1)
+        let l25 = auctionHouseAuctions[ah].filter(a => a.petLevel === 25)
+        await db.collection('average').updateOne(
+          {psid: speciesId, petLevel: 1, region: null, ahid: ah},
+          {$set: this._packageData(l1, {lastUpdate: Date.now(), psid: speciesId, petLevel: 1, region: null, ahid: ah})},
+          {upsert: true}
+        )
+        await db.collection('average').updateOne(
+          {psid: speciesId, petLevel: 25, region: null, ahid: ah},
+          {$set: this._packageData(l25, {lastUpdate: Date.now(), psid: speciesId, petLevel: 25, region: null, ahid: ah})},
+          {upsert: true}
+        )
+      }
+    }
+    await db.collection('average').createIndex('psid', {name: 'psid'})
+    await db.collection('average').createIndex('petLevel', {name: 'petLevel'})
+    await db.collection('average').createIndex('region', {name: 'region'})
+    await db.collection('average').createIndex('ahid', {name: 'ahid'})
+    await db.collection('average').createIndex('lastUpdate', {name: 'lastUpdate'})
 
+    return true
+  }
 
+  _packageData(auctions, otherData) {
+    // console.log(chalk.magenta('_packageData: ' + auctions.length))
+    var daysMS = this.daysToAverage * 24 * 60 * 60 * 1000
+    let sold = auctions.filter(auction => auction.status === 'sold')
+    let canceled = auctions.filter(auction => auction.status === 'canceled')
+    let expired = auctions.filter(auction => auction.status === 'expired')
+
+    let soldBuyout = sold.map(auction => auction.buyout)
+    let canceledBuyout = canceled.map(auction => auction.buyout)
+    let expiredBuyout = expired.map(auction => auction.buyout)
+
+    let soldWeight = sold.map(auction => {
+      let weight = daysMS - (Date.now() - auction.lastSeen)
+      if (weight <= 0) weight = 0
+      return weight
+    })
+    let canceledWeight = canceled.map(auction => {
+      let weight = daysMS - (Date.now() - auction.lastSeen)
+      if (weight <= 0) weight = 0
+      return weight
+    })
+    let expiredWeight = expired.map(auction => {
+      let weight = daysMS - (Date.now() - auction.lastSeen)
+      if (weight <= 0) weight = 0
+      return weight
+    })
+
+    let data = {
+      sold: this._averageCombinationObject(soldBuyout, soldWeight),
+      canceled: this._averageCombinationObject(canceledBuyout, canceledWeight),
+      expired: this._averageCombinationObject(expiredBuyout, expiredWeight)
+    }
+    return Object.assign(otherData, data)
+  }
+
+  _averageCombinationObject (numArray, weightArray) {
+    return {
+      mean: this._mean(numArray),
+      median: this._median(numArray),
+      mode: this._mode(numArray),
+      spread: this._spread(numArray),
+      weightedMean: this._weightedMean(numArray, weightArray),
+      standardDeviation: this._standardDeviation(numArray),
+      high: this._high(numArray),
+      low: this._low(numArray),
+      num: numArray.length
+    }
   }
 
   _mode (numArray) {
@@ -106,7 +192,19 @@ class Average {
     return this._mean(mostNumbers)
   }
 
-  _sperad (numArray) {
+  _high (numArray) {
+    if (numArray.length === 0) return 0
+    let max = Math.max(...numArray)
+    return max
+  }
+  _low (numArray) {
+    if (numArray.length === 0) return 0
+    let min = Math.min(...numArray)
+    return min
+  }
+
+  _spread (numArray) {
+    if (numArray.length === 0) return 0
     let max = Math.max(...numArray)
     let min = Math.min(...numArray)
     return max - min

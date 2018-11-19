@@ -4,7 +4,6 @@ const lib = require('./lib.js')
 const chalk = require('chalk')
 const md5 = require('md5')
 const wow = require('./wow.js')
-const realm = require('./realm.js')
 const LockedInterval = require('./lockedinterval.js')
 
 class Auction {
@@ -58,11 +57,26 @@ class Auction {
       auctionsLiveSpeciesIdLookup[auction.petSpeciesId].push(auction)
     })
 
-    auctionsLive.forEach(auction => {
+    for (var index in auctionsLive) {
+      let auction = auctionsLive[index]
       auction.new = !auctionsOldMap.includes(auction.aid)
       auction.live = true
       auction.status = 'live'
-    })
+      if (auction.new) {
+        let ah = await lib.auctionHouse(auction.ahid)
+        let average = await lib.speciesAverageRegion (auction.petSpeciesId, auction.petLevel, ah.regionTag)
+        if (average !== null) {
+          auction.median = average.sold.median
+          auction.profit = (auction.median * 0.95) - auction.buyout
+          auction.percent = this._percent(auction.profit, auction.buyout)
+        } else {
+          auction.median = 0
+          auction.profit = 0
+          auction.percent = 0
+        }
+      }
+    }
+
     auctionsOld.forEach(auction => {
       auction.new = false
       auction.live = auctionsLiveMap.includes(auction.aid)
@@ -106,6 +120,9 @@ class Auction {
       if (auction.owner === owner && auction.petSpeciesId === petSpeciesId && auction.new === true) repost = true
     })
     return repost
+  }
+  _percent (a, b) {
+    return ( a/b ) * 100
   }
 }
 

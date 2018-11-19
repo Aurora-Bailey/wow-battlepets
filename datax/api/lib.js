@@ -6,16 +6,17 @@ const md5 = require('md5')
 class Lib {
   constructor () {
     this.cacheRealmAuctionHouse = {}
+    this.cacheSpeciesAverageRegion = {}
     this.cacheAuctionHouse = {}
     this.cacheAuctionHouseList = null
-    this.cacheSpeciesAverage = {}
   }
 
   /*
   /// Realm
   */
   async realmAuctionHouse (realmId) {
-    console.log(chalk.magenta('realmAuctionHouse: ' + realmId))
+    if (this.cacheRealmAuctionHouse[realmId]) console.log(chalk.yellow('(m)') + chalk.magenta('realmAuctionHouse: ' + realmId))
+    else console.log(chalk.magenta('realmAuctionHouse: ' + realmId))
     if (this.cacheRealmAuctionHouse[realmId]) return this.cacheRealmAuctionHouse[realmId]
 
     // find acution house
@@ -41,59 +42,57 @@ class Lib {
   }
 
   /*
+  /// Average
+  */
+  async speciesAverageRegion (speciesId, level, region) {
+    let id = speciesId + region + level
+    if (typeof this.cacheSpeciesAverageRegion[id] === 'undefined') this.cacheSpeciesAverageRegion[id] = {results: null, date: 0, expire: 0, valid: false}
+
+    // invalidate old data
+    if (this.cacheSpeciesAverageRegion[id].expire < Date.now()) this.cacheSpeciesAverageRegion[id].valid = false
+    if (this.cacheSpeciesAverageRegion[id].expire < Date.now() && this.cacheSpeciesAverageRegion[id].expire !== 0) console.log(chalk.cyanBright('Invalidate: ') + speciesId)
+
+    // console out
+    if (this.cacheSpeciesAverageRegion[id].valid) console.log(chalk.yellow('(m)') + chalk.magenta('speciesAverageRegion: ' + speciesId + ' ' + level + ' ' + region))
+    else console.log(chalk.magenta('speciesAverageRegion: ' + speciesId + ' ' + level + ' ' + region))
+
+    // return from cash
+    if (this.cacheSpeciesAverageRegion[id].valid) return this.cacheSpeciesAverageRegion[id].results
+
+    // return form database
+    let db = await kaisBattlepets.getDB()
+    let results = await db.collection('average').findOne({psid: speciesId, petLevel: level, region: region, ahid: null})
+    this.cacheSpeciesAverageRegion[id] = {results, date: Date.now(), expire: Date.now() + (1000*60*6) + (Math.random() * 1000*60), valid: true}
+    return results
+  }
+
+  /*
   /// Auction
   */
   async auctionHouse(ahid) {
-    console.log(chalk.magenta('auctionHouse: ' + ahid))
+    // if (this.cacheAuctionHouse[ahid]) console.log(chalk.yellow('(m)') + chalk.magenta('auctionHouse: ' + ahid))
+    // else console.log(chalk.magenta('auctionHouse: ' + ahid))
+
     if (this.cacheAuctionHouse[ahid]) return this.cacheAuctionHouse[ahid]
 
     let db = await kaisBattlepets.getDB()
     let ahi = await db.collection('auctionHouseIndex').findOne({ahid: ahid}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}})
     if (ahi === null) throw {error: 'Auction house not found!'}
     this.cacheAuctionHouse[ahid] = ahi
-    return await this.auctionHouse(ahid)
+    return ahi
   }
 
   async auctionHouseList() {
-    console.log(chalk.magenta('auctionHouseList: null'))
+    if (this.cacheAuctionHouseList) console.log(chalk.yellow('(m)') + chalk.magenta('auctionHouseList: null'))
+    else console.log(chalk.magenta('auctionHouseList: null'))
+
     if (this.cacheAuctionHouseList) return this.cacheAuctionHouseList
 
     let db = await kaisBattlepets.getDB()
     let ahi = await db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
     this.cacheAuctionHouseList = ahi
-    return await this.auctionHouseList()
+    return ahi
   }
-
-  /*
-  /// Average
-  */
-  async speciesAverage (speciesId) {
-    console.log(chalk.magenta('speciesAverage: ' + speciesId))
-    if (this.cacheSpeciesAverage[speciesId]) return this.cacheSpeciesAverage[speciesId]
-
-    let db = await kaisBattlepets.getDB()
-    let results = await db.collection('average').findOne({psid: speciesId})
-    if (results !== null) {
-      this.cacheSpeciesAverage[speciesId] = results
-      return await this.speciesAverage(speciesId)
-    }
-
-    // species not found
-    await this._newSpeciesAverageFound(speciesId)
-    return await this.speciesAverage(speciesId)
-  }
-  async _newSpeciesAverageFound (speciesId) {
-    console.log(chalk.magenta('newSpeciesFound: ' + speciesId))
-    let db = await kaisBattlepets.getDB()
-    await db.collection('average').createIndex('psid', {unique: true, name: 'psid'})
-    await db.collection('average').createIndex('lastUpdate', {name: 'lastUpdate'})
-    await db.collection('average').insertOne({
-      psid: speciesId,
-      lastUpdate: 0
-    })
-    return true
-  }
-
 }
 
 module.exports = new Lib()
