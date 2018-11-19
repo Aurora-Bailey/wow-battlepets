@@ -62,18 +62,17 @@ class Auction {
       auction.new = !auctionsOldMap.includes(auction.aid)
       auction.live = true
       auction.status = 'live'
-      if (auction.new) {
-        let ah = await lib.auctionHouse(auction.ahid)
-        let average = await lib.speciesAverageRegion (auction.petSpeciesId, auction.petLevel, ah.regionTag)
-        if (average !== null) {
-          auction.median = average.sold.median
-          auction.profit = (auction.median * 0.95) - auction.buyout
-          auction.percent = this._percent(auction.profit, auction.buyout)
-        } else {
-          auction.median = 0
-          auction.profit = 0
-          auction.percent = 0
-        }
+      if (auction.petLevel < 25) auction.petLevel = 1 // colapse pet level to 25 or 1
+      let ah = await lib.auctionHouse(auction.ahid)
+      let average = await lib.speciesAverageRegion (auction.petSpeciesId, auction.petLevel, ah.regionTag)
+      if (average !== null) {
+        auction.median = average.sold.median
+        auction.profit = (auction.median * 0.95) - auction.buyout
+        auction.percent = this._percent(auction.profit, auction.buyout)
+      } else {
+        auction.median = 0
+        auction.profit = 0
+        auction.percent = 0
       }
     }
 

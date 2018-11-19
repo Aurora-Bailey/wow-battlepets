@@ -15,8 +15,8 @@ class Lib {
   /// Realm
   */
   async realmAuctionHouse (realmId) {
-    if (this.cacheRealmAuctionHouse[realmId]) console.log(chalk.yellow('(m)') + chalk.magenta('realmAuctionHouse: ' + realmId))
-    else console.log(chalk.magenta('realmAuctionHouse: ' + realmId))
+    if (this.cacheRealmAuctionHouse[realmId]) console.log(chalk.yellow('(m)') + chalk.magenta('realmAuctionHouse: ') + realmId)
+    else console.log(chalk.magenta('realmAuctionHouse: ') + realmId)
     if (this.cacheRealmAuctionHouse[realmId]) return this.cacheRealmAuctionHouse[realmId]
 
     // find acution house
@@ -50,11 +50,11 @@ class Lib {
 
     // invalidate old data
     if (this.cacheSpeciesAverageRegion[id].expire < Date.now()) this.cacheSpeciesAverageRegion[id].valid = false
-    if (this.cacheSpeciesAverageRegion[id].expire < Date.now() && this.cacheSpeciesAverageRegion[id].expire !== 0) console.log(chalk.cyanBright('Invalidate: ') + speciesId)
+    if (this.cacheSpeciesAverageRegion[id].expire < Date.now() && this.cacheSpeciesAverageRegion[id].expire !== 0) console.log(chalk.cyanBright('Expire speciesAverageRegion: ') + speciesId + ' ' + level + ' ' + region)
 
     // console out
-    if (this.cacheSpeciesAverageRegion[id].valid) console.log(chalk.yellow('(m)') + chalk.magenta('speciesAverageRegion: ' + speciesId + ' ' + level + ' ' + region))
-    else console.log(chalk.magenta('speciesAverageRegion: ' + speciesId + ' ' + level + ' ' + region))
+    if (this.cacheSpeciesAverageRegion[id].valid) console.log(chalk.yellow('(m)') + chalk.magenta('speciesAverageRegion: ') + speciesId + ' ' + level + ' ' + region)
+    else console.log(chalk.magenta('speciesAverageRegion: ') + speciesId + ' ' + level + ' ' + region)
 
     // return from cash
     if (this.cacheSpeciesAverageRegion[id].valid) return this.cacheSpeciesAverageRegion[id].results
@@ -62,7 +62,7 @@ class Lib {
     // return form database
     let db = await kaisBattlepets.getDB()
     let results = await db.collection('average').findOne({psid: speciesId, petLevel: level, region: region, ahid: null})
-    this.cacheSpeciesAverageRegion[id] = {results, date: Date.now(), expire: Date.now() + (1000*60*6) + (Math.random() * 1000*60), valid: true}
+    this.cacheSpeciesAverageRegion[id] = {results, date: Date.now(), expire: Date.now() + (1000*60*60*6) + (Math.random() * 1000*60*60), valid: true}
     return results
   }
 
@@ -70,8 +70,8 @@ class Lib {
   /// Auction
   */
   async auctionHouse(ahid) {
-    // if (this.cacheAuctionHouse[ahid]) console.log(chalk.yellow('(m)') + chalk.magenta('auctionHouse: ' + ahid))
-    // else console.log(chalk.magenta('auctionHouse: ' + ahid))
+    // if (this.cacheAuctionHouse[ahid]) console.log(chalk.yellow('(m)') + chalk.magenta('auctionHouse: ') + ahid)
+    // else console.log(chalk.magenta('auctionHouse: ') + ahid)
 
     if (this.cacheAuctionHouse[ahid]) return this.cacheAuctionHouse[ahid]
 
@@ -83,8 +83,8 @@ class Lib {
   }
 
   async auctionHouseList() {
-    if (this.cacheAuctionHouseList) console.log(chalk.yellow('(m)') + chalk.magenta('auctionHouseList: null'))
-    else console.log(chalk.magenta('auctionHouseList: null'))
+    if (this.cacheAuctionHouseList) console.log(chalk.yellow('(m)') + chalk.magenta('auctionHouseList:'))
+    else console.log(chalk.magenta('auctionHouseList:'))
 
     if (this.cacheAuctionHouseList) return this.cacheAuctionHouseList
 
