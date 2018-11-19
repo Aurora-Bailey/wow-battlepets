@@ -1,5 +1,6 @@
 const realm = require('./api/realm.js')
 const auction = require('./api/auction.js')
+const average = require('./api/average.js')
 
 class Harvest {
   constructor () {
@@ -9,6 +10,7 @@ class Harvest {
   async start () {
     await realm.buildRealmDatabase(2)
     await auction.setupLoop()
+    await average.setupLoop()
     return 'Running!'
   }
 }
