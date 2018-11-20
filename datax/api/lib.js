@@ -53,8 +53,8 @@ class Lib {
     if (this.cacheSpeciesAverageRegion[id].expire < Date.now() && this.cacheSpeciesAverageRegion[id].expire !== 0) console.log(chalk.cyanBright('Expire speciesAverageRegion: ') + speciesId + ' ' + level + ' ' + region)
 
     // console out
-    if (this.cacheSpeciesAverageRegion[id].valid) console.log(chalk.yellow('(m)') + chalk.magenta('speciesAverageRegion: ') + speciesId + ' ' + level + ' ' + region)
-    else console.log(chalk.magenta('speciesAverageRegion: ') + speciesId + ' ' + level + ' ' + region)
+    // if (this.cacheSpeciesAverageRegion[id].valid) console.log(chalk.yellow('(m)') + chalk.magenta('speciesAverageRegion: ') + speciesId + ' ' + level + ' ' + region)
+    // else console.log(chalk.magenta('speciesAverageRegion: ') + speciesId + ' ' + level + ' ' + region)
 
     // return from cash
     if (this.cacheSpeciesAverageRegion[id].valid) return this.cacheSpeciesAverageRegion[id].results

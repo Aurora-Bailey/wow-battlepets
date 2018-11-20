@@ -39,7 +39,6 @@ class Auction {
       return typeof auc.petSpeciesId !== 'undefined'
     })
     let auctionsOld = await db.collection('auctionsLive').find({ahid}).toArray()
-    let auctionsMissing = []
 
     // Add additional stats to new auctions
     auctionsLive.forEach(auction => {
@@ -57,22 +56,25 @@ class Auction {
       auctionsLiveSpeciesIdLookup[auction.petSpeciesId].push(auction)
     })
 
+    // something more efficent than replacing all live data every hour
     for (var index in auctionsLive) {
       let auction = auctionsLive[index]
       auction.new = !auctionsOldMap.includes(auction.aid)
-      auction.live = true
-      auction.status = 'live'
-      if (auction.petLevel < 25) auction.petLevel = 1 // colapse pet level to 25 or 1
-      let ah = await lib.auctionHouse(auction.ahid)
-      let average = await lib.speciesAverageRegion (auction.petSpeciesId, auction.petLevel, ah.regionTag)
-      if (average !== null) {
-        auction.median = average.sold.median
-        auction.profit = (auction.median * 0.95) - auction.buyout
-        auction.percent = this._percent(auction.profit, auction.buyout)
-      } else {
-        auction.median = 0
-        auction.profit = 0
-        auction.percent = 0
+      if (auction.new) {
+        auction.live = true
+        auction.status = 'live'
+        if (auction.petLevel < 25) auction.petLevel = 1 // colapse pet level to 25 or 1
+        let ah = await lib.auctionHouse(auction.ahid)
+        let average = await lib.speciesAverageRegion (auction.petSpeciesId, auction.petLevel, ah.regionTag)
+        if (average !== null) {
+          auction.median = average.sold.median
+          auction.profit = (auction.median * 0.95) - auction.buyout
+          auction.percent = this._percent(auction.profit, auction.buyout)
+        } else {
+          auction.median = 0
+          auction.profit = 0
+          auction.percent = 0
+        }
       }
     }
 
@@ -80,7 +82,6 @@ class Auction {
       auction.new = false
       auction.live = auctionsLiveMap.includes(auction.aid)
       if (!auction.live) {
-        auctionsMissing.push(auction)
         // auction has been sold canceled or expired.
         if (auction.lastSeen < Date.now() - (1000*60*60*1.5)) {
           auction.status = 'timeskip'
@@ -94,14 +95,19 @@ class Auction {
       }
     })
 
+    let auctionsMissing = auctionsOld.filter(a => !a.live)
+    let auctionsMissingAid = auctionsMissing.map(a => a.aid)
+    let auctionsNew = auctionsLive.filter(a => a.new)
+
     // Add to database
     await db.collection('auctionsLive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsLive').createIndex('ahid', {name: 'ahid'})
     await db.collection('auctionsLive').createIndex('new', {name: 'new'})
     await db.collection('auctionsLive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
     await db.collection('auctionsLive').createIndex('lastSeen', {name: 'lastSeen'})
-    await db.collection('auctionsLive').deleteMany({ahid})
-    await db.collection('auctionsLive').insertMany(auctionsLive)
+    await db.collection('auctionsLive').deleteMany({aid: {$in: auctionsMissingAid}})
+    await db.collection('auctionsLive').updateMany({ahid}, {$set: {new: false}})
+    await db.collection('auctionsLive').insertMany(auctionsNew)
 
     await db.collection('auctionsArchive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsArchive').createIndex('ahid', {name: 'ahid'})
