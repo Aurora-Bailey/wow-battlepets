@@ -22,7 +22,7 @@ class Average {
   }
 
   async speciesAverage (speciesId, level, region, ahid) {
-    console.log(chalk.magenta('speciesAverage: ' + speciesId))
+    console.log(chalk.magenta('speciesAverage: ') + speciesId)
     let db = await kaisBattlepets.getDB()
     let results = await db.collection('average').findOne({psid: speciesId, petLevel: level, region: region, ahid: ahid})
     if (results !== null) return results
@@ -33,7 +33,7 @@ class Average {
 
   async _updateAverageUpdate () {
     // this is a soultion to keep track of species and when to update the average
-    console.log(chalk.magenta('_updateAverageUpdate: null'))
+    console.log(chalk.magenta('_updateAverageUpdate:'))
     let db = await kaisBattlepets.getDB()
     let psids = await db.collection('auctionsLive').distinct('petSpeciesId', {})
     psids.forEach(id => {
@@ -45,7 +45,7 @@ class Average {
   }
 
   async _updateOldest () {
-    console.log(chalk.magenta('_updateOldest: null'))
+    console.log(chalk.magenta('_updateOldest:'))
     let db = await kaisBattlepets.getDB()
     let oldestAverage = await db.collection('averageUpdate').findOne({}, {sort: {lastUpdate: 1}, projection: {_id: 1, psid: 1}})
     if (oldestAverage === null) return false
@@ -55,7 +55,7 @@ class Average {
   }
 
   async _updateSpeciesId (speciesId) {
-    console.log(chalk.magenta('_updateSpeciesId: ' + speciesId))
+    console.log(chalk.magenta('_updateSpeciesId: ') + speciesId)
     var daysMS = this.daysToAverage * 24 * 60 * 60 * 1000
     let db = await kaisBattlepets.getDB()
     let results = await db.collection('auctionsArchive').find({petSpeciesId: speciesId, lastSeen: {$gte: Date.now() - daysMS}}, {sort: {lastSeen: -1}, projection: {

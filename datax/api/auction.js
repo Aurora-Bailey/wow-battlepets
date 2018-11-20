@@ -16,7 +16,7 @@ class Auction {
   }
 
   async setupLoop () {
-    console.log(chalk.magenta('setupLoop: null'))
+    console.log(chalk.magenta('setupLoop:'))
     let ahl = await lib.auctionHouseList()
     let crawlStagger = this.crawlTimespanMS / ahl.length
     ahl.forEach((ah, i) => {
@@ -32,7 +32,7 @@ class Auction {
   }
 
   async _updateAuctionHouse (ahid) {
-    console.log(chalk.magenta('_updateAuctionHouse: ' + ahid))
+    console.log(chalk.magenta('_updateAuctionHouse: ') + ahid)
     let db = await kaisBattlepets.getDB()
     let auctionsLive = await wow.getAuctions(ahid)
     auctionsLive = auctionsLive.filter(auc => {
