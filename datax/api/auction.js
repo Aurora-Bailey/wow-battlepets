@@ -105,9 +105,9 @@ class Auction {
     await db.collection('auctionsLive').createIndex('new', {name: 'new'})
     await db.collection('auctionsLive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
     await db.collection('auctionsLive').createIndex('lastSeen', {name: 'lastSeen'})
-    await db.collection('auctionsLive').deleteMany({aid: {$in: auctionsMissingAid}})
+    if (auctionsMissingAid.length > 0) await db.collection('auctionsLive').deleteMany({aid: {$in: auctionsMissingAid}})
     await db.collection('auctionsLive').updateMany({ahid}, {$set: {new: false}})
-    if(auctionsNew.length > 0) await db.collection('auctionsLive').insertMany(auctionsNew)
+    if (auctionsNew.length > 0) await db.collection('auctionsLive').insertMany(auctionsNew)
 
     await db.collection('auctionsArchive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsArchive').createIndex('ahid', {name: 'ahid'})
