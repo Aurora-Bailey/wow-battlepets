@@ -39,7 +39,7 @@ class Wow {
 
   async getMediaString (string) {
     let token = await this.authenticate()
-    console.log(chalk.cyan('wow-api: ' + string))
+    console.log(chalk.cyan('wow-api: ') + string)
     let response = await axios.get(string, {headers: {'Authorization': "bearer " + token}})
     return response.data
   }
