@@ -58,7 +58,7 @@ class Average {
     console.log(chalk.magenta('_updateSpeciesId: ') + speciesId)
     var daysMS = this.daysToAverage * 24 * 60 * 60 * 1000
     let db = await kaisBattlepets.getDB()
-    let results = await db.collection('auctionsArchive').find({petSpeciesId: speciesId, lastSeen: {$gte: Date.now() - daysMS}}, {sort: {lastSeen: -1}, projection: {
+    let results = await db.collection('auctionsArchive').find({petSpeciesId: speciesId, lastSeen: {$gte: Date.now() - daysMS}}, {sort: {lastSeen: -1}, limit: 10000, projection: {
       _id: 0,
       buyout: 1,
       petSpeciesId: 1,
