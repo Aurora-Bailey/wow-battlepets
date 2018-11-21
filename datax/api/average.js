@@ -40,7 +40,7 @@ class Average {
 
     let auctionHouseHealth = {
       ahid: oldest.ahid,
-      liveMarketCap: liveAuctions.reduce((a,v) => a + v.buyout),
+      liveMarketCap: liveAuctions.reduce((a,v) => a + v.buyout, 0),
       liveVolume: liveAuctions.length,
       sellPriceAvg: this._mean(oldAuctionsSold.map(a => a.buyout)),
       sellRate: this._spread(oldAuctionsSold.map(a => a.lastSeen)) / oldAuctionsSold.length,
