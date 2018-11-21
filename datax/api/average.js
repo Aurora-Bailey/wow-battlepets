@@ -38,6 +38,12 @@ class Average {
     let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 10000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (oldAuctionsSold.length === 0) return false
 
+    console.log(oldAuctionsSold.length)
+    console.log(this._spread(oldAuctionsSold.map(a => a.lastSeen)))
+    console.log(this._spread(oldAuctionsSold.map(a => a.lastSeen)) / oldAuctionsSold.length)
+    console.log(oldAuctionsSold.map(a => a.lastSeen))
+    console.log(oldAuctionsSold)
+
     let auctionHouseHealth = {
       ahid: oldest.ahid,
       liveMarketCap: liveAuctions.reduce((a,v) => a + v.buyout, 0),
