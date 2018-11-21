@@ -68,7 +68,7 @@ class Average {
     })
     for (var index in auctionHouseHealth) {
       let ah = auctionHouseHealth[index]
-      await db.collection('auctionHouseHealth').updateOne({ahid: ah.ahid}, {$set: ah}, {upsert: true})
+      db.collection('auctionHouseHealth').insertOne(ah).catch(() => {})
     }
     return true
   }
