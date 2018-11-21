@@ -14,7 +14,7 @@ class Average {
     await this._updateAverageUpdate()
     new LockedInterval(() => {
       this._updateAverageUpdate().catch(console.error)
-    }, 1000*60*60, 0)
+    }, 1000*60*60*6, 0)
     new LockedInterval(() => {
       this._updateOldest().catch(console.error)
     }, 1000*60, 0)
@@ -54,7 +54,7 @@ class Average {
     await db.collection('auctionHouseHealth').createIndex('ahid', {unique: true, name: 'ahid'})
     await db.collection('auctionHouseHealth').createIndex('lastUpdate', {name: 'lastUpdate'})
     let auctionHouses = db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1}}).toArray()
-    let auctionHouseHealth = auctionHouse.map(ah => {
+    let auctionHouseHealth = auctionHouses.map(ah => {
       return {
         ahid: ah.ahid,
         liveMarketCap: 0,
