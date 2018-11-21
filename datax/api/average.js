@@ -53,7 +53,7 @@ class Average {
     let db = await kaisBattlepets.getDB()
     await db.collection('auctionHouseHealth').createIndex('ahid', {unique: true, name: 'ahid'})
     await db.collection('auctionHouseHealth').createIndex('lastUpdate', {name: 'lastUpdate'})
-    let auctionHouses = db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1}}).toArray()
+    let auctionHouses = await db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1}}).toArray()
     let auctionHouseHealth = auctionHouses.map(ah => {
       return {
         ahid: ah.ahid,
