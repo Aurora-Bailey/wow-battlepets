@@ -33,18 +33,10 @@ class Average {
     console.log(chalk.magenta('_updateAuctionHouseHealth: ') + oldest.ahid)
 
     let liveAuctions = await db.collection('auctionsLive').find({ahid: oldest.ahid}, {projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
-    console.log(liveAuctions.length)
     if (liveAuctions.length === 0) return false
 
     let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 10000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
-    console.log(oldAuctionsSold.length)
     if (oldAuctionsSold.length === 0) return false
-
-    console.log(oldAuctionsSold.length)
-    console.log(this._spread(oldAuctionsSold.map(a => a.lastSeen)))
-    console.log(this._spread(oldAuctionsSold.map(a => a.lastSeen)) / oldAuctionsSold.length)
-    console.log(oldAuctionsSold.map(a => a.lastSeen))
-    console.log(oldAuctionsSold)
 
     let auctionHouseHealth = {
       ahid: oldest.ahid,
