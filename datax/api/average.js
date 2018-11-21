@@ -29,13 +29,13 @@ class Average {
     console.log(chalk.magenta('_updateAuctionHouseHealth:'))
     let db = await kaisBattlepets.getDB()
 
-    let oldest = await db.collection('auctionHouseHealth').findOne({}, {sort: {lastUpdate: -1}, projection: {_id: 0, ahid: 1, lastUpdate: 1}})
+    let oldest = await db.collection('auctionHouseHealth').findOne({}, {sort: {lastUpdate: 1}, projection: {_id: 0, ahid: 1, lastUpdate: 1}})
     if (oldest === null) return false
 
-    let liveAuctions = await db.collection('auctionsLive').find({ahid: oldest.ahid}, {projection: {_id: 0, buyout: 1}})
+    let liveAuctions = await db.collection('auctionsLive').find({ahid: oldest.ahid}, {projection: {_id: 0, buyout: 1}}).toArray()
     if (liveAuctions.length === 0) return false
 
-    let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 10000, projection: {_id: 0, buyout: 1, lastSeen: 1}})
+    let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 10000, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (oldAuctionsSold.length === 0) return false
 
     let auctionHouseHealth = {
