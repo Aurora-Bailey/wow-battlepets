@@ -26,6 +26,7 @@ class Average {
   }
 
   async _updateAuctionHouseHealth () {
+    console.log(chalk.magenta('_updateAuctionHouseHealth:'))
     let db = await kaisBattlepets.getDB()
 
     let oldest = await db.collection('auctionHouseHealth').findOne({}, {sort: {lastUpdate: -1}, projection: {_id: 0, ahid: 1, lastUpdate: 1}})
@@ -50,6 +51,7 @@ class Average {
   }
 
   async _ensureAuctionHouseHealth () {
+    console.log(chalk.magenta('_ensureAuctionHouseHealth:'))
     let db = await kaisBattlepets.getDB()
     await db.collection('auctionHouseHealth').createIndex('ahid', {unique: true, name: 'ahid'})
     await db.collection('auctionHouseHealth').createIndex('lastUpdate', {name: 'lastUpdate'})
