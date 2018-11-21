@@ -46,7 +46,7 @@ class Average {
       sellRate: this._spread(oldAuctionsSold.map(a => a.lastSeen)) / oldAuctionsSold.length,
       lastUpdate: Date.now()
     }
-    await db.collection('auctionHouseHealth').updateOne({ahid: old.ahid}, {$set: auctionHouseHealth})
+    await db.collection('auctionHouseHealth').updateOne({ahid: oldest.ahid}, {$set: auctionHouseHealth})
     return true
   }
 
