@@ -4,7 +4,7 @@ const wow = require('./wow.js')
 const lib = require('./lib.js')
 const chalk = require('chalk')
 
-class PetInfo () {
+class PetInfo {
   constructor () {
     this.petInfoCache = {}
   }
