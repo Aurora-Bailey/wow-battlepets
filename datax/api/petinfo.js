@@ -24,7 +24,7 @@ class PetInfo {
   }
   async getPetInfoFromDatabase (petId) {
     let db = await kaisBattlepets.getDB()
-    let pet = await db.collection('petInfo').fineOne({speciesId: petId})
+    let pet = await db.collection('petInfo').findOne({speciesId: petId})
     if (pet === null) return await this.getPetInfoFromBlizzard(petId)
     return pet
   }
