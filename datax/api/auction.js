@@ -56,7 +56,6 @@ class Auction {
       auctionsLiveSpeciesIdLookup[auction.petSpeciesId].push(auction)
     })
 
-    // something more efficent than replacing all live data every hour
     for (var index in auctionsLive) {
       let auction = auctionsLive[index]
       auction.new = !auctionsOldMap.includes(auction.aid)
