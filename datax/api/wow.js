@@ -52,15 +52,15 @@ class Wow {
     let response_auction = await axios.get(response_token.data.files[0].url)
     return response_auction.data.auctions
   }
-
-  /// -------------
-
+  
   async getPetInfo (petId) {
     let token = await this.authenticate()
     console.log(chalk.cyan(`wow-api: `) + chalk.white(`https://us.api.blizzard.com/wow/pet/species/${petId}`))
     let pet = await axios.get(`https://us.api.blizzard.com/wow/pet/species/${petId}`, {headers: {'Authorization': "bearer " + token}})
     return pet.data
   }
+
+  /// -------------
 
   async getCharacterPets (region, realm, character) {
     let token = await this.authenticate()

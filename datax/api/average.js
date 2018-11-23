@@ -3,6 +3,7 @@ const kaisBattlepets = new MongoDB('kaisBattlepets')
 const lib = require('./lib.js')
 const chalk = require('chalk')
 const md5 = require('md5')
+const petInfo = require('./petinfo.js')
 const LockedInterval = require('./lockedinterval.js')
 
 class Average {
@@ -110,6 +111,7 @@ class Average {
     console.log(chalk.magenta('_updateSpeciesId: ') + speciesId)
     var daysMS = this.daysToAverage * 24 * 60 * 60 * 1000
     let db = await kaisBattlepets.getDB()
+    let petdetails = await petInfo.getPetInfo(speciesId) // hacky way to update petinfo
     let results = await db.collection('auctionsArchive').find({petSpeciesId: speciesId, lastSeen: {$gte: Date.now() - daysMS}}, {sort: {lastSeen: -1}, limit: 10000, projection: {
       _id: 0,
       buyout: 1,
