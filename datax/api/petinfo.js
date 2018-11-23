@@ -11,7 +11,7 @@ class PetInfo {
 
   async getPetInfo (petId) {
     if (this.petInfoCache[petId]) return this.petInfoCache[petId]
-    let pet = this.getPetsFromDatabase(petId)
+    let pet = this.getPetInfoFromDatabase(petId)
     this.petInfoCache[petId] = pet
     return pet
   }
