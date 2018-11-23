@@ -17,8 +17,9 @@ class PetInfo {
   }
 
   async getPetInfoFromBlizzard (petId) {
-    let pet = await wow.petInfo(petId)
+    let pet = await wow.getPetInfo(petId)
     let db = await kaisBattlepets.getDB()
+    await db.collection('petInfo').createIndex('speciesId', {unique: true, name: 'speciesId'})
     await db.collection('petInfo').insertOne(pet)
     return pet
   }
