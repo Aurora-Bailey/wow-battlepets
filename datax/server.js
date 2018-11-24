@@ -16,36 +16,44 @@ app.use(function(req, res, next) {
   next()
 })
 
-app.get('/buy', async function (req, res) {
-  res.send(JSON.stringify(await buy.request(req.query)))
+app.get('/buy', async function (req, res, next) {
+  try { res.json(await buy.request(req.query)) }
+  catch (e) { next(e) }
 })
 
-app.get('/collection', async function (req, res) {
-  res.send(JSON.stringify(await collection.request(req.query)))
+app.get('/collection', async function (req, res, next) {
+  try { res.json(await collection.request(req.query)) }
+  catch (e) { next(e) }
 })
 
-app.get('/health', async function (req, res) {
-  res.send(JSON.stringify(await health.request(req.query)))
+app.get('/health', async function (req, res, next) {
+  try { res.json(await health.request(req.query)) }
+  catch (e) { next(e) }
 })
 
-app.get('/pet', async function (req, res) {
-  res.send(JSON.stringify(await pet.request(req.query)))
+app.get('/pet', async function (req, res, next) {
+  try { res.json(await pet.request(req.query)) }
+  catch (e) { next(e) }
 })
 
-app.get('/petindex', async function (req, res) {
-  res.send(JSON.stringify(await petindex.request(req.query)))
+app.get('/petindex', async function (req, res, next) {
+  try { res.json(await petindex.request(req.query)) }
+  catch (e) { next(e) }
 })
 
-app.get('/player', async function (req, res) {
-  res.send(JSON.stringify(await player.request(req.query)))
+app.get('/player/:realm/:name', async function (req, res, next) {
+  try { res.json(await player.request(Object.assign(req.params, req.query))) }
+  catch (e) { next(e) }
 })
 
-app.get('/realmindex', async function (req, res) {
-  res.send(JSON.stringify(await realmindex.request(req.query)))
+app.get('/realmindex', async function (req, res, next) {
+  try { res.json(await realmindex.request(req.query)) }
+  catch (e) { next(e) }
 })
 
-app.get('/sell', async function (req, res) {
-  res.send(JSON.stringify(await sell.request(req.query)))
+app.get('/sell', async function (req, res, next) {
+  try { res.json(await sell.request(req.query)) }
+  catch (e) { next(e) }
 })
 
 app.listen(3303)
