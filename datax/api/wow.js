@@ -52,7 +52,7 @@ class Wow {
     let response_auction = await axios.get(response_token.data.files[0].url)
     return response_auction.data.auctions
   }
-  
+
   async getPetInfo (petId) {
     let token = await this.authenticate()
     console.log(chalk.cyan(`wow-api: `) + chalk.white(`https://us.api.blizzard.com/wow/pet/species/${petId}`))
@@ -60,9 +60,12 @@ class Wow {
     return pet.data
   }
 
-  /// -------------
-
-  async getCharacterPets (region, realm, character) {
+  async getCharacterPets (rid, character) {
+    let db = await kaisBattlepets.getDB()
+    let realmObject = await db.collection('realmIndex').findOne({id: rid})
+    if (realmObject === null) throw 'Realm not found!'
+    let realm = realmObject.slug
+    let region = realmObject.regionTag
     let token = await this.authenticate()
     console.log(chalk.cyan(`wow-api: `) + chalk.white(`https://${region.toLowerCase()}.api.blizzard.com/wow/character/${realm}/${character}?fields=pets`))
     let response = await axios.get(`https://${region.toLowerCase()}.api.blizzard.com/wow/character/${realm}/${character}?fields=pets`, {headers: {'Authorization': "bearer " + token}})

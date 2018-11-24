@@ -16,13 +16,13 @@ app.use(function(req, res, next) {
   next()
 })
 
-app.get('/buy', async function (req, res, next) {
-  try { res.json(await buy.request(req.query)) }
+app.get('/buy/:ahid', async function (req, res, next) {
+  try { res.json(await buy.request(Object.assign(req.params, req.query))) }
   catch (e) { next(e) }
 })
 
-app.get('/collection', async function (req, res, next) {
-  try { res.json(await collection.request(req.query)) }
+app.get('/collection/:rid/:name', async function (req, res, next) {
+  try { res.json(await collection.request(Object.assign(req.params, req.query))) }
   catch (e) { next(e) }
 })
 

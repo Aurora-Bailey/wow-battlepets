@@ -7,21 +7,13 @@ class Buy {
   }
 
   async request (query) {
-    if (!query.name || !query.realm || isNaN(query.realm) || query.name.length > 100 || query.realm > 100000) throw 'Player not found!'
-    query.realm = parseInt(query.realm)
-    query.name = this.toUpperCaseFirst(query.name.toLowerCase())
+    query.maxbuyout = query.maxbuyout || 10000000000
+    query.minprofit = query.minprofit || 1000000
+    query.minmarkup = query.minmarkup || 50
 
     let db = await kaisBattlepets.getDB()
-    let ah = await db.collection('auctionHouseIndex').findOne({connected: query.realm}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}})
-    if (ah === null) throw 'Auction house not found!'
-
-    let live = await db.collection('auctionsLive').find({ahid: ah.ahid, owner: query.name, lastSeen: {$gte: Date.now() - (1000*60*60*24*7)}}).toArray()
-    let archive = await db.collection('auctionsArchive').find({ahid: ah.ahid, owner: query.name, lastSeen: {$gte: Date.now() - (1000*60*60*24*7)}}).toArray()
-    return live.concat(archive)
-  }
-
-  toUpperCaseFirst(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1)
+    let live = await db.collection('auctionsLive').find({ahid: query.ahid, buyout: {$lte: query.maxbuyout}, profit: {$gte: query.minprofit}, percent: {$gte: query.minmarkup}}).toArray()
+    return live
   }
 }
 
