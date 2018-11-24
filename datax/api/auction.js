@@ -101,6 +101,7 @@ class Auction {
     // Add to database
     await db.collection('auctionsLive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsLive').createIndex('ahid', {name: 'ahid'})
+    await db.collection('auctionsLive').createIndex('owner', {name: 'owner'})
     await db.collection('auctionsLive').createIndex('new', {name: 'new'})
     await db.collection('auctionsLive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
     await db.collection('auctionsLive').createIndex('lastSeen', {name: 'lastSeen'})
@@ -110,6 +111,7 @@ class Auction {
 
     await db.collection('auctionsArchive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsArchive').createIndex('ahid', {name: 'ahid'})
+    await db.collection('auctionsArchive').createIndex('owner', {name: 'owner'})
     await db.collection('auctionsArchive').createIndex('status', {name: 'status'})
     await db.collection('auctionsArchive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
     await db.collection('auctionsArchive').createIndex('lastSeen', {name: 'lastSeen'})
