@@ -41,7 +41,7 @@ app.get('/petindex', async function (req, res, next) {
   catch (e) { next(e) }
 })
 
-app.get('/player/:realm/:name', async function (req, res, next) {
+app.get('/player/:ahid/:name', async function (req, res, next) {
   try { res.json(await player.request(Object.assign(req.params, req.query))) }
   catch (e) { next(e) }
 })
