@@ -7,6 +7,7 @@ class Lib {
   constructor () {
     this.cacheRealmAuctionHouse = {}
     this.cacheSpeciesAverageRegion = {}
+    this.cacheAuctionHouseHealth = {}
     this.cacheAuctionHouse = {}
     this.cacheAuctionHouseList = null
   }
@@ -67,6 +68,19 @@ class Lib {
   }
 
   /*
+  /// Health
+  */
+  async auctionHouseHealth(ahid) {
+    if (this.cacheAuctionHouseHealth[ahid]) return this.cacheAuctionHouseHealth[ahid]
+
+    let db = await kaisBattlepets.getDB()
+    let ahi = await db.collection('auctionHouseHealth').findOne({ahid: ahid})
+    if (ahi === null) throw 'Auction house not found!'
+    this.cacheAuctionHouseHealth[ahid] = ahi
+    return ahi
+  }
+
+  /*
   /// Auction
   */
   async auctionHouse(ahid) {
@@ -77,7 +91,7 @@ class Lib {
 
     let db = await kaisBattlepets.getDB()
     let ahi = await db.collection('auctionHouseIndex').findOne({ahid: ahid}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}})
-    if (ahi === null) throw {error: 'Auction house not found!'}
+    if (ahi === null) throw 'Auction house not found!'
     this.cacheAuctionHouse[ahid] = ahi
     return ahi
   }

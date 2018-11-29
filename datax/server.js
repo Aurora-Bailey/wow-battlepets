@@ -31,8 +31,8 @@ app.get('/health', async function (req, res, next) {
   catch (e) { next(e) }
 })
 
-app.get('/pet', async function (req, res, next) {
-  try { res.json(await pet.request(req.query)) }
+app.get('/pet/:psid', async function (req, res, next) {
+  try { res.json(await pet.request(Object.assign(req.params, req.query))) }
   catch (e) { next(e) }
 })
 
@@ -51,8 +51,8 @@ app.get('/realmindex', async function (req, res, next) {
   catch (e) { next(e) }
 })
 
-app.get('/sell', async function (req, res, next) {
-  try { res.json(await sell.request(req.query)) }
+app.get('/sell/:rid/:name/:sellat', async function (req, res, next) {
+  try { res.json(await sell.request(Object.assign(req.params, req.query))) }
   catch (e) { next(e) }
 })
 
