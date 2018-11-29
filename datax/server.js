@@ -7,10 +7,12 @@ const player = require('./pages/player.js')
 const realmindex = require('./pages/realmindex.js')
 const sell = require('./pages/sell.js')
 
+const chalk = require('chalk')
 const express = require('express')
 const app = express()
 
 app.use(function(req, res, next) {
+  console.log(chalk.yellowBright('Incoming request: ') + req.url)
   res.header("Access-Control-Allow-Origin", "*")
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
   next()
