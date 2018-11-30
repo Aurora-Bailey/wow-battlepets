@@ -8,16 +8,10 @@
         <v-card-title class="headline">Buy pets from realm</v-card-title>
         <v-card-text>
           <v-select :items="regions" v-model="region" label="Region"></v-select>
-          <v-autocomplete :items="realmList" v-model="realm" label="Realm"></v-autocomplete>
-          <v-text-field label="Max Buyout (gold)" v-model="maxBuyout"></v-text-field>
-          <v-text-field label="Min Margin (gold)" v-model="minMargin"></v-text-field>
-          <v-text-field label="Min percent gain" v-model="minPercent"></v-text-field>
-          <!-- <br>
-          Region: {{region}}
-          <br>
-          Realm: {{realm}}
-          <br>
-          Auction House: {{auctionHouse}} -->
+          <v-autocomplete :items="realmList" v-model="ahid" label="Realm"></v-autocomplete>
+          <v-text-field label="Maximum Buyout (gold)" v-model="maxBuyout"></v-text-field>
+          <v-text-field label="Minimum Profit (gold)" v-model="minProfit"></v-text-field>
+          <v-text-field label="Minimum Markup (percent)" v-model="minMarkup"></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -25,27 +19,24 @@
         </v-card-actions>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
-        <v-card-title class="headline">Listings</v-card-title>
+        <v-card-title class="headline">Live auction listings</v-card-title>
         <v-card-text>
           <v-data-table
             :headers="listingsHeadings"
             :items="listings"
             class="elevation-1"
             :rows-per-page-items="[ 50, 100, 500 ]"
+            must-sort
+            :pagination.sync="pagination"
           >
             <template slot="items" slot-scope="props">
-              <td><img :src="props.item.icon"></td>
+              <td><img :src="props.item.image"></td>
               <td>{{ props.item.name }}</td>
               <td>{{ props.item.petLevel }}</td>
               <td v-html="goldStyling(props.item.buyout)"></td>
-              <td v-html="goldStyling(props.item.region_sold_median)"></td>
-              <td v-html="goldStyling(props.item.region_margin)"></td>
-              <td>{{ Math.round(props.item.region_percent) }}%</td>
-              <td>{{ props.item.region_sold_num }}</td>
-              <td v-html="goldStyling(props.item.realm_sold_median)"></td>
-              <td>{{ props.item.realm_sold_num }}</td>
-              <td v-html="goldStyling(props.item.region_sold_median_1)"></td>
-              <td>{{ props.item.region_sold_num_1 }}</td>
+              <td v-html="goldStyling(props.item.median)"></td>
+              <td v-html="goldStyling(props.item.profit)"></td>
+              <td>{{ Math.round(props.item.percent) }}%</td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -75,42 +66,51 @@
 <script>
   export default {
     computed: {
+      realmIndex () { return this.$store.state.realmIndex },
+      petIndex () { return this.$store.state.petIndex },
+      regions () {
+        return Object.keys(this.$store.state.realmIndex)
+        .map(r => this.$store.state.realmIndex[r].regionTag)
+        .reduce((a, v) => { if (!a.includes(v)) a.push(v); return a }, [])
+      },
       realmList () {
-        return this.realms.filter(realm => {return realm.region === this.region}).map(realm => {return realm.name}).sort()
+        return Object.keys(this.$store.state.realmIndex)
+        .map(r => { return {text: this.$store.state.realmIndex[r].name, value: this.$store.state.realmIndex[r].ahid, region: this.$store.state.realmIndex[r].regionTag} })
+        .filter(r => { return r.region === this.region })
+        .sort((a, b) => { return a.text > b.text ? 1:-1 })
       },
-      auctionSlug () {
-        let slugList = {}
-        this.realms.forEach(rlm => {
-          if (rlm.region === this.region)slugList[rlm.name] = rlm.auction_slug
+      listings () {
+        let list = []
+        this.listingsRaw.forEach(auction => {
+          let petInfo = this.petIndex[auction.petSpeciesId]
+          list.push(Object.assign(auction, {name: petInfo.name, image: petInfo.image}))
         })
-        return slugList
-      },
-      auctionHouse () {
-        return this.auctionSlug[this.realm]
-      },
-      listingsHeadings () {
-        if (this.listings.length > 0) return Object.keys(this.listings[0]).map(head => {return {value: head, text: head}})
-        else return []
+        return list
       }
     },
     data () {
       return {
         maxBuyout: 5000,
-        minMargin: 500,
-        minPercent: 50,
+        minProfit: 500,
+        minMarkup: 50,
         region: 'US',
-        realm: 'Aggramar',
-        regions: ['US', 'EU', 'KR', 'TW'],
-        listings: []
+        ahid: 'AH3FD1C2',
+        listingsRaw: [],
+        pagination: {descending: true, page: 0, rowsPerPage: -1, sortBy: 'percent'},
+        listingsHeadings: [
+          {text: 'Image', value: 'image'},
+          {text: 'Name', value: 'name'},
+          {text: 'Level', value: 'petLevel'},
+          {text: 'Buyout', value: 'buyout'},
+          {text: 'Suggested Price', value: 'median'},
+          {text: 'Profit', value: 'profit'},
+          {text: 'Markup', value: 'percent'},
+        ]
       }
     },
     methods: {
       async auctionListings (event) {
-        let list = await this.$axios.$get(`http://54.244.210.52:3303/buy?ah=${this.auctionHouse}&region=${this.region}&maxbuyout=${this.maxBuyout * 10000}&minmargin=${this.minMargin * 10000}&minpercent=${this.minPercent}`)
-        this.listings = list.map(item => {
-          let {icon, name, petLevel, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num, region_sold_median_1, region_sold_num_1} = item
-          return {icon, name, petLevel, buyout, region_sold_median, region_margin, region_percent, region_sold_num, realm_sold_median, realm_sold_num, region_sold_median_1, region_sold_num_1}
-        })
+        this.listingsRaw = await this.$axios.$get(`http://localhost:3303/buy/${this.ahid}?maxbuyout=${this.maxBuyout * 10000}&minprofit=${this.minProfit * 10000}&minmarkup=${this.minMarkup}`)
       },
       numberWithCommas (x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -127,10 +127,6 @@
         styled += `<span class="copper">${copper}</span>`
         return styled
       }
-    },
-    async asyncData({ app }) {
-      const realms = await app.$axios.$get('http://54.244.210.52:3303/realms')
-      return { realms }
     }
   }
 </script>
