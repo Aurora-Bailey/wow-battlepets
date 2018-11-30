@@ -15,7 +15,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" @click="auctionListings">Continue</v-btn>
+          <v-btn color="primary" @click="requestData">Continue</v-btn>
         </v-card-actions>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
@@ -67,9 +67,9 @@
       },
       listings () {
         let list = []
-        this.listingsRaw.forEach(auction => {
-          let petInfo = this.petIndex[auction.petSpeciesId]
-          list.push(Object.assign(auction, {name: petInfo.name, image: petInfo.image}))
+        this.listingsRaw.forEach(item => {
+          let petInfo = this.petIndex[item.petSpeciesId]
+          list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image}))
         })
         return list
       }
@@ -96,7 +96,7 @@
       }
     },
     methods: {
-      async auctionListings (event) {
+      async requestData (event) {
         this.listingsRaw = []
         this.listingsRaw = await this.$axios.$get(`http://localhost:3303/buy/${this.ahid}?maxbuyout=${this.maxBuyout * 10000}&minprofit=${this.minProfit * 10000}&minmarkup=${this.minMarkup}`)
       }
