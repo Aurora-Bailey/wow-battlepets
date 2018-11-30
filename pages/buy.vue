@@ -33,9 +33,9 @@
               <td><img :src="props.item.image"></td>
               <td>{{ props.item.name }}</td>
               <td>{{ props.item.petLevel }}</td>
-              <td v-html="goldStyling(props.item.buyout)"></td>
-              <td v-html="goldStyling(props.item.median)"></td>
-              <td v-html="goldStyling(props.item.profit)"></td>
+              <td><display-gold :value="props.item.buyout"></display-gold></td>
+              <td><display-gold :value="props.item.median"></display-gold></td>
+              <td><display-gold :value="props.item.profit"></display-gold></td>
               <td>{{ Math.round(props.item.percent) }}%</td>
             </template>
           </v-data-table>
@@ -46,25 +46,15 @@
 </template>
 
 <style>
-.copper, .silver, .gold {
-  font-weight: bold;
-  padding-left:2px;
-  font-size: 10px;
-}
-.copper {
-  color: #b87333;
-}
-.silver {
-  color: silver;
-}
-.gold {
-  color: gold;
-  font-size: 16px;
-}
 </style>
 
 <script>
+  import displayGold from '../components/displayGold.vue'
+
   export default {
+    components: {
+      'display-gold': displayGold
+    },
     computed: {
       realmIndex () { return this.$store.state.realmIndex },
       petIndex () { return this.$store.state.petIndex },
@@ -111,21 +101,6 @@
     methods: {
       async auctionListings (event) {
         this.listingsRaw = await this.$axios.$get(`http://localhost:3303/buy/${this.ahid}?maxbuyout=${this.maxBuyout * 10000}&minprofit=${this.minProfit * 10000}&minmarkup=${this.minMarkup}`)
-      },
-      numberWithCommas (x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      },
-      goldStyling (num) {
-        let str = '' + Math.round(num)
-        let copper = str.substring(str.length -2, str.length)
-        let silver = str.substring(str.length -4, str.length -2)
-        let gold = str.substring(0, str.length -4)
-
-        let styled = ''
-        if (str.length > 4) styled += `<span class="gold">${this.numberWithCommas(gold)}</span>`
-        if (str.length > 2) styled += `<span class="silver">${silver}</span>`
-        styled += `<span class="copper">${copper}</span>`
-        return styled
       }
     }
   }
