@@ -5,35 +5,34 @@
         <img src="/v.png" alt="Vuetify.js" class="mb-5" />
       </div>
       <v-card>
-        <v-card-title class="headline">Sell Battle Pets</v-card-title>
+        <v-card-title class="headline">View your collection</v-card-title>
         <v-card-text>
           <v-select :items="regions" v-model="region" label="Region"></v-select>
           <v-autocomplete :items="realmList" v-model="realm" label="Realm"></v-autocomplete>
-          <v-text-field label="Character Name" v-model="characterName"></v-text-field>
+          <v-text-field label="Character Name" v-model="character"></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" @click="submitData">Continue</v-btn>
+          <v-btn color="primary" @click="requestData">Continue</v-btn>
         </v-card-actions>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
-        <v-card-title class="headline">Listings <v-spacer></v-spacer> <span class="pr-5" v-html="goldStyling(totalValue)"></span></v-card-title>
+        <v-card-title class="headline">Your collection <v-spacer></v-spacer> <display-gold :value="listingsValue"></display-gold></v-card-title>
         <v-card-text>
           <v-data-table
             :headers="listingsHeadings"
             :items="listings"
             class="elevation-1"
             :rows-per-page-items="[ 50, 100, 500 ]"
+            must-sort
+            :pagination.sync="pagination"
           >
             <template slot="items" slot-scope="props">
-              <td><img :src="props.item.icon"></td>
+              <td><img :src="props.item.image"></td>
               <td>{{ props.item.name }}</td>
-              <td>{{ props.item.speciesId }}</td>
-              <td>{{ props.item.breedId }}</td>
               <td>{{ props.item.level }}</td>
-              <td>{{ props.item.guid }}</td>
-              <td>{{ props.item.sold_num }}</td>
-              <td v-html="goldStyling(props.item.sold_median)"></td>
+              <td><display-gold :value="props.item.price"></display-gold></td>
+              <td>{{ props.item.sold }}</td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -43,84 +42,59 @@
 </template>
 
 <style>
-.copper, .silver, .gold {
-  font-weight: bold;
-  padding-left:2px;
-  font-size: 10px;
-}
-.copper {
-  color: #b87333;
-}
-.silver {
-  color: silver;
-}
-.gold {
-  color: gold;
-  font-size: 16px;
-}
 </style>
 
 <script>
   export default {
     computed: {
+      realmIndex () { return this.$store.state.realmIndex },
+      petIndex () { return this.$store.state.petIndex },
+      regions () {
+        return Object.keys(this.$store.state.realmIndex)
+        .map(r => this.$store.state.realmIndex[r].regionTag)
+        .reduce((a, v) => { if (!a.includes(v)) a.push(v); return a }, [])
+      },
       realmList () {
-        return this.realms.filter(realm => {return realm.region === this.region}).map(realm => {return realm.name}).sort()
+        return Object.keys(this.$store.state.realmIndex)
+        .map(r => { return {text: this.$store.state.realmIndex[r].name, value: this.$store.state.realmIndex[r].id, region: this.$store.state.realmIndex[r].regionTag} })
+        .filter(r => { return r.region === this.region })
+        .sort((a, b) => { return a.text > b.text ? 1:-1 })
       },
-      auctionSlug () {
-        let slugList = {}
-        this.realms.forEach(rlm => {
-          if (rlm.region === this.region)slugList[rlm.name] = rlm.auction_slug
+      listings () {
+        let list = []
+        this.listingsRaw
+        .filter(item => { return typeof this.petIndex[item.psid] !== 'undefined'})
+        .forEach(item => {
+          let petInfo = this.petIndex[item.psid]
+          list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image}))
         })
-        return slugList
+        return list
       },
-      auctionHouse () {
-        return this.auctionSlug[this.realm]
-      },
-      listingsHeadings () {
-        if (this.listings.length > 0) return Object.keys(this.listings[0]).map(head => {return {value: head, text: head}})
-        else return []
-      },
-      totalValue () {
-        return this.listings.reduce((a, b) => { return a + b.sold_median}, 0)
+      listingsValue () {
+        return this.listingsRaw.reduce((a,v) => { return a + v.price}, 0)
       }
     },
     data () {
       return {
-        characterName: 'Napri',
         region: 'US',
-        realm: 'Aggramar',
-        regions: ['US', 'EU', 'KR', 'TW'],
-        listings: []
+        realm: 106,
+        character: 'Napri',
+        listingsRaw: [],
+        pagination: {descending: false, page: 0, rowsPerPage: -1, sortBy: 'name'},
+        listingsHeadings: [
+          {text: 'Image', value: 'image'},
+          {text: 'Name', value: 'name'},
+          {text: 'Level', value: 'level'},
+          {text: 'Price', value: 'price'},
+          {text: 'Sold', value: 'sold'}
+        ]
       }
     },
     methods: {
-      async submitData (event) {
-        console.log('asdf')
-        let list = await this.$axios.$get(`http://54.244.210.52:3303/collection?region=${this.region}&realm=${this.realm}&character=${this.characterName}`)
-        this.listings = list.map(li => {
-          let {icon, name, speciesId, breedId, level, guid, sold_num, sold_median} = li
-          return {icon, name, speciesId, breedId, level, guid, sold_num, sold_median}
-        })
-      },
-      numberWithCommas (x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      },
-      goldStyling (num) {
-        let str = '' + Math.round(num)
-        let copper = str.substring(str.length -2, str.length)
-        let silver = str.substring(str.length -4, str.length -2)
-        let gold = str.substring(0, str.length -4)
-
-        let styled = ''
-        if (str.length > 4) styled += `<span class="gold">${this.numberWithCommas(gold)}</span>`
-        if (str.length > 2) styled += `<span class="silver">${silver}</span>`
-        styled += `<span class="copper">${copper}</span>`
-        return styled
+      async requestData (event) {
+        this.listingsRaw = []
+        this.listingsRaw = await this.$axios.$get(`http://localhost:3303/collection/${this.realm}/${this.character}`)
       }
-    },
-    async asyncData({ app }) {
-      const realms = await app.$axios.$get('http://54.244.210.52:3303/realms')
-      return { realms }
     }
   }
 </script>

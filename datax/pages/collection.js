@@ -25,9 +25,18 @@ class Collection {
       if (level !== 25) level = 1
       pet.speciesId = pet.stats.speciesId
       pet.average = await lib.speciesAverageRegion(pet.speciesId, level, realm.regionTag)
+      if (pet.average === null) pet.average = {sold: {median: 0, num: 0}}
     }
 
-    return pets
+    return pets.map(pet => {
+      return {
+        psid: pet.stats.speciesId,
+        level: pet.stats.level,
+        price: pet.average.sold.median,
+        sold: pet.average.sold.num,
+        guid: pet.battlePetGuid
+      }
+    })
   }
 }
 
