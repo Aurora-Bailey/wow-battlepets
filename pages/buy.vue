@@ -37,6 +37,7 @@
               <td><display-gold :value="props.item.median"></display-gold></td>
               <td><display-gold :value="props.item.profit"></display-gold></td>
               <td>{{ Math.round(props.item.percent) }}%</td>
+              <td>{{ props.item.soldNum }}</td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -90,11 +91,13 @@
           {text: 'Suggested Price', value: 'median'},
           {text: 'Profit', value: 'profit'},
           {text: 'Markup', value: 'percent'},
+          {text: 'Sold', value: 'soldNum'}
         ]
       }
     },
     methods: {
       async auctionListings (event) {
+        this.listingsRaw = []
         this.listingsRaw = await this.$axios.$get(`http://localhost:3303/buy/${this.ahid}?maxbuyout=${this.maxBuyout * 10000}&minprofit=${this.minProfit * 10000}&minmarkup=${this.minMarkup}`)
       }
     }

@@ -69,10 +69,12 @@ class Auction {
           auction.median = average.sold.median
           auction.profit = (auction.median * 0.95) - auction.buyout
           auction.percent = this._percent(auction.profit, auction.buyout)
+          auction.soldNum = average.sold.num
         } else {
           auction.median = 0
           auction.profit = 0
           auction.percent = 0
+          auction.soldNum = 0
         }
       }
     }
