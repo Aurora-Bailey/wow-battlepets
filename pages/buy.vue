@@ -49,12 +49,7 @@
 </style>
 
 <script>
-  import displayGold from '../components/displayGold.vue'
-
   export default {
-    components: {
-      'display-gold': displayGold
-    },
     computed: {
       realmIndex () { return this.$store.state.realmIndex },
       petIndex () { return this.$store.state.petIndex },
