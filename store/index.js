@@ -18,7 +18,7 @@ export const actions = {
     console.log(req.url)
     let realmIndexResponse = await app.$axios.$get('http://localhost:3303/realmindex')
     let realmIndex = {}
-    realmIndexResponse.forEach(r => realmIndex[r.ahid] = r)
+    realmIndexResponse.forEach(r => realmIndex[r.id] = r)
     commit('setRealmIndex', realmIndex)
 
     let petIndexResponse = await app.$axios.$get('http://localhost:3303/petindex')
