@@ -101,7 +101,7 @@
     methods: {
       async requestData (event) {
         this.listingsRaw = []
-        this.listingsRaw = await this.$axios.$get(`http://localhost:3303/health`)
+        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/health`)
       },
       msToTimeString (ms) {
         let str = ''

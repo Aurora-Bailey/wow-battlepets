@@ -6,7 +6,6 @@ class Pet {
 
   }
 
-  // http://localhost:3303/pet/1155/?ahid=AHF7D429
   async request (query) {
     query.psid = parseInt(query.psid)
     query.ahid = query.ahid || {$exists: true}

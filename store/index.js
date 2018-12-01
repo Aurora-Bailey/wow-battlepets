@@ -1,7 +1,8 @@
 
 export const state = () => ({
   realmIndex: {},
-  petIndex: {}
+  petIndex: {},
+  server: '54.244.210.52:3303'
 })
 
 export const mutations = {
@@ -16,12 +17,12 @@ export const mutations = {
 export const actions = {
   async nuxtServerInit ({ commit }, { app, req }) {
     console.log(req.url)
-    let realmIndexResponse = await app.$axios.$get('http://localhost:3303/realmindex')
+    let realmIndexResponse = await app.$axios.$get(`http://${this.state.server}/realmindex`)
     let realmIndex = {}
     realmIndexResponse.forEach(r => realmIndex[r.id] = r)
     commit('setRealmIndex', realmIndex)
 
-    let petIndexResponse = await app.$axios.$get('http://localhost:3303/petindex')
+    let petIndexResponse = await app.$axios.$get(`http://${this.state.server}/petindex`)
     let petIndex = {}
     petIndexResponse.forEach(r => petIndex[r.speciesId] = r)
     commit('setPetIndex', petIndex)

@@ -93,7 +93,7 @@
     methods: {
       async requestData (event) {
         this.listingsRaw = []
-        this.listingsRaw = await this.$axios.$get(`http://localhost:3303/collection/${this.realm}/${this.character}`)
+        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/collection/${this.realm}/${this.character}`)
       }
     }
   }

@@ -98,7 +98,7 @@
     methods: {
       async requestData (event) {
         this.listingsRaw = []
-        this.listingsRaw = await this.$axios.$get(`http://localhost:3303/buy/${this.ahid}?maxbuyout=${this.maxBuyout * 10000}&minprofit=${this.minProfit * 10000}&minmarkup=${this.minMarkup}`)
+        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/buy/${this.ahid}?maxbuyout=${this.maxBuyout * 10000}&minprofit=${this.minProfit * 10000}&minmarkup=${this.minMarkup}`)
       }
     }
   }

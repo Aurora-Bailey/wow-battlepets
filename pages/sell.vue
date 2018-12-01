@@ -138,7 +138,7 @@
     methods: {
       async requestData (event) {
         this.listingsRaw = []
-        this.listingsRaw = await this.$axios.$get(`http://localhost:3303/sell/${this.realm}/${this.character}/${this.sellRealmsString}`)
+        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/sell/${this.realm}/${this.character}/${this.sellRealmsString}`)
       },
       addSellRealm (event) {
         this.sellRealms.push({ahid: ''})
