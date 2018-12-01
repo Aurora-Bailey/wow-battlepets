@@ -38,7 +38,7 @@ class Sell {
         return a.sellrate - b.sellrate
       })
     }
-    return pets.map(p => {return {psid: p.stats.speciesId, level: p.stats.level, guid: p.battlePetGuid, sellIndex: 0, sellAt: p.sellAt}})
+    return pets.map(p => {return {psid: p.stats.speciesId, level: p.stats.level, guid: p.battlePetGuid, selected: p.sellAt[0].undercut, sellIndex: 0, sellAt: p.sellAt}})
   }
 
   async petAverageAuctionHouseSold (psid, level, ahid) {
