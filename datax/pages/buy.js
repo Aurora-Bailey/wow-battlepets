@@ -14,7 +14,7 @@ class Buy {
     let db = await kaisBattlepets.getDB()
     let live = await db.collection('auctionsLive').find({ahid: query.ahid, buyout: {$lte: query.maxbuyout}, profit: {$gte: query.minprofit}, percent: {$gte: query.minmarkup}},
     {projection: {_id: 0, auc: 1, buyout: 1, median: 1, percent: 1, profit: 1, soldNum: 1, petLevel: 1, petBreedId: 1, petSpeciesId: 1}}).toArray()
-    live.map(item => item.sell = item.percent > 300)
+    live.map(item => item.buy = item.percent > 300)
     return live
   }
 }
