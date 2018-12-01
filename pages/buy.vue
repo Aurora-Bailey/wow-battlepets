@@ -19,6 +19,12 @@
         </v-card-actions>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
+        <v-card-title class="headline">Wow commands </v-card-title>
+        <v-card-text>
+          <span v-for="item in listings" v-if="item.buy">{{`QueryAuctionItems("${item.name}") print("${item.name} ${item.petLevel} ${item.buyout/10000}")|`}}</span>
+        </v-card-text>
+      </v-card>
+      <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Live auction listings</v-card-title>
         <v-card-text>
           <v-data-table
@@ -30,7 +36,7 @@
             :pagination.sync="pagination"
           >
             <template slot="items" slot-scope="props">
-              <td><img :src="props.item.image"></td>
+              <td><img :src="props.item.image" :title="props.item.petSpeciesId"></td>
               <td>{{ props.item.name }}</td>
               <td>{{ props.item.petLevel }}</td>
               <td><display-gold :value="props.item.buyout"></display-gold></td>
@@ -38,6 +44,7 @@
               <td><display-gold :value="props.item.profit"></display-gold></td>
               <td>{{ Math.round(props.item.percent) }}%</td>
               <td>{{ props.item.soldNum }}</td>
+              <td><v-checkbox v-model="props.item.buy" primary hide-details></v-checkbox></td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -91,7 +98,8 @@
           {text: 'Suggested Price', value: 'median'},
           {text: 'Profit', value: 'profit'},
           {text: 'Markup', value: 'percent'},
-          {text: 'Sold', value: 'soldNum'}
+          {text: 'Sold', value: 'soldNum'},
+          {text: 'Buy', value: 'buy'}
         ]
       }
     },
