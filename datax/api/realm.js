@@ -65,7 +65,7 @@ class Realm {
             await db.collection('realmIndex').updateOne({id: rwfd.id}, {$set: response})
           } catch (e) {
             console.log('Error on #', rwfd.id)
-            console.log(chalk.yellow(JSON.stringify(e.response.data)))
+            console.log(chalk.yellow(JSON.stringify(e.response)))
             stage = 2
           }
         }
