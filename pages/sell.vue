@@ -24,7 +24,7 @@
         <v-card-title class="headline">Wow commands </v-card-title>
         <v-card-text>
           <!-- PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(100000, 150000, 2, 1, 1) -->
-          <div v-for="ah in sellListings"><h2>{{ah[0].ahname}}:{{ah.length}}</h2 <br><span v-for="item in ah">{{`C_PetJournal.CagePetByID('BattlePet-0-${item.guid}')|PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(${item.price}, ${item.price}, 1)|`}}</span><br><br></div>
+          <div v-for="ah in sellListings"><h2>{{ah[0].ahname}}:{{ah.length}}</h2 <br><span v-for="item in ah">{{`C_PetJournal.CagePetByID('BattlePet-0-${item.guid}')|PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(${item.price}, ${item.price}, 3)|`}}</span><br><br></div>
         </v-card-text>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
