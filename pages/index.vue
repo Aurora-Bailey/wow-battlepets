@@ -5,9 +5,6 @@
         <img src="/v.png" alt="Vuetify.js" class="mb-5" />
       </div>
       <h1>Kai's Battle Pets</h1>
-      <p>{{realmIndex}}</p>
-      <br>
-      <p>{{petIndex}}</p>
     </v-flex>
   </v-layout>
 </template>

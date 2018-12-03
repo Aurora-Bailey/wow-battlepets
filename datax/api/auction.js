@@ -110,6 +110,10 @@ class Auction {
     if (auctionsMissingAid.length > 0) await db.collection('auctionsLive').deleteMany({aid: {$in: auctionsMissingAid}})
     await db.collection('auctionsLive').updateMany({ahid}, {$set: {new: false, lastSeen: Date.now()}})
     if (auctionsNew.length > 0) await db.collection('auctionsLive').insertMany(auctionsNew)
+    for (var index in auctionsLive) {
+      let al = auctionsLive[index]
+      db.collection('auctionsLive').updateOne({aid: al.aid}, {$set: {timeLeft: al.timeLeft}}).catch(console.error)
+    }
 
     await db.collection('auctionsArchive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsArchive').createIndex('ahid', {name: 'ahid'})

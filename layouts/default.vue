@@ -87,10 +87,10 @@
         drawer: true,
         fixed: false,
         items: [
-          { icon: 'apps', title: 'Welcome', to: '/' },
           { icon: 'shopping_cart', title: 'Buy', to: '/buy' },
           { icon: 'attach_money', title: 'Sell', to: '/sell' },
           { icon: 'local_play', title: 'Collection', to: '/collection' },
+          { icon: 'person', title: 'Player', to: '/player' },
           { icon: 'local_hospital', title: 'AH Health', to: '/health' }
         ],
         miniVariant: false,
