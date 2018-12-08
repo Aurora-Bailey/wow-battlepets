@@ -35,7 +35,7 @@ class Sell {
         pet.sellAt.push({ahid, undercut, competition, price: average.sold.median, sellrate: health.sellRate})
       }
       pet.sellAt.sort((a,b) => {
-        // if (a.undercut != b.undercut) return a.undercut ? -1:1
+        if (a.undercut != b.undercut) return a.undercut ? -1:1
         return b.competition - a.competition
       })
     }
