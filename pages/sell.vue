@@ -102,6 +102,9 @@
           item.sellAt.forEach(sa => {
             sa.ahname = this.auctionHouseNameLookup[sa.ahid]
           })
+          if (item.match) {
+            item.buyout = petinfo.sellAt[item.sellIndex].competition - 1
+          }
           list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image}, item.sellAt[item.sellIndex]))
         })
         return list
@@ -133,7 +136,8 @@
           {text: 'Realm', value: 'ahname'},
           {text: 'Can Undercut', value: 'undercut'},
           {text: 'Competition', value: 'competition'},
-          {text: 'Sell', value: 'selected'}
+          {text: 'Sell', value: 'selected'},
+          {text: 'Match', value: 'match'},
         ]
       }
     },

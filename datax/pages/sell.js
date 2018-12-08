@@ -46,7 +46,10 @@ class Sell {
       // inc sell index for multiple of the same pet
       pet.sellIndex = 0
       while (true) {
-        if (typeof pet.sellAt[pet.sellIndex] === 'undefined') break
+        if (typeof pet.sellAt[pet.sellIndex] === 'undefined') {
+          pet.sellIndex--
+          break
+        }
         let name = '' + pet.stats.speciesId + pet.sellAt[pet.sellIndex].ahid
         if (typeof petsUnique[name] === 'undefined') {
           petsUnique[name] = true
