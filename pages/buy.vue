@@ -19,12 +19,6 @@
         </v-card-actions>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
-        <v-card-title class="headline">Wow commands </v-card-title>
-        <v-card-text>
-          <span v-for="item in listings" v-if="item.buy">{{`QueryAuctionItems("${item.name}") print("${item.name} ${item.petLevel} ${item.buyout/10000}")|`}}</span>
-        </v-card-text>
-      </v-card>
-      <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Live auction listings</v-card-title>
         <v-card-text>
           <v-data-table
@@ -47,6 +41,12 @@
               <td><v-checkbox v-model="props.item.buy" primary hide-details></v-checkbox></td>
             </template>
           </v-data-table>
+        </v-card-text>
+      </v-card>
+      <v-card v-if="listings.length > 0" class="mt-5">
+        <v-card-title class="headline">Wow commands </v-card-title>
+        <v-card-text>
+          <span v-for="item in listings" v-if="item.buy">{{`QueryAuctionItems("${item.name}") print("${item.name} ${item.petLevel} ${item.buyout/10000}")|`}}</span>
         </v-card-text>
       </v-card>
     </v-flex>

@@ -36,10 +36,10 @@ class Sell {
       }
       pet.sellAt.sort((a,b) => {
         if (a.undercut != b.undercut) return a.undercut ? -1:1
-        return a.sellrate - b.sellrate
+        return b.competition - a.competition
       })
     }
-    return pets.map(p => {return {psid: p.stats.speciesId, level: p.stats.level, quality: p.stats.petQualityId, guid: p.battlePetGuid, selected: p.sellAt[0].undercut, sellIndex: 0, sellAt: p.sellAt}})
+    return pets.map(p => {return {psid: p.stats.speciesId, level: p.stats.level, quality: p.stats.petQualityId, guid: p.battlePetGuid, selected: p.sellAt[0].undercut, match: false, sellIndex: 0, sellAt: p.sellAt}})
   }
 
   async petAverageAuctionHouseSold (psid, level, ahid) {

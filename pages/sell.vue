@@ -21,13 +21,6 @@
         </v-card-actions>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
-        <v-card-title class="headline">Wow commands </v-card-title>
-        <v-card-text>
-          <!-- PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(100000, 150000, 2, 1, 1) -->
-          <div v-for="ah in sellListings"><h2>{{ah[0].ahname}}:{{ah.length}}</h2 <br><span v-for="item in ah">{{`C_PetJournal.CagePetByID('BattlePet-0-${item.guid}')|PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(${item.price}, ${item.price}, 3)|`}}</span><br><br></div>
-        </v-card-text>
-      </v-card>
-      <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Sell collection </v-card-title>
         <v-card-text>
           <v-data-table
@@ -45,9 +38,17 @@
               <td><display-gold :value="props.item.price"></display-gold></td>
               <td style="cursor: pointer" @click="props.item.sellIndex = (props.item.sellIndex + 1) % props.item.sellAt.length">{{ props.item.ahname }}</td>
               <td :style="{color: props.item.undercut ? '#00FF00':'#FF0000'}">{{ props.item.undercut }}</td>
+              <td><display-gold :value="props.item.competition"></display-gold></td>
               <td><v-checkbox v-model="props.item.selected" primary hide-details></v-checkbox></td>
             </template>
           </v-data-table>
+        </v-card-text>
+      </v-card>
+      <v-card v-if="listings.length > 0" class="mt-5">
+        <v-card-title class="headline">Wow commands </v-card-title>
+        <v-card-text>
+          <!-- PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(100000, 150000, 2, 1, 1) -->
+          <div v-for="ah in sellListings"><h2>{{ah[0].ahname}}:{{ah.length}}</h2 <br><span v-for="item in ah">{{`C_PetJournal.CagePetByID('BattlePet-0-${item.guid}')|PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(${item.price}, ${item.price}, 3) `}}</span><br><br></div>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -131,6 +132,7 @@
           {text: 'Price', value: 'price'},
           {text: 'Realm', value: 'ahname'},
           {text: 'Can Undercut', value: 'undercut'},
+          {text: 'Competition', value: 'competition'},
           {text: 'Sell', value: 'selected'}
         ]
       }
