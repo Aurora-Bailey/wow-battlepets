@@ -39,7 +39,25 @@ class Sell {
         return b.competition - a.competition
       })
     }
-    return pets.map(p => {return {psid: p.stats.speciesId, level: p.stats.level, quality: p.stats.petQualityId, guid: p.battlePetGuid, selected: p.sellAt[0].undercut, match: false, sellIndex: 0, sellAt: p.sellAt}})
+
+    let petsUnique = {}
+    for (var petIndex in pets) {
+      let pet = pets[petIndex]
+      // inc sell index for multiple of the same pet
+      pet.sellIndex = 0
+      while (true) {
+        if (typeof pet.sellAt[pet.sellIndex] === 'undefined') break
+        let name = '' + pet.stats.speciesId + pet.sellAt[pet.sellIndex].ahid
+        if (typeof petsUnique[name] === 'undefined') {
+          petsUnique[name] = true
+          break
+        } else {
+          pet.sellIndex++
+        }
+      }
+    }
+
+    return pets.map(p => {return {psid: p.stats.speciesId, level: p.stats.level, quality: p.stats.petQualityId, guid: p.battlePetGuid, selected: p.sellAt[0].undercut, match: false, sellIndex: p.sellIndex, sellAt: p.sellAt}})
   }
 
   async petAverageAuctionHouseSold (psid, level, ahid) {
