@@ -27,7 +27,7 @@
             :pagination.sync="pagination"
           >
             <template slot="items" slot-scope="props">
-              <td><img :src="props.item.image" :title="props.item.petSpeciesId"></td>
+              <td><img :src="props.item.image" :title="props.item.petSpeciesId" :class="'quality' + props.item.petQualityId"></td>
               <td>{{ props.item.name }}</td>
               <td>{{ props.item.petLevel }}</td>
               <td><display-gold :value="props.item.buyout"></display-gold></td>

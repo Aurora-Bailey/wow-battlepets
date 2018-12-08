@@ -28,7 +28,7 @@
             :pagination.sync="pagination"
           >
             <template slot="items" slot-scope="props">
-              <td><img :src="props.item.image"></td>
+              <td><img :src="props.item.image" :class="'quality' + props.item.quality"></td>
               <td>{{ props.item.name }}</td>
               <td>{{ props.item.level }}</td>
               <td><display-gold :value="props.item.price"></display-gold></td>
