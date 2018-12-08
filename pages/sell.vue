@@ -37,9 +37,10 @@
               <td>{{ props.item.level }}</td>
               <td><display-gold :value="props.item.price"></display-gold></td>
               <td style="cursor: pointer" @click="props.item.sellIndex = (props.item.sellIndex + 1) % props.item.sellAt.length">{{ props.item.ahname }}</td>
-              <td :style="{color: props.item.undercut ? '#00FF00':'#FF0000'}">{{ props.item.undercut }}</td>
+              <td :class="'undercut_' + props.item.undercut">{{ props.item.undercut }}</td>
               <td><display-gold :value="props.item.competition"></display-gold></td>
               <td><v-checkbox v-model="props.item.selected" primary hide-details></v-checkbox></td>
+              <td><v-checkbox v-model="props.item.match" primary hide-details></v-checkbox></td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -56,6 +57,15 @@
 </template>
 
 <style>
+.undercut_true {
+  color: #00FF00
+}
+.undercut_false {
+  color: #FF0000
+}
+.undercut_match {
+  color: cyan
+}
 </style>
 
 <script>
@@ -102,10 +112,10 @@
           item.sellAt.forEach(sa => {
             sa.ahname = this.auctionHouseNameLookup[sa.ahid]
           })
-          if (item.match) {
-            item.buyout = petinfo.sellAt[item.sellIndex].competition - 1
-          }
-          list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image}, item.sellAt[item.sellIndex]))
+
+          let price = item.match ? item.sellAt[item.sellIndex].competition - 1 : item.sellAt[item.sellIndex].price
+          let undercut = item.match ? 'match' : item.sellAt[item.sellIndex].undercut
+          list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image}, item.sellAt[item.sellIndex], {price, undercut}))
         })
         return list
       },
