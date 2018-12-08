@@ -1,4 +1,5 @@
 const buy = require('./pages/buy.js')
+const multibuy = require('./pages/multibuy.js')
 const collection = require('./pages/collection.js')
 const health = require('./pages/health.js')
 const pet = require('./pages/pet.js')
@@ -21,6 +22,11 @@ app.use(function(req, res, next) {
 
 app.get('/buy/:ahid', async function (req, res, next) {
   try { res.json(await buy.request(Object.assign(req.params, req.query))) }
+  catch (e) { next(e) }
+})
+
+app.get('/multibuy/:rid/:name/:buyat', async function (req, res, next) {
+  try { res.json(await multibuy.request(Object.assign(req.params, req.query))) }
   catch (e) { next(e) }
 })
 
