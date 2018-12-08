@@ -28,13 +28,16 @@ class Collection {
       if (pet.average === null) pet.average = {sold: {median: 0, num: 0}}
     }
 
+    console.log(pets[0])
+
     return pets.map(pet => {
       return {
         psid: pet.stats.speciesId,
         level: pet.stats.level,
         price: pet.average.sold.median,
         sold: pet.average.sold.num,
-        guid: pet.battlePetGuid
+        guid: pet.battlePetGuid,
+        quality: pet.stats.petQualityId
       }
     })
   }
