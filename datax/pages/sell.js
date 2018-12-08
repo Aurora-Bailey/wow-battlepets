@@ -27,11 +27,12 @@ class Sell {
         let average = await db.collection('average').findOne({psid: pet.stats.speciesId, region: ah.regionTag, petLevel: pet.stats.level == 25 ? 25:1}, {projection: {_id: 0, sold:1}})
         if (average === null) average = {sold: {median: 0}}
 
-        let petAuctionUndercut = await db.collection('auctionsLive').findOne({ahid, petSpeciesId: pet.stats.speciesId, petLevel: pet.stats.level == 25 ? 25:1, buyout: {$lt: average.sold.median}}, {projection: {_id: 1}})
-        let undercut = petAuctionUndercut === null
+        let petAuctionUndercut = await db.collection('auctionsLive').findOne({ahid, petSpeciesId: pet.stats.speciesId, petLevel: pet.stats.level == 25 ? 25:1}, {sort: {buyout: 1}, projection: {_id: 1, buyout: 1}})
+        let competition = petAuctionUndercut === null ? 0 : petAuctionUndercut.buyout
+        let undercut = competition === 0 ? true : average.sold.median > competition ? false : true
         let health = await lib.auctionHouseHealth(ahid)
 
-        pet.sellAt.push({ahid, undercut, price: average.sold.median, sellrate: health.sellRate})
+        pet.sellAt.push({ahid, undercut, competition, price: average.sold.median, sellrate: health.sellRate})
       }
       pet.sellAt.sort((a,b) => {
         if (a.undercut != b.undercut) return a.undercut ? -1:1
