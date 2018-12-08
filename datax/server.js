@@ -4,6 +4,7 @@ const health = require('./pages/health.js')
 const pet = require('./pages/pet.js')
 const petindex = require('./pages/petindex.js')
 const player = require('./pages/player.js')
+const name = require('./pages/name.js')
 const realmindex = require('./pages/realmindex.js')
 const sell = require('./pages/sell.js')
 
@@ -45,6 +46,11 @@ app.get('/petindex', async function (req, res, next) {
 
 app.get('/player/:ahid/:name', async function (req, res, next) {
   try { res.json(await player.request(Object.assign(req.params, req.query))) }
+  catch (e) { next(e) }
+})
+
+app.get('/name/:name', async function (req, res, next) {
+  try { res.json(await name.request(Object.assign(req.params, req.query))) }
   catch (e) { next(e) }
 })
 
