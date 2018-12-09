@@ -23,9 +23,9 @@ class Collection {
     let petsOwned = await wow.getCharacterPets(query.rid, query.name)
     petsOwned = petsOwned.map(pet => {
       return {
-        psid: pet.stats.speciesId,
-        level: pet.stats.level,
-        quality: pet.stats.petQualityId
+        psid: parseInt(pet.stats.speciesId),
+        level: parseInt(pet.stats.level),
+        quality: parseInt(pet.stats.petQualityId)
       }
     })
 
@@ -33,6 +33,7 @@ class Collection {
     let petList = {}
     let petInfo = await db.collection('petInfo').find({}, {projection: {_id: 0, speciesId: 1}}).toArray()
     petInfo.forEach(pet => {
+      pet.speciesId = parseInt(pet.speciesId)
       petList[pet.speciesId] = 0
     })
 
