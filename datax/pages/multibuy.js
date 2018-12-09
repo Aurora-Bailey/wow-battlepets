@@ -54,6 +54,7 @@ class Collection {
       }).toArray()
       buyable.forEach(b => { returnList.push(b) })
     }
+    returnList.map(item => item.buy = false)
     return returnList
   }
 }
