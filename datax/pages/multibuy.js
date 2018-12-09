@@ -39,7 +39,7 @@ class Collection {
 
     // Fill list with pets already owned
     petsOwned.forEach(pet => {
-      if (petList[pet.psid]) petList[pet.psid]++
+      if (typeof petList[pet.psid] !== 'undefined') petList[pet.psid]++
     })
 
     // Find pets to buy
