@@ -12,7 +12,9 @@
           <v-autocomplete :items="realmListID" v-model="realm" label="Realm"></v-autocomplete>
           <v-text-field label="Character Name" v-model="character"></v-text-field>
           <h3>Sell Realms</h3>
-          <v-autocomplete v-for="item in sellRealms" :items="realmListAHID" v-model="item.ahid" label="Realm"></v-autocomplete>
+          <v-autocomplete v-for="(item, index) in sellRealms" :items="realmListAHID" v-model="item.ahid" label="Realm">
+            <v-icon slot="append-outer" @click="removeSellRealm(index)">cancel</v-icon>
+          </v-autocomplete>
           <v-btn color="success" @click="addSellRealm" small fab><v-icon>add</v-icon></v-btn>
         </v-card-text>
         <v-card-actions>
@@ -158,6 +160,9 @@
       },
       addSellRealm (event) {
         this.sellRealms.push({ahid: ''})
+      },
+      removeSellRealm (index) {
+        this.sellRealms.splice(index, 1)
       }
     }
   }

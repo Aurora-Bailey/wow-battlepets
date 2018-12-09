@@ -88,10 +88,11 @@
         fixed: false,
         items: [
           { icon: 'shopping_cart', title: 'Buy', to: '/buy' },
+          { icon: 'add_shopping_cart', title: 'Multi-Buy', to: '/multibuy' },
           { icon: 'attach_money', title: 'Sell', to: '/sell' },
           { icon: 'local_play', title: 'Collection', to: '/collection' },
           { icon: 'person', title: 'Player', to: '/player' },
-          { icon: 'person', title: 'Name', to: '/name' },
+          { icon: 'person_add', title: 'Name', to: '/name' },
           { icon: 'local_hospital', title: 'AH Health', to: '/health' }
         ],
         miniVariant: false,
