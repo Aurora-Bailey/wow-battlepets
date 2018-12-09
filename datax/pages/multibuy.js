@@ -9,7 +9,7 @@ class Collection {
   }
   // ?rareonly=false ?level=25
   async request (query) {
-    query.rareonly = query.rareonly || true
+    query.rareonly = query.rareonly === false ? false : true
     query.level = query.level || 1
     query.level = query.level == 25 ? 25:1
     query.maxbuyout = parseInt(query.maxbuyout) || 10000000000
