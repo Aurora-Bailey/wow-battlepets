@@ -47,7 +47,7 @@ class Collection {
       if (!petList.hasOwnProperty(psid)) continue
       let numOwned = petList[psid]
       if (numOwned === 3) continue
-      let buyable = await db.collection('auctionsLive').find({petSpeciesId: parseInt(psid), ahid: {$in: buyAt}, petLevel: query.level, petQualityId: query.rareonly ? 3 : {$exists: true}, buyout: {$lte: query.maxbuyout}, buyout: {$ne: 0}, profit: {$gte: query.minprofit}, percent: {$gte: query.minmarkup}}, {
+      let buyable = await db.collection('auctionsLive').find({petSpeciesId: parseInt(psid), ahid: {$in: buyAt}, petLevel: query.level, petQualityId: query.rareonly ? 3 : {$exists: true}, buyout: {$lte: query.maxbuyout, $ne: 0}, profit: {$gte: query.minprofit}, percent: {$gte: query.minmarkup}}, {
         sort: {buyout: 1},
         limit: 3 - numOwned,
         projection: {_id: 0, ahid: 1, auc: 1, buyout: 1, median: 1, percent: 1, profit: 1, soldNum: 1, petQualityId: 1, petLevel: 1, petBreedId: 1, petSpeciesId: 1}
