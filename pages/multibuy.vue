@@ -60,7 +60,13 @@
       <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Wow commands </v-card-title>
         <v-card-text>
-          <span v-for="item in listings" v-if="item.buy">{{`QueryAuctionItems("${item.name}") print("${item.name} ${item.petLevel} ${item.buyout/10000}")|`}}</span>
+          <div v-for="list in listingsByRealm">
+            <h2>{{list[0].ahname}}</h2>
+            <br>
+            <span v-for="item in list" v-if="item.buy">{{`QueryAuctionItems("${item.name}") print("${item.name} ${item.petLevel} ${item.buyout/10000}")|`}}</span>
+            <br>
+            <br>
+          </div>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -105,6 +111,19 @@
         .sort((a, b) => { return a.text > b.text ? 1:-1 })
       },
       buyRealmsString () { return this.buyRealms.map(r => r.ahid).filter(r => r !== '').join('-')},
+      listingsByRealm () {
+        let sl = {}
+        this.listings
+        .sort((a, b) => {
+            return b.percent - a.percent
+        })
+        .filter(item => item.buy)
+        .forEach(item => {
+          if (typeof sl[item.ahid] === 'undefined') sl[item.ahid] = []
+          sl[item.ahid].push(item)
+        })
+        return Object.keys(sl).map(index => sl[index]).sort((a,b) => {return b.length - a.length})
+      },
       listings () {
         let list = []
         this.listingsRaw.forEach(item => {
@@ -119,7 +138,7 @@
       return {
         maxBuyout: 5000,
         minProfit: 500,
-        minMarkup: 50,
+        minMarkup: 100,
         rareonly: true,
         level: 1,
         region: 'US',
