@@ -11,7 +11,7 @@ class Collection {
   async request (query) {
     query.rareonly = query.rareonly || true
     query.level = query.level || 1
-    query.level = query.level === 25 ? 25:1
+    query.level = query.level == 25 ? 25:1
     query.maxbuyout = parseInt(query.maxbuyout) || 10000000000
     query.minprofit = parseInt(query.minprofit) || 1000000
     query.minmarkup = parseInt(query.minmarkup) || 50
