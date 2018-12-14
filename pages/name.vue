@@ -29,6 +29,7 @@
             <template slot="items" slot-scope="props">
               <td><img :src="props.item.image" :title="props.item.petSpeciesId" :class="'quality' + props.item.petQualityId"></td>
               <td>{{ props.item.name }}</td>
+              <td>{{ auctionHouseNameLookup[props.item.ahid] }}</td>
               <td>{{ props.item.petLevel }}</td>
               <td><display-gold :value="props.item.buyout"></display-gold></td>
               <td><display-gold :value="props.item.median"></display-gold></td>
@@ -66,6 +67,18 @@
     computed: {
       realmIndex () { return this.$store.state.realmIndex },
       petIndex () { return this.$store.state.petIndex },
+      auctionHouseNameLookup () {
+        let ahLookup = {}
+        Object.keys(this.$store.state.realmIndex).forEach(index => {
+          let realm = this.$store.state.realmIndex[index]
+          if (typeof ahLookup[realm.ahid] === 'undefined') ahLookup[realm.ahid] = []
+          ahLookup[realm.ahid].push(realm.name)
+        })
+        Object.keys(ahLookup).forEach(index => {
+          ahLookup[index] = ahLookup[index].join(', ')
+        })
+        return ahLookup
+      },
       regions () {
         return Object.keys(this.$store.state.realmIndex)
         .map(r => this.$store.state.realmIndex[r].regionTag)
@@ -94,6 +107,7 @@
         listingsHeadings: [
           {text: 'Image', value: 'image'},
           {text: 'Name', value: 'name'},
+          {text: 'Realm', value: 'ahid'},
           {text: 'Level', value: 'petLevel'},
           {text: 'Buyout', value: 'buyout'},
           {text: 'Suggested Price', value: 'median'},
