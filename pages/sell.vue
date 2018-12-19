@@ -48,10 +48,27 @@
         </v-card-text>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
+        <v-card-title class="headline">Settings</v-card-title>
+        <v-card-text>
+          <v-radio-group label="Auction Length" row v-model="auctionLength">
+            <v-radio :key="1" label="12H" :value="1"></v-radio>
+            <v-radio :key="2" label="24H" :value="2"></v-radio>
+            <v-radio :key="3" label="48H" :value="3"></v-radio>
+          </v-radio-group>
+          <v-radio-group label="Auto Match/Sell" row v-model="autoMatch">
+            <v-radio :key="1" label="100%" :value="1"></v-radio>
+            <v-radio :key="2" label="90%" :value="0.9"></v-radio>
+            <v-radio :key="3" label="80%" :value="0.8"></v-radio>
+            <v-radio :key="4" label="70%" :value="0.7"></v-radio>
+            <v-radio :key="5" label="60%" :value="0.6"></v-radio>
+          </v-radio-group>
+        </v-card-text>
+      </v-card>
+      <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Wow commands </v-card-title>
         <v-card-text>
           <!-- PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(100000, 150000, 2, 1, 1) -->
-          <div v-for="ah in sellListings"><h2>{{ah[0].ahname}}:{{ah.length}}</h2 <br><span v-for="item in ah">{{`C_PetJournal.CagePetByID('BattlePet-0-${item.guid}')|PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(${item.price}, ${item.price}, 3) `}}</span><br><br></div>
+          <div v-for="ah in sellListings"><h2>{{ah[0].ahname}}:{{ah.length}}</h2 <br><span v-for="item in ah">{{`C_PetJournal.CagePetByID('BattlePet-0-${item.guid}')|PickupContainerItem(0, 1) ClickAuctionSellItemButton() ClearCursor() PostAuction(${item.price}, ${item.price}, ${auctionLength}) `}}</span><br><br></div>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -115,7 +132,7 @@
             sa.ahname = this.auctionHouseNameLookup[sa.ahid]
           })
 
-          let price = item.match ? item.sellAt[item.sellIndex].competition - 1 : item.sellAt[item.sellIndex].price
+          let price = item.match ? Math.floor(item.sellAt[item.sellIndex].competition * 0.99) : item.sellAt[item.sellIndex].price
           let undercut = item.match ? 'match' : item.sellAt[item.sellIndex].undercut
           list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image}, item.sellAt[item.sellIndex], {price, undercut}))
         })
@@ -134,6 +151,8 @@
     },
     data () {
       return {
+        autoMatch: 1,
+        auctionLength: 3,
         region: 'US',
         realm: 106,
         character: 'Napri',
@@ -151,6 +170,21 @@
           {text: 'Sell', value: 'selected'},
           {text: 'Match', value: 'match'},
         ]
+      }
+    },
+    watch: {
+      autoMatch (val) {
+        this.listingsRaw.forEach(item => {
+          if (item.sellAt[item.sellIndex].competition <= item.sellAt[item.sellIndex].price) {
+            if (item.sellAt[item.sellIndex].competition > item.sellAt[item.sellIndex].price * val){
+              item.match = true
+              item.selected = true
+            } else {
+              item.match = false
+              item.selected = false
+            }
+          }
+        })
       }
     },
     methods: {
