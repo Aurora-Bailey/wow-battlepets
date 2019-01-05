@@ -8,7 +8,7 @@ const LockedInterval = require('./lockedinterval.js')
 
 class Average {
   constructor () {
-    this.daysToAverage = 30
+    this.daysToAverage = 14
   }
 
   async setupLoop () {
