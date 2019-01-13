@@ -124,9 +124,9 @@ class Average {
       lastSeen: 1,
       status: 1
     }}
+    let results = await db.collection('auctionsArchive').find(dbQuery, dbOptions).toArray()
     console.log(dbQuery)
     console.log(dbOptions)
-    let results = await db.collection('auctionsArchive').find(dbQuery, dbOptions).toArray()
     if (results.length === 0) return false
 
     var regionAuctions = {}
