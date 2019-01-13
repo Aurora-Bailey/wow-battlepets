@@ -8,7 +8,7 @@ const LockedInterval = require('./lockedinterval.js')
 
 class Average {
   constructor () {
-    this.daysToAverage = 14
+    this.daysToAverage = 7
   }
 
   async setupLoop () {
@@ -113,7 +113,7 @@ class Average {
     var daysMS = this.daysToAverage * 24 * 60 * 60 * 1000
     let db = await kaisBattlepets.getDB()
     let petdetails = await petInfo.getPetInfo(speciesId) // hacky way to update petinfo
-    let results = await db.collection('auctionsArchive').find({petSpeciesId: speciesId, lastSeen: {$gte: Date.now() - daysMS}}, {sort: {lastSeen: -1}, limit: 1000, projection: {
+    let results = await db.collection('auctionsArchive').find({lastSeen: {$gte: Date.now() - daysMS}, petSpeciesId: speciesId}, {sort: {_id: -1}, limit: 1000, projection: {
       _id: 0,
       buyout: 1,
       petSpeciesId: 1,
