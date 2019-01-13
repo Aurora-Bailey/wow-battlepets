@@ -36,6 +36,7 @@ class Sell {
       }
       pet.sellAt.sort((a,b) => {
         if (a.undercut != b.undercut) return a.undercut ? -1:1
+        if( a.competition === 0 || b.competition === 0) return a.competition - b.competition
         return b.competition - a.competition
       })
     }
