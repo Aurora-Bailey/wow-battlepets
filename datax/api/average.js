@@ -114,7 +114,8 @@ class Average {
     var daysMS = this.daysToAverage * 24 * 60 * 60 * 1000
     let db = await kaisBattlepets.getDB()
     let petdetails = await petInfo.getPetInfo(speciesId) // hacky way to update petinfo
-    let results = await db.collection('auctionsArchive').find({lastSeen: {$gte: Date.now() - daysMS}, petSpeciesId: speciesId}, {sort: {_id: -1}, limit: 1000, projection: {
+    let dbQuery = {lastSeen: {$gte: Date.now() - daysMS}, petSpeciesId: speciesId}
+    let dbOptions = {sort: {_id: -1}, limit: 1000, projection: {
       _id: 0,
       buyout: 1,
       petSpeciesId: 1,
@@ -122,7 +123,10 @@ class Average {
       ahid: 1,
       lastSeen: 1,
       status: 1
-    }}).toArray()
+    }}
+    console.log(dbQuery)
+    console.log(dbOptions)
+    let results = await db.collection('auctionsArchive').find(dbQuery, dbOptions).toArray()
     if (results.length === 0) return false
 
     var regionAuctions = {}
