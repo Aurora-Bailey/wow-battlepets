@@ -103,8 +103,8 @@ class Average {
     let db = await kaisBattlepets.getDB()
     let oldestAverage = await db.collection('averageUpdate').findOne({}, {sort: {lastUpdate: 1}, projection: {_id: 1, psid: 1}})
     if (oldestAverage === null) return false
-    let updateId = await this._updateSpeciesId(oldestAverage.psid)
     await db.collection('averageUpdate').updateOne({psid: oldestAverage.psid}, {$set: {lastUpdate: Date.now()}})
+    let updateId = await this._updateSpeciesId(oldestAverage.psid)
     console.log(chalk.green('_updateOldest:' + oldestAverage.psid))
     return updateId
   }
@@ -125,8 +125,6 @@ class Average {
       status: 1
     }}
     let results = await db.collection('auctionsArchive').find(dbQuery, dbOptions).toArray()
-    console.log(dbQuery)
-    console.log(dbOptions)
     if (results.length === 0) return false
 
     var regionAuctions = {}
