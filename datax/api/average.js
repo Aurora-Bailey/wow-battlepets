@@ -138,12 +138,12 @@ class Average {
       if (regionAuctions.hasOwnProperty(region)) {
         let l1 = regionAuctions[region].filter(a => a.petLevel === 1)
         let l25 = regionAuctions[region].filter(a => a.petLevel === 25)
-        await db.collection('average').updateOne(
+        db.collection('average').updateOne(
           {psid: speciesId, petLevel: 1, region: region, ahid: null},
           {$set: this._packageData(l1, {lastUpdate: Date.now(), psid: speciesId, petLevel: 1, region: region, ahid: null})},
           {upsert: true}
         )
-        await db.collection('average').updateOne(
+        db.collection('average').updateOne(
           {psid: speciesId, petLevel: 25, region: region, ahid: null},
           {$set: this._packageData(l25, {lastUpdate: Date.now(), psid: speciesId, petLevel: 25, region: region, ahid: null})},
           {upsert: true}
@@ -154,12 +154,12 @@ class Average {
       if (auctionHouseAuctions.hasOwnProperty(ah)) {
         let l1 = auctionHouseAuctions[ah].filter(a => a.petLevel === 1)
         let l25 = auctionHouseAuctions[ah].filter(a => a.petLevel === 25)
-        await db.collection('average').updateOne(
+        db.collection('average').updateOne(
           {psid: speciesId, petLevel: 1, region: null, ahid: ah},
           {$set: this._packageData(l1, {lastUpdate: Date.now(), psid: speciesId, petLevel: 1, region: null, ahid: ah})},
           {upsert: true}
         )
-        await db.collection('average').updateOne(
+        db.collection('average').updateOne(
           {psid: speciesId, petLevel: 25, region: null, ahid: ah},
           {$set: this._packageData(l25, {lastUpdate: Date.now(), psid: speciesId, petLevel: 25, region: null, ahid: ah})},
           {upsert: true}
