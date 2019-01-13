@@ -48,6 +48,7 @@ class Average {
       lastUpdate: Date.now()
     }
     await db.collection('auctionHouseHealth').updateOne({ahid: oldest.ahid}, {$set: auctionHouseHealth})
+    console.log(chalk.green('_updateAuctionHouseHealth: ') + oldest.ahid)
     return true
   }
 

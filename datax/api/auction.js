@@ -120,6 +120,7 @@ class Auction {
     await db.collection('auctionsArchive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
     await db.collection('auctionsArchive').createIndex('lastSeen', {name: 'lastSeen'})
     if (auctionsMissing.length > 0) await db.collection('auctionsArchive').insertMany(auctionsMissing)
+    console.log(chalk.green('_updateAuctionHouse: ') + ahid)
     return true
   }
 
