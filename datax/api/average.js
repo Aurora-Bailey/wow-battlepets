@@ -104,6 +104,7 @@ class Average {
     if (oldestAverage === null) return false
     let updateId = await this._updateSpeciesId(oldestAverage.psid)
     await db.collection('averageUpdate').updateOne({psid: oldestAverage.psid}, {$set: {lastUpdate: Date.now()}})
+    console.log(chalk.green('_updateOldest:' + oldestAverage.psid))
     return updateId
   }
 
@@ -112,7 +113,7 @@ class Average {
     var daysMS = this.daysToAverage * 24 * 60 * 60 * 1000
     let db = await kaisBattlepets.getDB()
     let petdetails = await petInfo.getPetInfo(speciesId) // hacky way to update petinfo
-    let results = await db.collection('auctionsArchive').find({petSpeciesId: speciesId, lastSeen: {$gte: Date.now() - daysMS}}, {sort: {lastSeen: -1}, limit: 10000, projection: {
+    let results = await db.collection('auctionsArchive').find({petSpeciesId: speciesId, lastSeen: {$gte: Date.now() - daysMS}}, {sort: {lastSeen: -1}, limit: 1000, projection: {
       _id: 0,
       buyout: 1,
       petSpeciesId: 1,
