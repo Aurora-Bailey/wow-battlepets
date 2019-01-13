@@ -123,7 +123,6 @@ class Average {
       status: 1
     }}).toArray()
     if (results.length === 0) return false
-    console.log(1)
 
     var regionAuctions = {}
     var auctionHouseAuctions = {}
@@ -135,7 +134,6 @@ class Average {
       regionAuctions[ah.regionTag].push(auction)
       auctionHouseAuctions[auction.ahid].push(auction)
     }
-    console.log(2)
     for (var region in regionAuctions) {
       if (regionAuctions.hasOwnProperty(region)) {
         let l1 = regionAuctions[region].filter(a => a.petLevel === 1)
@@ -152,7 +150,6 @@ class Average {
         )
       }
     }
-    console.log(3)
     for (var ah in auctionHouseAuctions) {
       if (auctionHouseAuctions.hasOwnProperty(ah)) {
         let l1 = auctionHouseAuctions[ah].filter(a => a.petLevel === 1)
@@ -169,7 +166,6 @@ class Average {
         )
       }
     }
-    console.log(4)
     await db.collection('average').createIndex('psid', {name: 'psid'})
     await db.collection('average').createIndex('petLevel', {name: 'petLevel'})
     await db.collection('average').createIndex('region', {name: 'region'})
