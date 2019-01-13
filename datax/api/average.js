@@ -36,7 +36,7 @@ class Average {
     let liveAuctions = await db.collection('auctionsLive').find({ahid: oldest.ahid}, {projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (liveAuctions.length === 0) return false
 
-    let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 10000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
+    let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 1000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (oldAuctionsSold.length === 0) return false
 
     let auctionHouseHealth = {
@@ -56,7 +56,7 @@ class Average {
     let db = await kaisBattlepets.getDB()
     await db.collection('auctionHouseHealth').createIndex('ahid', {unique: true, name: 'ahid'})
     await db.collection('auctionHouseHealth').createIndex('lastUpdate', {name: 'lastUpdate'})
-    let auctionHouses = await db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1}}).toArray()
+    let auctionHouses = await db.collection('auctionHouseIndex').find({regionTag: "US"}, {projection: {_id: 0, ahid: 1}}).toArray()
     let auctionHouseHealth = auctionHouses.map(ah => {
       return {
         ahid: ah.ahid,
