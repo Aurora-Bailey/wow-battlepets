@@ -101,6 +101,7 @@ class Auction {
     let auctionsNew = auctionsLive.filter(a => a.new)
 
     // Add to database
+    await db.collection('auctionsLive').createIndex('aid', {unique: true, name: 'aid'})
     await db.collection('auctionsLive').createIndex('ahid', {name: 'ahid'})
     await db.collection('auctionsLive').createIndex('owner', {name: 'owner'})
     await db.collection('auctionsLive').createIndex('new', {name: 'new'})
