@@ -13,6 +13,8 @@ class Auction {
 
     this.crawlTimespanMS = this.crawlTimespan * 60000 // in miliseconds
     this.crawlIntervalMS = this.crawlInterval * 60000 // in miliseconds
+
+    this.deleteAfterXDays = 14
   }
 
   async setupLoop () {
@@ -121,6 +123,8 @@ class Auction {
     await db.collection('auctionsArchive').createIndex('petSpeciesId', {name: 'petSpeciesId'})
     await db.collection('auctionsArchive').createIndex('lastSeen', {name: 'lastSeen'})
     if (auctionsMissing.length > 0) await db.collection('auctionsArchive').insertMany(auctionsMissing)
+    var daysMS = this.deleteAfterXDays * 24 * 60 * 60 * 1000
+    await db.collection('auctionsArchive').deleteMany({lastSeen: {$lte: Date.now() - daysMS}})
     console.log(chalk.green('_updateAuctionHouse: ') + ahid)
     return true
   }
