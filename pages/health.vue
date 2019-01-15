@@ -31,7 +31,7 @@
               <td>{{ props.item.liveVolume }}</td>
               <td><display-gold :value="props.item.sellPriceAvg"></display-gold></td>
               <td>{{msToTimeString(props.item.sellRate)}}</td>
-              <td>{{msToTimeString(props.item.lastUpdate)}}</td>
+              <td>{{msToTimeString(Date.now() - props.item.lastUpdate)}}</td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -95,7 +95,8 @@
           {text: 'Market Cap', value: 'liveMarketCap'},
           {text: 'Volume', value: 'liveVolume'},
           {text: 'Avg Sell', value: 'sellPriceAvg'},
-          {text: 'Sell Rate', value: 'sellRate'}
+          {text: 'Sell Rate', value: 'sellRate'},
+          {text: 'Last Update', value: 'lastUpdate'}
         ]
       }
     },
