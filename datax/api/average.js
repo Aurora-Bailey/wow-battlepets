@@ -39,12 +39,18 @@ class Average {
     let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 1000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (oldAuctionsSold.length === 0) return false
 
+    let oldAuctionsOneThousand = await db.collection('auctionsArchive').find({ahid: oldest.ahid}, {limit: 1000, sort: {lastSeen: -1}, projection: {_id: 0, status: 1}}).toArray()
+    if (oldAuctionsOneThousand.length === 0) return false
+
     let auctionHouseHealth = {
       ahid: oldest.ahid,
       liveMarketCap: liveAuctions.reduce((a,v) => a + v.buyout, 0),
       liveVolume: liveAuctions.length,
       sellPriceAvg: this._mean(oldAuctionsSold.map(a => a.buyout)),
       sellRate: this._spread(oldAuctionsSold.map(a => a.lastSeen)) / oldAuctionsSold.length,
+      soldOfOneThousand: oldAuctionsOneThousand.filter(item => item.status === 'sold').length,
+      expiredOfOneThousand: oldAuctionsOneThousand.filter(item => item.status === 'expired').length,
+      canceledOfOneThousand: oldAuctionsOneThousand.filter(item => item.status === 'canceled').length,
       lastUpdate: Date.now()
     }
     await db.collection('auctionHouseHealth').updateOne({ahid: oldest.ahid}, {$set: auctionHouseHealth})
@@ -65,7 +71,10 @@ class Average {
         liveVolume: 0,
         sellPriceAvg: 0,
         sellRate: 0,
-        lastUpdate: 0
+        lastUpdate: 0,
+        soldOfOneThousand: 0,
+        expiredOfOneThousand: 0,
+        canceledOfOneThousand:0
       }
     })
     for (var index in auctionHouseHealth) {
