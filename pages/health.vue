@@ -33,9 +33,9 @@
               <td>{{msToTimeString(props.item.sellRate)}}</td>
               <td>{{msToTimeString(Date.now() - props.item.lastUpdate)}}</td>
               <td>
-                <span style="color: lime">{{props.item.soldOfOneThousand}}</span>:
-                <span style="color: orange">{{props.item.canceledOfOneThousand}}</span>:
-                <span style="color: red">{{props.item.expiredOfOneThousand}}</span>
+                <span style="color: lime">{{props.item.soldOfOneThousand}}</span> :
+                <span style="color: orange">{{props.item.canceledOfOneThousand}}</span> :
+                <span style="color: #FF5555">{{props.item.expiredOfOneThousand}}</span>
               </td>
             </template>
           </v-data-table>
