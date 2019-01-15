@@ -29,6 +29,7 @@
               <td>{{ props.item.name }}</td>
               <td><display-gold :value="props.item.liveMarketCap"></display-gold></td>
               <td>{{ props.item.liveVolume }}</td>
+              <td>{{ msToTimeString(props.item.ttsv) }}</td>
               <td><display-gold :value="props.item.sellPriceAvg"></display-gold></td>
               <td>{{msToTimeString(props.item.sellRate)}}</td>
               <td>{{msToTimeString(Date.now() - props.item.lastUpdate)}}</td>
@@ -84,7 +85,8 @@
         })
         .forEach(item => {
           let name = this.auctionHouseNameLookup[item.ahid]
-          list.push(Object.assign(item, {name}))
+          let ttsv = item.sellRate * item.liveVolume // time to sell volume
+          list.push(Object.assign(item, {name, ttsv}))
         })
 
         return list
@@ -99,6 +101,7 @@
           {text: 'Name', value: 'name'},
           {text: 'Market Cap', value: 'liveMarketCap'},
           {text: 'Volume', value: 'liveVolume'},
+          {text: 'TTSV', value: 'ttsv'},
           {text: 'Avg Sell', value: 'sellPriceAvg'},
           {text: 'Sell Rate', value: 'sellRate'},
           {text: 'Last Update', value: 'lastUpdate'},
