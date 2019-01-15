@@ -32,6 +32,11 @@
               <td><display-gold :value="props.item.sellPriceAvg"></display-gold></td>
               <td>{{msToTimeString(props.item.sellRate)}}</td>
               <td>{{msToTimeString(Date.now() - props.item.lastUpdate)}}</td>
+              <td>
+                <span style="color: lime">{{props.item.soldOfOneThousand}}</span>:
+                <span style="color: orange">{{props.item.canceledOfOneThousand}}</span>:
+                <span style="color: red">{{props.item.expiredOfOneThousand}}</span>
+              </td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -96,7 +101,8 @@
           {text: 'Volume', value: 'liveVolume'},
           {text: 'Avg Sell', value: 'sellPriceAvg'},
           {text: 'Sell Rate', value: 'sellRate'},
-          {text: 'Last Update', value: 'lastUpdate'}
+          {text: 'Last Update', value: 'lastUpdate'},
+          {text: 'S:C:E', value: 'soldOfOneThousand'}
         ]
       }
     },
