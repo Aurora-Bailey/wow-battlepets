@@ -31,6 +31,7 @@
               <td>{{ props.item.liveVolume }}</td>
               <td><display-gold :value="props.item.sellPriceAvg"></display-gold></td>
               <td>{{msToTimeString(props.item.sellRate)}}</td>
+              <td>{{msToTimeString(props.item.lastUpdate)}}</td>
             </template>
           </v-data-table>
         </v-card-text>

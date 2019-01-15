@@ -8,7 +8,7 @@ class Health {
 
   async request (query) {
     let db = await kaisBattlepets.getDB()
-    let health = await db.collection('auctionHouseHealth').find({}, {projection: {_id: 0, ahid: 1, liveMarketCap: 1, liveVolume: 1, sellPriceAvg: 1, sellRate: 1}}).toArray()
+    let health = await db.collection('auctionHouseHealth').find({}, {projection: {_id: 0, ahid: 1, liveMarketCap: 1, liveVolume: 1, sellPriceAvg: 1, sellRate: 1, lastUpdate: 1}}).toArray()
 
     return health
   }
