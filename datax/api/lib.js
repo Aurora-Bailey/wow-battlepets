@@ -63,7 +63,7 @@ class Lib {
     // return form database
     let db = await kaisBattlepets.getDB()
     let results = await db.collection('average').findOne({psid: speciesId, petLevel: level, region: region, ahid: null})
-    this.cacheSpeciesAverageRegion[id] = {results, date: Date.now(), expire: Date.now() + (1000*60*60*24) + (Math.random() * 1000*60*60*6), valid: true}
+    this.cacheSpeciesAverageRegion[id] = {results, date: Date.now(), expire: Date.now() + (1000*60*60*6) + (Math.random() * 1000*60*60*3), valid: true}
     return results
   }
 
