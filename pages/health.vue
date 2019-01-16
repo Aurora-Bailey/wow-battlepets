@@ -20,6 +20,8 @@
           <div>Name: Realm name(s)</div>
           <div>Market Cap: The sum buyout of all live auctions on the auctionhouse</div>
           <div>Volume: How many battle pets are currently on the auctionhouse</div>
+          <div>Unique: How many unique battle pets are currently on the auctionhouse</div>
+          <div>Overpriced: Percent of battle pet species being sold for less than 0% profit</div>
           <div>TTSV: Time to sell volume; Volume * Sell Rate</div>
           <div>Avg Sell: The average sell price of the last 1000 pets sold</div>
           <div>Sell Rate: The average time between each battle pet sell for the last 1000 sold</div>
@@ -38,7 +40,8 @@
               <td>{{ props.item.name }}</td>
               <td><display-gold :value="props.item.liveMarketCap"></display-gold></td>
               <td>{{ props.item.liveVolume }}</td>
-              <td>{{ props.item.overPricedUniquePercent }} - ({{ props.item.uniquePets}})</td>
+              <td>{{ props.item.uniquePets}}</td>
+              <td>{{ props.item.overPricedUniquePercent }}%</td>
               <td>{{ msToTimeString(props.item.ttsv) }}</td>
               <td><display-gold :value="props.item.sellPriceAvg"></display-gold></td>
               <td>{{msToTimeString(props.item.sellRate)}}</td>
@@ -120,6 +123,7 @@
           {text: 'Name', value: 'name', width: 250},
           {text: 'Market Cap', value: 'liveMarketCap'},
           {text: 'Volume', value: 'liveVolume'},
+          {text: 'Unique', value: 'uniquePets'},
           {text: 'Overpriced', value: 'overPricedUniquePercent'},
           {text: 'TTSV', value: 'ttsv'},
           {text: 'Avg Sell', value: 'sellPriceAvg'},
