@@ -36,7 +36,7 @@ class Average {
     let liveAuctions = await db.collection('auctionsLive').find({ahid: oldest.ahid}, {projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (liveAuctions.length === 0) return false
 
-    let liveAuctionsBuyable = await db.collection('auctionsLive').find({ahid: oldest.ahid, percent: {$gte: 100}}, {projection: {_id: 0, petSpeciesId: 1, profit: 1, buyout: 1}}).toArray()
+    let liveAuctionsBuyable = await db.collection('auctionsLive').find({ahid: oldest.ahid, percent: {$gte: 100}, petLevel: 1, petQualityId: 3}, {projection: {_id: 0, petSpeciesId: 1, profit: 1, buyout: 1}}).toArray()
     if (liveAuctionsBuyable.length === 0) return false
     let buyableUnique = liveAuctionsBuyable.reduce((a, v) => {
       if (a[v.petSpeciesId] && a[v.petSpeciesId].buyout < v.buyout) return a
