@@ -86,7 +86,7 @@ class Auction {
       auction.live = auctionsLiveMap.includes(auction.aid)
       if (!auction.live) {
         // auction has been sold canceled or expired.
-        if (auction.lastSeen < Date.now() - (1000*60*60*1.5)) {
+        if (auction.lastSeen < Date.now() - (1000*60*60*2)) {
           auction.status = 'timeskip'
         } else if (auction.timeLeft === 'SHORT' || auction.timeLeft === 'MEDIUM') {
           auction.status = 'expired'
