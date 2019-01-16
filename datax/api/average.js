@@ -66,6 +66,7 @@ class Average {
       halfPriceUniqueOverOneThousand: buyableUniqueArray.filter(item => item.buyout >= (1000 * 10000) && item.buyout < (10000 * 10000)).length,
       halfPriceUniqueOverOneHundred: buyableUniqueArray.filter(item => item.buyout >= (100 * 10000) && item.buyout < (1000 * 10000)).length,
       halfPriceUniqueOverTen: buyableUniqueArray.filter(item => item.buyout >= (10 * 10000) && item.buyout < (100 * 10000)).length,
+      halfPriceUniqueOverZero: buyableUniqueArray.filter(item => item.buyout >= 0 && item.buyout < (10 * 10000)).length,
       lastUpdate: Date.now()
     }
     await db.collection('auctionHouseHealth').updateOne({ahid: oldest.ahid}, {$set: auctionHouseHealth})
@@ -95,6 +96,7 @@ class Average {
         halfPriceUniqueOverOneThousand: 0,
         halfPriceUniqueOverOneHundred: 0,
         halfPriceUniqueOverTen: 0,
+        halfPriceUniqueOverZero: 0,
         lastUpdate: 0
       }
     })
