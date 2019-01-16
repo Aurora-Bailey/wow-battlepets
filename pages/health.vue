@@ -38,7 +38,7 @@
               <td>{{ props.item.name }}</td>
               <td><display-gold :value="props.item.liveMarketCap"></display-gold></td>
               <td>{{ props.item.liveVolume }}</td>
-              <td>{{ props.item.overpriced }}</td>
+              <td>{{ props.item.overPricedUniquePercent }} - ({{ props.item.uniquePets}})</td>
               <td>{{ msToTimeString(props.item.ttsv) }}</td>
               <td><display-gold :value="props.item.sellPriceAvg"></display-gold></td>
               <td>{{msToTimeString(props.item.sellRate)}}</td>
@@ -120,7 +120,7 @@
           {text: 'Name', value: 'name', width: 250},
           {text: 'Market Cap', value: 'liveMarketCap'},
           {text: 'Volume', value: 'liveVolume'},
-          {text: 'Overpriced', value: 'overpriced'},
+          {text: 'Overpriced', value: 'overPricedUniquePercent'},
           {text: 'TTSV', value: 'ttsv'},
           {text: 'Avg Sell', value: 'sellPriceAvg'},
           {text: 'Sell Rate', value: 'sellRate'},

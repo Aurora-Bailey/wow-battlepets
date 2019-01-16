@@ -26,7 +26,7 @@ class Health {
       halfPriceUniqueOverOneHundred: 1,
       halfPriceUniqueOverTen: 1,
       halfPriceUniqueOverZero: 1,
-      overpricedUnique: 1,
+      overPricedUniquePercent: 1,
       uniquePets: 1
     }}).toArray()
 

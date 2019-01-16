@@ -72,7 +72,7 @@ class Average {
       halfPriceUniqueOverOneHundred: buyableUniqueArray.filter(item => item.buyout >= (100 * 10000) && item.buyout < (1000 * 10000)).length,
       halfPriceUniqueOverTen: buyableUniqueArray.filter(item => item.buyout >= (10 * 10000) && item.buyout < (100 * 10000)).length,
       halfPriceUniqueOverZero: buyableUniqueArray.filter(item => item.buyout >= 0 && item.buyout < (10 * 10000)).length,
-      overpricedUnique: Math.floor((liveUniqueArray.filter(item => item.percent < 0).length / liveUniqueArray.length) * 100),
+      overPricedUniquePercent: Math.floor((liveUniqueArray.filter(item => item.percent < 0).length / liveUniqueArray.length) * 100),
       uniquePets: liveUniqueArray.length,
       lastUpdate: Date.now()
     }
@@ -104,7 +104,7 @@ class Average {
         halfPriceUniqueOverOneHundred: 0,
         halfPriceUniqueOverTen: 0,
         halfPriceUniqueOverZero: 0,
-        overpricedUnique: 0,
+        overPricedUniquePercent: 0,
         uniquePets: 0,
         lastUpdate: 0
       }
