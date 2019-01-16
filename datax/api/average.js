@@ -28,13 +28,16 @@ class Average {
 
   async _updateAuctionHouseHealth () {
     let db = await kaisBattlepets.getDB()
+    console.log(1)
 
     let oldest = await db.collection('auctionHouseHealth').findOne({}, {sort: {lastUpdate: 1}, projection: {_id: 0, ahid: 1, lastUpdate: 1}})
     if (oldest === null) return false
     console.log(chalk.magenta('_updateAuctionHouseHealth: ') + oldest.ahid)
+    console.log(2)
 
     let liveAuctions = await db.collection('auctionsLive').find({ahid: oldest.ahid}, {projection: {_id: 0, buyout: 1, lastSeen: 1, percent: 1}}).toArray()
     if (liveAuctions.length === 0) return false
+    console.log(3)
 
     let liveAuctionsBuyable = await db.collection('auctionsLive').find({ahid: oldest.ahid, percent: {$gte: 100}, petLevel: 1, petQualityId: 3}, {projection: {_id: 0, petSpeciesId: 1, profit: 1, buyout: 1}}).toArray()
     if (liveAuctionsBuyable.length === 0) return false
@@ -44,12 +47,15 @@ class Average {
       return a
     }, {})
     let buyableUniqueArray = Object.keys(buyableUnique).map(index => buyableUnique[index])
+    console.log(4)
 
     let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 1000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (oldAuctionsSold.length === 0) return false
+    console.log(5)
 
     let oldAuctionsFiveThousand = await db.collection('auctionsArchive').find({ahid: oldest.ahid}, {limit: 5000, sort: {lastSeen: -1}, projection: {_id: 0, status: 1}}).toArray()
     if (oldAuctionsFiveThousand.length === 0) return false
+    console.log(6)
 
     let auctionHouseHealth = {
       ahid: oldest.ahid,
@@ -71,6 +77,7 @@ class Average {
       lastUpdate: Date.now()
     }
     await db.collection('auctionHouseHealth').updateOne({ahid: oldest.ahid}, {$set: auctionHouseHealth})
+    console.log(7)
     console.log(chalk.green('_updateAuctionHouseHealth: ') + oldest.ahid)
     return true
   }
