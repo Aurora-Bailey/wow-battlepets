@@ -8,8 +8,8 @@ const LockedInterval = require('./lockedinterval.js')
 
 class Auction {
   constructor () {
-    this.crawlTimespan = 50 // minutes, stagger the request across time
-    this.crawlInterval = 60 // minutes, frequency of data pulls
+    this.crawlTimespan = 80 // minutes, stagger the request across time
+    this.crawlInterval = 90 // minutes, frequency of data pulls
 
     this.crawlTimespanMS = this.crawlTimespan * 60000 // in miliseconds
     this.crawlIntervalMS = this.crawlInterval * 60000 // in miliseconds
