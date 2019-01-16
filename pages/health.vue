@@ -17,6 +17,15 @@
       <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Realm Health</v-card-title>
         <v-card-text>
+          <div>Name: Realm name(s)</div>
+          <div>Market Cap: The sum buyout of all live auctions on the auctionhouse</div>
+          <div>Volume: How many battle pets are currently on the auctionhouse</div>
+          <div>TTSV: Time to sell volume; Volume * Sell Rate</div>
+          <div>Avg Sell: The average sell price of the last 1000 pets sold</div>
+          <div>Sell Rate: The average time between each battle pet sell for the last 1000 sold</div>
+          <div>Last Update: The last time this record was updated</div>
+          <div>S:C:E: Sold Canceled Expired from the last 5000 battle pets</div>
+          <div>Half Price: Number of rare level 1 pets that can be bought and sold for 100% markup. &#x3E;100k : &#x3E;10k : &#x3E;1k : &#x3E;100 : &#x3E; 10 : &#x3E;0</div>
           <v-data-table
             :headers="listingsHeadings"
             :items="listings"
@@ -34,9 +43,9 @@
               <td>{{msToTimeString(props.item.sellRate)}}</td>
               <td>{{msToTimeString(Date.now() - props.item.lastUpdate)}}</td>
               <td>
-                <span style="color: lime">{{props.item.soldOfOneThousand}}</span> :
-                <span style="color: orange">{{props.item.canceledOfOneThousand}}</span> :
-                <span style="color: #FF5555">{{props.item.expiredOfOneThousand}}</span>
+                <span style="color: lime">{{props.item.soldOfFiveThousand}}</span> :
+                <span style="color: orange">{{props.item.canceledOfFiveThousand}}</span> :
+                <span style="color: #FF5555">{{props.item.expiredOfFiveThousand}}</span>
               </td>
               <td>
                 <span>{{ props.item.halfPriceUnique }}</span> --
@@ -107,14 +116,14 @@
         listingsRaw: [],
         pagination: {descending: false, page: 0, rowsPerPage: -1, sortBy: 'sellRate'},
         listingsHeadings: [
-          {text: 'Name', value: 'name'},
+          {text: 'Name', value: 'name', width: 250},
           {text: 'Market Cap', value: 'liveMarketCap'},
           {text: 'Volume', value: 'liveVolume'},
           {text: 'TTSV', value: 'ttsv'},
           {text: 'Avg Sell', value: 'sellPriceAvg'},
           {text: 'Sell Rate', value: 'sellRate'},
           {text: 'Last Update', value: 'lastUpdate'},
-          {text: 'S:C:E', value: 'soldOfOneThousand'},
+          {text: 'S:C:E', value: 'soldOfFiveThousand'},
           {text: 'Half Price', value: 'halfPriceUnique'}
         ]
       }

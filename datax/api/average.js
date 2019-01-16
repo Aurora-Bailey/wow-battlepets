@@ -48,8 +48,8 @@ class Average {
     let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 1000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (oldAuctionsSold.length === 0) return false
 
-    let oldAuctionsOneThousand = await db.collection('auctionsArchive').find({ahid: oldest.ahid}, {limit: 1000, sort: {lastSeen: -1}, projection: {_id: 0, status: 1}}).toArray()
-    if (oldAuctionsOneThousand.length === 0) return false
+    let oldAuctionsFiveThousand = await db.collection('auctionsArchive').find({ahid: oldest.ahid}, {limit: 5000, sort: {lastSeen: -1}, projection: {_id: 0, status: 1}}).toArray()
+    if (oldAuctionsFiveThousand.length === 0) return false
 
     let auctionHouseHealth = {
       ahid: oldest.ahid,
@@ -57,9 +57,9 @@ class Average {
       liveVolume: liveAuctions.length,
       sellPriceAvg: this._mean(oldAuctionsSold.map(a => a.buyout)),
       sellRate: this._spread(oldAuctionsSold.map(a => a.lastSeen)) / oldAuctionsSold.length,
-      soldOfOneThousand: oldAuctionsOneThousand.filter(item => item.status === 'sold').length,
-      expiredOfOneThousand: oldAuctionsOneThousand.filter(item => item.status === 'expired').length,
-      canceledOfOneThousand: oldAuctionsOneThousand.filter(item => item.status === 'canceled').length,
+      soldOfFiveThousand: oldAuctionsFiveThousand.filter(item => item.status === 'sold').length,
+      expiredOfFiveThousand: oldAuctionsFiveThousand.filter(item => item.status === 'expired').length,
+      canceledOfFiveThousand: oldAuctionsFiveThousand.filter(item => item.status === 'canceled').length,
       halfPriceUnique: buyableUniqueArray.length,
       halfPriceUniqueOverOneHundredThousand: buyableUniqueArray.filter(item => item.buyout >= (100000 * 10000)).length,
       halfPriceUniqueOverTenThousand: buyableUniqueArray.filter(item => item.buyout >= (10000 * 10000) && item.buyout < (100000 * 10000)).length,
@@ -87,9 +87,9 @@ class Average {
         liveVolume: 0,
         sellPriceAvg: 0,
         sellRate: 0,
-        soldOfOneThousand: 0,
-        expiredOfOneThousand: 0,
-        canceledOfOneThousand:0,
+        soldOfFiveThousand: 0,
+        expiredOfFiveThousand: 0,
+        canceledOfFiveThousand:0,
         halfPriceUnique: 0,
         halfPriceUniqueOverOneHundredThousand: 0,
         halfPriceUniqueOverTenThousand: 0,
