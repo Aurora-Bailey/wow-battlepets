@@ -36,6 +36,15 @@ class Average {
     let liveAuctions = await db.collection('auctionsLive').find({ahid: oldest.ahid}, {projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (liveAuctions.length === 0) return false
 
+    let liveAuctionsBuyable = await db.collection('auctionsLive').find({ahid: oldest.ahid, percent: {$gte: 100}}, {projection: {_id: 0, petSpeciesId: 1, profit: 1, buyout: 1}}).toArray()
+    if (liveAuctionsBuyable.length === 0) return false
+    let buyableUnique = liveAuctionsBuyable.reduce((a, v) => {
+      if (a[v.petSpeciesId] && a[v.petSpeciesId].buyout < v.buyout) return a
+      a[v.petSpeciesId] = v
+      return a
+    }, {})
+    let buyableUniqueArray = Object.keys(buyableUnique).map(index => buyableUnique[index])
+
     let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 1000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
     if (oldAuctionsSold.length === 0) return false
 
@@ -51,6 +60,12 @@ class Average {
       soldOfOneThousand: oldAuctionsOneThousand.filter(item => item.status === 'sold').length,
       expiredOfOneThousand: oldAuctionsOneThousand.filter(item => item.status === 'expired').length,
       canceledOfOneThousand: oldAuctionsOneThousand.filter(item => item.status === 'canceled').length,
+      halfPriceUnique: buyableUniqueArray.length,
+      halfPriceUniqueOverOneHundredThousand: buyableUniqueArray.filter(item => item.buyout >= (100000 * 10000)).length,
+      halfPriceUniqueOverTenThousand: buyableUniqueArray.filter(item => item.buyout >= (10000 * 10000) && item.buyout < (100000 * 10000)).length,
+      halfPriceUniqueOverOneThousand: buyableUniqueArray.filter(item => item.buyout >= (1000 * 10000) && item.buyout < (10000 * 10000)).length,
+      halfPriceUniqueOverOneHundred: buyableUniqueArray.filter(item => item.buyout >= (100 * 10000) && item.buyout < (1000 * 10000)).length,
+      halfPriceUniqueOverTen: buyableUniqueArray.filter(item => item.buyout >= (10 * 10000) && item.buyout < (100 * 10000)).length,
       lastUpdate: Date.now()
     }
     await db.collection('auctionHouseHealth').updateOne({ahid: oldest.ahid}, {$set: auctionHouseHealth})
@@ -71,10 +86,16 @@ class Average {
         liveVolume: 0,
         sellPriceAvg: 0,
         sellRate: 0,
-        lastUpdate: 0,
         soldOfOneThousand: 0,
         expiredOfOneThousand: 0,
-        canceledOfOneThousand:0
+        canceledOfOneThousand:0,
+        halfPriceUnique: 0,
+        halfPriceUniqueOverOneHundredThousand: 0,
+        halfPriceUniqueOverTenThousand: 0,
+        halfPriceUniqueOverOneThousand: 0,
+        halfPriceUniqueOverOneHundred: 0,
+        halfPriceUniqueOverTen: 0,
+        lastUpdate: 0
       }
     })
     for (var index in auctionHouseHealth) {
