@@ -33,7 +33,7 @@ class Average {
     if (oldest === null) return false
     console.log(chalk.magenta('_updateAuctionHouseHealth: ') + oldest.ahid)
 
-    let liveAuctions = await db.collection('auctionsLive').find({ahid: oldest.ahid}, {projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
+    let liveAuctions = await db.collection('auctionsLive').find({ahid: oldest.ahid}, {projection: {_id: 0, buyout: 1, lastSeen: 1, percent: 1}}).toArray()
     if (liveAuctions.length === 0) return false
 
     let liveAuctionsBuyable = await db.collection('auctionsLive').find({ahid: oldest.ahid, percent: {$gte: 100}, petLevel: 1, petQualityId: 3}, {projection: {_id: 0, petSpeciesId: 1, profit: 1, buyout: 1}}).toArray()
@@ -67,6 +67,7 @@ class Average {
       halfPriceUniqueOverOneHundred: buyableUniqueArray.filter(item => item.buyout >= (100 * 10000) && item.buyout < (1000 * 10000)).length,
       halfPriceUniqueOverTen: buyableUniqueArray.filter(item => item.buyout >= (10 * 10000) && item.buyout < (100 * 10000)).length,
       halfPriceUniqueOverZero: buyableUniqueArray.filter(item => item.buyout >= 0 && item.buyout < (10 * 10000)).length,
+      overpriced: liveAuctions.filter(item => item.percent < 0).length,
       lastUpdate: Date.now()
     }
     await db.collection('auctionHouseHealth').updateOne({ahid: oldest.ahid}, {$set: auctionHouseHealth})
@@ -97,6 +98,7 @@ class Average {
         halfPriceUniqueOverOneHundred: 0,
         halfPriceUniqueOverTen: 0,
         halfPriceUniqueOverZero: 0,
+        overpriced: 0,
         lastUpdate: 0
       }
     })
