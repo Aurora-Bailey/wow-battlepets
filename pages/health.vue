@@ -38,6 +38,15 @@
                 <span style="color: orange">{{props.item.canceledOfOneThousand}}</span> :
                 <span style="color: #FF5555">{{props.item.expiredOfOneThousand}}</span>
               </td>
+              <td>
+                <span>{{ props.item.halfPriceUnique }}</span> --
+                <span style="color: #FF5555">{{ props.item.halfPriceUniqueOverOneHundredThousand }}</span> :
+                <span style="color: orange">{{ props.item.halfPriceUniqueOverTenThousand }}</span> :
+                <span style="color: yellow">{{ props.item.halfPriceUniqueOverOneThousand }}</span> :
+                <span style="color: lime">{{ props.item.halfPriceUniqueOverOneHundred }}</span> :
+                <span style="color: cyan">{{ props.item.halfPriceUniqueOverTen }}</span> :
+                <span style="color: magenta">{{ props.item.halfPriceUniqueOverZero }}</span>
+              </td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -105,7 +114,8 @@
           {text: 'Avg Sell', value: 'sellPriceAvg'},
           {text: 'Sell Rate', value: 'sellRate'},
           {text: 'Last Update', value: 'lastUpdate'},
-          {text: 'S:C:E', value: 'soldOfOneThousand'}
+          {text: 'S:C:E', value: 'soldOfOneThousand'},
+          {text: 'Half Price', value: 'halfPriceUnique'}
         ]
       }
     },
