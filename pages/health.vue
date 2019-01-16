@@ -25,7 +25,7 @@
           <div>Sell Rate: The average time between each battle pet sell for the last 1000 sold</div>
           <div>Last Update: The last time this record was updated</div>
           <div>S:C:E: Sold Canceled Expired from the last 5000 battle pets</div>
-          <div>Half Price: Number of rare level 1 pets that can be bought and sold for 100% markup. &#x3E;100k : &#x3E;10k : &#x3E;1k : &#x3E;100 : &#x3E; 10 : &#x3E;0</div>
+          <div>Buyable: Number of unique rare level 1 pets that can be bought and sold for 100% markup. &#x3E;100k : &#x3E;10k : &#x3E;1k : &#x3E;100 : &#x3E; 10 : &#x3E;0</div>
           <v-data-table
             :headers="listingsHeadings"
             :items="listings"
@@ -124,7 +124,7 @@
           {text: 'Sell Rate', value: 'sellRate'},
           {text: 'Last Update', value: 'lastUpdate'},
           {text: 'S:C:E', value: 'soldOfFiveThousand'},
-          {text: 'Half Price', value: 'halfPriceUnique'}
+          {text: 'Buyable', value: 'halfPriceUnique'}
         ]
       }
     },

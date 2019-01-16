@@ -5,7 +5,7 @@
         <img src="/v.png" alt="Vuetify.js" class="mb-5" />
       </div>
       <v-card>
-        <v-card-title class="headline">Buy pets from realm</v-card-title>
+        <v-card-title class="headline">View listing across all realms</v-card-title>
         <v-card-text>
           <v-text-field label="Character Name" v-model="character"></v-text-field>
         </v-card-text>

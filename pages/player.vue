@@ -5,7 +5,7 @@
         <img src="/v.png" alt="Vuetify.js" class="mb-5" />
       </div>
       <v-card>
-        <v-card-title class="headline">Buy pets from realm</v-card-title>
+        <v-card-title class="headline">View a players listings</v-card-title>
         <v-card-text>
           <v-select :items="regions" v-model="region" label="Region"></v-select>
           <v-autocomplete :items="realmList" v-model="ahid" label="Realm"></v-autocomplete>
