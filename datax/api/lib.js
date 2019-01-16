@@ -103,7 +103,7 @@ class Lib {
     if (this.cacheAuctionHouseList) return this.cacheAuctionHouseList
 
     let db = await kaisBattlepets.getDB()
-    let ahi = await db.collection('auctionHouseIndex').find({regionTag: "US"}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
+    let ahi = await db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
     this.cacheAuctionHouseList = ahi
     return ahi
   }
