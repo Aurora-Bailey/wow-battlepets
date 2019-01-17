@@ -13,7 +13,6 @@ class SellTime {
     let realmIndex = await db.collection('realmIndex').find({}, {projection: {_id: 0, ahid: 1, timezone: 1}}).toArray()
 
     let archiveSold = await db.collection('auctionsArchive').find({status: "sold"}, {projection: {_id: 0, ahid: 1, lastSeen: 1}}).toArray()
-    archiveSold.map(item => )
 
     let ahidToTimezone = realmIndex.reduce((a, v) => {
       a[v.ahid] = v.timezone
