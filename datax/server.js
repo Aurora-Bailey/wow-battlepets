@@ -8,6 +8,7 @@ const player = require('./pages/player.js')
 const name = require('./pages/name.js')
 const realmindex = require('./pages/realmindex.js')
 const sell = require('./pages/sell.js')
+const selltime = require('./pages/selltime.js')
 
 const chalk = require('chalk')
 const express = require('express')
@@ -66,6 +67,11 @@ app.get('/realmindex', async function (req, res, next) {
 })
 
 app.get('/sell/:rid/:name/:sellat', async function (req, res, next) {
+  try { res.json(await sell.request(Object.assign(req.params, req.query))) }
+  catch (e) { next(e) }
+})
+
+app.get('/selltime', async function (req, res, next) {
   try { res.json(await sell.request(Object.assign(req.params, req.query))) }
   catch (e) { next(e) }
 })
