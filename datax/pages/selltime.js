@@ -28,7 +28,7 @@ class SellTime {
       if (typeof data[timezone] === 'undefined') data[timezone] = {}
       if (typeof data[timezone][hour] === 'undefined') data[timezone][hour] = 0
 
-      data[item.ahid].lastSold[hour]++
+      data[item.ahid][hour]++
     })
 
     return data
