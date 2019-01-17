@@ -72,7 +72,7 @@ app.get('/sell/:rid/:name/:sellat', async function (req, res, next) {
 })
 
 app.get('/selltime', async function (req, res, next) {
-  try { res.json(await sell.request(Object.assign(req.params, req.query))) }
+  try { res.json(await selltime.request(Object.assign(req.params, req.query))) }
   catch (e) { next(e) }
 })
 
