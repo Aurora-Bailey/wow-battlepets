@@ -93,7 +93,8 @@
           { icon: 'local_play', title: 'Collection', to: '/collection' },
           { icon: 'person', title: 'Player', to: '/player' },
           { icon: 'person_add', title: 'Name', to: '/name' },
-          { icon: 'local_hospital', title: 'AH Health', to: '/health' }
+          { icon: 'local_hospital', title: 'AH Health', to: '/health' },
+          { icon: 'timer', title: 'Sell Time', to: '/selltime' }
         ],
         miniVariant: false,
         right: true,
