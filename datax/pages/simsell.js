@@ -5,13 +5,15 @@ const lib = require('../api/lib.js')
 
 class Collection {
   constructor () {
-
+    // simulate sell of level 1 rare quality pets
   }
 
   async request (query) {
     query.rid = parseInt(query.rid)
     query.canceled = parseInt(query.canceled) || 100 // number of canceled items to allow before skipping the pet
-    query.discount = parseInt(query.discount) || 1 // number of canceled items to allow before skipping the pet
+    query.discount = parseInt(query.discount) || 1 // 0 to 1
+    query.level = parseInt(query.level) || 1 // Level of pets to compare
+    // only compare rare quality pets
     // get pets from blizzard
     let pets = await wow.getCharacterPets(query.rid, query.name)
 
@@ -42,19 +44,19 @@ class Collection {
       }
     })
 
+    // filter unique and query.level
+    let petSimpleObject = petsSimple.reduce((a, v) => {
+      if (v.level === query.level && v.quality === 3) a[v.psid] = v
+      return a
+    }, {})
+    let petSimpleUnique = Object.keys(petSimpleObject).map(key => petSimpleObject[key])
+
     // build ahid lookup
     let auctionHouseIndex = await db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1, regionTag: 1}}).toArray()
     let ahidToRegionTag = auctionHouseIndex.reduce((a, v) => {
       a[v.ahid] = v.regionTag
       return a
     }, {})
-
-    // filter unique
-    let petSimpleObject = petsSimple.reduce((a, v) => {
-      a[v.psid] = v
-      return a
-    }, {})
-    let petSimpleUnique = Object.keys(petSimpleObject).map(key => petSimpleObject[key])
 
     // Auction house compare object
     let auctionHouseCompare = []
@@ -64,9 +66,8 @@ class Collection {
       await (async function () {
         let fromTime = Date.now() - ((i+1) * 1000 * 60 * 60 * 24)
         let toTime = Date.now() - (i * 1000 * 60 * 60 * 24)
-        let auctionsArchive = await db.collection('auctionsArchive').find({$or: [{status: 'sold'}, {status: 'canceled'}], lastSeen: {$gte: fromTime, $lt: toTime}},
-        {projection: {_id: 0, buyout: 1, petSpeciesId: 1, petQualityId: 1, petLevel: 1, status: 1, ahid: 1}}).toArray()
-        console.log('-db')
+        let auctionsArchive = await db.collection('auctionsArchive').find({$or: [{status: 'sold'}, {status: 'canceled'}], lastSeen: {$gte: fromTime, $lt: toTime}, petLevel: query.level, petQualityId: 3},
+        {projection: {_id: 0, buyout: 1, petSpeciesId: 1, status: 1, ahid: 1}}).toArray()
 
         // filter out all but player region
         auctionsArchive = auctionsArchive.filter(item => ahidToRegionTag[item.ahid] === realm.regionTag)
