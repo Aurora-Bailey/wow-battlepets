@@ -11,7 +11,7 @@
           <div v-for="timezone in dataArray">
             <h4>{{timezone.timezone}} min:{{timezone.min}} max:{{timezone.max}}</h4>
             <div class="block_container">
-              <div :title="hour.humantime + ' ' + hour.sold" class="hour_block" v-for="hour in timezone.values" :style="{backgroundColor: `hsl(200, 100%, ${Math.round(hour.p * 100)}%)`}">
+              <div :title="hour.humantime + ' ' + hour.sold" class="hour_block" v-for="hour in timezone.values" :style="{backgroundColor: hour.error ? `#2d0000` : `hsl(200, 100%, ${Math.round(hour.p * 100)}%)`}">
                 <div class="hour_tooltip">
                   {{hour.humantime}} Sold:{{hour.sold}}
                 </div>
@@ -61,6 +61,8 @@
   export default {
     computed: {
       dataArray () {
+        console.log(this.data)
+        this.data["UnitedStates"] = mergeTimezones(mergeTimezones(this.data["America/Chicago"], this.data["America/Denver"]),mergeTimezones(this.data["America/New_York"], this.data["America/Los_Angeles"]))
         return Object.keys(this.data).map(index => {
           let values = Object.keys(this.data[index]).map(key => {
             let timestamp = parseInt(key) * (1000*60*60)
@@ -86,7 +88,7 @@
             if (l === 0) {
               let firstHour = parseInt(v.hour)
               while (firstHour > 0) {
-                a.push({h: lastIndex, humantime: 'notfound!', sold: 0, p: 0})
+                a.push({h: 0, humantime: 'notfound!', error: true, sold: 0, p: 0})
                 firstHour--
               }
               a.push(v)
@@ -96,7 +98,7 @@
             let lastIndex = parseInt(lastItem.h)
 
             while (lastIndex + 1 < parseInt(v.h)) {
-              a.push({h: lastIndex, humantime: 'notfound!', sold: 0, p: 0})
+              a.push({h: lastIndex, humantime: 'notfound!', error: true, sold: 0, p: 0})
               lastIndex++
             }
 
@@ -117,5 +119,18 @@
       let { data } = await $axios.get(`http://54.244.210.52:3303/selltime`)
       return { data }
     }
+  }
+
+  function mergeTimezones (timezoneA, timezoneB) {
+    let timezoneC = {}
+    Object.keys(timezoneA).forEach(key => {
+      if (typeof timezoneC[key] === 'undefined') timezoneC[key] = 0
+      timezoneC[key] += timezoneA[key]
+    })
+    Object.keys(timezoneB).forEach(key => {
+      if (typeof timezoneC[key] === 'undefined') timezoneC[key] = 0
+      timezoneC[key] += timezoneB[key]
+    })
+    return timezoneC
   }
 </script>
