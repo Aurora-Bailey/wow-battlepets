@@ -132,7 +132,7 @@
             sa.ahname = this.auctionHouseNameLookup[sa.ahid]
           })
 
-          let price = item.match ? Math.floor(item.sellAt[item.sellIndex].competition * 0.99) : item.sellAt[item.sellIndex].price
+          let price = item.match ? Math.floor(item.sellAt[item.sellIndex].competition -1) : item.sellAt[item.sellIndex].price
           let undercut = item.match ? 'match' : item.sellAt[item.sellIndex].undercut
           list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image}, item.sellAt[item.sellIndex], {price, undercut}))
         })
