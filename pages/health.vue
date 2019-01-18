@@ -20,6 +20,7 @@
           <div>Overpriced: Percent of battle pet species being sold for less than 0% profit</div>
           <div>TTSV: Time to sell volume; Volume * Sell Rate</div>
           <div>Avg Sell: The average sell price of the last 1000 pets sold</div>
+          <div>Med Sold %: The median percent of our reccomended price that pets are selling for (last 1000)</div>
           <div>Sell Rate: The average time between each battle pet sell for the last 1000 sold</div>
           <div>Last Update: The last time this record was updated</div>
           <div>S:C:E: Sold Canceled Expired from the last 5000 battle pets</div>
@@ -40,6 +41,7 @@
               <td>{{ props.item.overPricedUniquePercent }}%</td>
               <td>{{ msToTimeString(props.item.ttsv) }}</td>
               <td><display-gold :value="props.item.sellPriceAvg"></display-gold></td>
+              <td>{{ parseInt(props.item.soldPercentMedian) }}</td>
               <td>{{msToTimeString(props.item.sellRate)}}</td>
               <td>{{msToTimeString(Date.now() - props.item.lastUpdate)}}</td>
               <td>
@@ -123,6 +125,7 @@
           {text: 'Overpriced', value: 'overPricedUniquePercent'},
           {text: 'TTSV', value: 'ttsv'},
           {text: 'Avg Sell', value: 'sellPriceAvg'},
+          {text: 'Med Sold %', value: 'soldPercentMedian'},
           {text: 'Sell Rate', value: 'sellRate'},
           {text: 'Last Update', value: 'lastUpdate'},
           {text: 'S:C:E', value: 'soldOfFiveThousand'},

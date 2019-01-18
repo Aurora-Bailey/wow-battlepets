@@ -14,7 +14,7 @@ class Health {
       liveMarketCap: 1,
       liveVolume: 1,
       sellPriceAvg: 1,
-      soldPercentAvg: 1,
+      soldPercentMedian: 1,
       sellRate: 1,
       lastUpdate: 1,
       soldOfFiveThousand: 1,
