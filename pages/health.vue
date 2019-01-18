@@ -9,10 +9,6 @@
         <v-card-text>
           <v-select :items="regions" v-model="region" label="Region"></v-select>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="requestData">Continue</v-btn>
-        </v-card-actions>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Realm Health</v-card-title>
@@ -134,11 +130,11 @@
         ]
       }
     },
+    async asyncData ({ params, $axios }) {
+      let { data } = await $axios.get(`http://54.244.210.52:3303/health`)
+      return {listingsRaw: data}
+    },
     methods: {
-      async requestData (event) {
-        this.listingsRaw = []
-        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/health`)
-      },
       msToTimeString (ms) {
         let str = ''
         let hours = Math.floor(ms / (1000*60*60))
