@@ -10,8 +10,10 @@ class Collection {
 
   async request (query) {
     query.rid = parseInt(query.rid)
-    query.canceled = parseInt(query.canceled) || 100 // number of canceled items to allow before skipping the pet
-    query.discount = parseInt(query.discount) || 1 // 0 to 1
+    if (query.canceled === '0') query.canceled = 0 // zero is falsy
+    else query.canceled = parseInt(query.canceled) || 100 // number of canceled items to allow before skipping the pet
+    if (query.discount === '0') query.discount = 0
+    else query.discount = parseInt(query.discount) || 1 // 0 to 1
     query.level = parseInt(query.level) || 1 // Level of pets to compare
     // only compare rare quality pets
     // get pets from blizzard
@@ -44,7 +46,7 @@ class Collection {
       }
     })
 
-    // filter unique and query.level
+    // filter unique and query.level/ quality
     let petSimpleObject = petsSimple.reduce((a, v) => {
       if (v.level === query.level && v.quality === 3) a[v.psid] = v
       return a
@@ -60,6 +62,7 @@ class Collection {
 
     // Auction house compare object
     let auctionHouseCompare = []
+    let overCanceled = 0
 
     for (var i = 0; i < 7; i++) {
       console.log(`Day: ${i}`)
@@ -94,7 +97,12 @@ class Collection {
           if (typeof sumNum[key] === 'undefined') sumNum[key] = {sum: 0, num: 0}
           Object.keys(soldCanceledAhid).forEach(key2 => {
             let soldCanceledAhidPsid = soldCanceledAhid[key2]
-            if (soldCanceledAhidPsid['canceled'] > query.canceled) return false
+            if (soldCanceledAhidPsid['canceled'] > query.canceled) {
+              overCanceled++
+              return false
+            } else if (soldCanceledAhidPsid['sold'] === 0) {
+              return false
+            }
             let itemPsid = parseInt(key2)
             sumNum[key]['num']++
             sumNum[key]['sum'] += petSimpleObject[itemPsid].price
@@ -108,7 +116,7 @@ class Collection {
 
     // get sold history
 
-    return {dev: auctionHouseCompare}
+    return {overCanceled, days: auctionHouseCompare}
   }
 }
 
