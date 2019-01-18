@@ -50,7 +50,7 @@ class Average {
     }, {})
     let buyableUniqueArray = Object.keys(buyableUnique).map(index => buyableUnique[index])
 
-    let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 1000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1}}).toArray()
+    let oldAuctionsSold = await db.collection('auctionsArchive').find({ahid: oldest.ahid, status: 'sold'}, {limit: 1000, sort: {lastSeen: -1}, projection: {_id: 0, buyout: 1, lastSeen: 1, percent: 1}}).toArray()
     if (oldAuctionsSold.length === 0) return false
 
     let oldAuctionsFiveThousand = await db.collection('auctionsArchive').find({ahid: oldest.ahid}, {limit: 5000, sort: {lastSeen: -1}, projection: {_id: 0, status: 1}}).toArray()
@@ -61,6 +61,7 @@ class Average {
       liveMarketCap: liveAuctions.reduce((a,v) => a + v.buyout, 0),
       liveVolume: liveAuctions.length,
       sellPriceAvg: this._mean(oldAuctionsSold.map(a => a.buyout)),
+      soldPercentAvg: this._mean(oldAuctionsSold.map(a => a.percent)),
       sellRate: this._spread(oldAuctionsSold.map(a => a.lastSeen)) / oldAuctionsSold.length,
       soldOfFiveThousand: oldAuctionsFiveThousand.filter(item => item.status === 'sold').length,
       expiredOfFiveThousand: oldAuctionsFiveThousand.filter(item => item.status === 'expired').length,
@@ -93,6 +94,7 @@ class Average {
         liveMarketCap: 0,
         liveVolume: 0,
         sellPriceAvg: 0,
+        soldPercentAvg: 0,
         sellRate: 0,
         soldOfFiveThousand: 0,
         expiredOfFiveThousand: 0,
