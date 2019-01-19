@@ -94,7 +94,8 @@
           { icon: 'person', title: 'Player', to: '/player' },
           { icon: 'person_add', title: 'Name', to: '/name' },
           { icon: 'local_hospital', title: 'AH Health', to: '/health' },
-          { icon: 'timer', title: 'Sell Time', to: '/selltime' }
+          { icon: 'timer', title: 'Sell Time', to: '/selltime' },
+          { icon: 'casino', title: 'Simulate Sell', to: '/simsell' }
         ],
         miniVariant: false,
         right: true,
