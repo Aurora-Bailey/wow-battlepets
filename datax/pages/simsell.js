@@ -64,6 +64,7 @@ class Collection {
     let auctionHouseCompare = []
     let overCanceled = 0
 
+    // loop over 7 days
     for (var i = 0; i < 7; i++) {
       console.log(`Day: ${i}`)
       await (async function () {
@@ -79,13 +80,12 @@ class Collection {
         let soldCanceled = {} // {ahid: {psid: {sold: 0, canceled: 0}, ...}, ...}
         auctionsArchive.forEach(item => {
           if (typeof petSimpleObject[item.petSpeciesId] === 'undefined') return false
+
+          if (typeof soldCanceled[item.ahid] === 'undefined') soldCanceled[item.ahid] = {}
+          if (typeof soldCanceled[item.ahid][item.petSpeciesId] === 'undefined') soldCanceled[item.ahid][item.petSpeciesId] = {sold: 0, canceled: 0}
           if (item.status === 'sold' && item.buyout > (petSimpleObject[item.petSpeciesId].price * query.discount)) {
-            if (typeof soldCanceled[item.ahid] === 'undefined') soldCanceled[item.ahid] = {}
-            if (typeof soldCanceled[item.ahid][item.petSpeciesId] === 'undefined') soldCanceled[item.ahid][item.petSpeciesId] = {sold: 0, canceled: 0}
             soldCanceled[item.ahid][item.petSpeciesId]['sold']++
           }else if (item.status === 'canceled') {
-            if (typeof soldCanceled[item.ahid] === 'undefined') soldCanceled[item.ahid] = {}
-            if (typeof soldCanceled[item.ahid][item.petSpeciesId] === 'undefined') soldCanceled[item.ahid][item.petSpeciesId] = {sold: 0, canceled: 0}
             soldCanceled[item.ahid][item.petSpeciesId]['canceled']++
           }
         })
@@ -109,14 +109,41 @@ class Collection {
           })
         })
 
-        auctionHouseCompare.push(sumNum)
+        let sumNumArray = Object.keys(sumNum).map(key => {return {sum: sumNum[key].sum, num: sumNum[key].num, ahid: key}})
+        sumNumArray.sort((a, b) => b.num - a.num)
+        sumNumArray.forEach((item, index) => { item.numRank = index + 1 })
+        sumNumArray.sort((a, b) => b.sum - a.sum)
+        sumNumArray.forEach((item, index) => { item.sumRank = index + 1 })
+
+        auctionHouseCompare.push(sumNumArray)
 
       })()
     }
 
-    // get sold history
+    // merge days into one average
+    let auctionHouseCompareAverage = {}
+    auctionHouseCompare.forEach(day => { // sum
+      day.forEach(item => {
+        if (typeof auctionHouseCompareAverage[item.ahid] === 'undefined') auctionHouseCompareAverage[item.ahid] = {ahid: item.ahid, sumAvg: 0, numAvg: 0, sumRankAvg: 0, numRankAvg: 0}
+        auctionHouseCompareAverage[item.ahid].sumAvg += item.sum
+        auctionHouseCompareAverage[item.ahid].numAvg += item.num
+        auctionHouseCompareAverage[item.ahid].sumRankAvg += item.sumRank
+        auctionHouseCompareAverage[item.ahid].numRankAvg += item.numRank
+      })
+    })
+    Object.keys(auctionHouseCompareAverage).forEach(key => { // divide by 7
+      auctionHouseCompareAverage[key].sumAvg = parseInt(auctionHouseCompareAverage[key].sumAvg / 7)
+      auctionHouseCompareAverage[key].numAvg = parseInt(auctionHouseCompareAverage[key].numAvg / 7)
+      auctionHouseCompareAverage[key].sumRankAvg = parseInt(auctionHouseCompareAverage[key].sumRankAvg / 7)
+      auctionHouseCompareAverage[key].numRankAvg = parseInt(auctionHouseCompareAverage[key].numRankAvg / 7)
+    })
+    let auctionHouseCompareAverageArray = Object.keys(auctionHouseCompareAverage).map(key => auctionHouseCompareAverage[key]) // to array
+    auctionHouseCompareAverageArray.sort((a, b) => b.numAvg - a.numAvg)
+    auctionHouseCompareAverageArray.forEach((item, index) => { item.numAvgRank = index + 1 })
+    auctionHouseCompareAverageArray.sort((a, b) => b.sumAvg - a.sumAvg)
+    auctionHouseCompareAverageArray.forEach((item, index) => { item.sumAvgRank = index + 1 })
 
-    return {overCanceled, days: auctionHouseCompare}
+    return {overCanceled, data: auctionHouseCompareAverageArray}
   }
 }
 
