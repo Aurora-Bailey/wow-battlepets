@@ -1,7 +1,6 @@
 const realm = require('./api/realm.js')
 const auction = require('./api/auction.js')
 const average = require('./api/average.js')
-const fs = require('fs')
 const chalk = require('chalk')
 const express = require('express')
 const app = express()
@@ -15,8 +14,7 @@ class Harvest {
     await realm.buildRealmDatabase()
     await auction.setupLoop()
     await average.setupLoop()
-    let lastCommitMessage = fs.readFileSync('../.git/COMMIT_EDITMSG')
-    return `Running! COMMIT_EDITMSG: "${lastCommitMessage}"`
+    return `Running!`
   }
 
   pause () {
@@ -39,11 +37,6 @@ app.use(function(req, res, next) {
   next()
 })
 
-app.get('/commitmsg', async function (req, res, next) {
-  let lastCommitMessage = fs.readFileSync('../.git/COMMIT_EDITMSG').toString()
-  try { res.json({lastCommitMessage}) }
-  catch (e) { next(e) }
-})
 app.get('/pause', async function (req, res, next) {
   try { res.json({status: harvest.pause()}) }
   catch (e) { next(e) }
