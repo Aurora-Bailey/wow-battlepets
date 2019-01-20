@@ -9,6 +9,8 @@ class Wow {
   constructor () {
     this.token = false
     this.token_expires = (Date.now()/1000) + 100000
+
+    this.auctionHouseLastModified = {}
   }
 
   async authenticate () {
@@ -47,10 +49,48 @@ class Wow {
   async getAuctions (ahid) {
     let auctionHouse = await lib.auctionHouse(ahid)
     let token = await this.authenticate()
-    console.log(chalk.cyan(`wow-api: `) + chalk.white(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`))
+    console.log(chalk.cyan(`wow-api: `) + chalk.red('(forced) ') + chalk.white(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`))
     let response_token = await axios.get(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`, {headers: {'Authorization': "bearer " + token}})
     let response_auction = await axios.get(response_token.data.files[0].url)
     return response_auction.data.auctions
+  }
+
+  async getAuctionsIfModified (ahid) {
+    let auctionHouse = await lib.auctionHouse(ahid)
+    let token = await this.authenticate()
+    // console.log(chalk.cyan(`wow-api: `) + chalk.white(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`))
+    let response_token = await axios.get(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`, {headers: {'Authorization': "bearer " + token}})
+    let {lastModified, url} = response_token.data.files[0]
+    // Return null if content has not been modified
+    let previousLastModified = await this._getAuctionHouseLastModified(ahid)
+    if (previousLastModified >= lastModified) return null // Auction has not changed since last request
+    // New content is available
+    console.log(chalk.cyan(`wow-api: `) + chalk.yellow(`${auctionHouse.regionTag} ${auctionHouse.slug} ${ahid}`) + ' ' + chalk.white(url))
+    let response_auction = await axios.get(url)
+    this._setAuctionHouseLastModified (ahid, lastModified)
+    return response_auction.data.auctions
+
+  }
+  async _getAuctionHouseLastModified (ahid) {
+    if (this.auctionHouseLastModified[ahid]) return this.auctionHouseLastModified[ahid]
+    let db = await kaisBattlepets.getDB()
+    let result = await db.collection('auctionHouseLastModified').findOne({ahid})
+    if (result === null) {
+      // datbase is empty, create a postdate random modifed date
+      let postDate = Date.now() + (1000*60*60*Math.random()) // 0 to 1 hours
+      await this._setAuctionHouseLastModified(ahid, postDate)
+      result = {ahid, lastModified: postDate} // fake response
+    }
+    this.auctionHouseLastModified[ahid] = result.lastModified
+    return result.lastModified
+  }
+  async _setAuctionHouseLastModified (ahid, lastModified) {
+    this.auctionHouseLastModified[ahid] = lastModified
+    let db = await kaisBattlepets.getDB()
+    await db.collection('auctionHouseLastModified').createIndex('ahid', {unique: true, name: 'ahid'})
+    await db.collection('auctionHouseLastModified').createIndex('lastModified', {name: 'lastModified'})
+    await db.collection('auctionHouseLastModified').updateOne({ahid}, {$set: {ahid, lastModified}}, {upsert: true})
+    return lastModified
   }
 
   async getPetInfo (petId) {

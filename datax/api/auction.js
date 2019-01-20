@@ -8,13 +8,30 @@ const LockedInterval = require('./lockedinterval.js')
 
 class Auction {
   constructor () {
-    this.crawlTimespan = 80 // minutes, stagger the request across time
-    this.crawlInterval = 90 // minutes, frequency of data pulls
+    this.crawlTimespan = 4 // minutes, stagger the request across time
+    this.crawlInterval = 5 // minutes, frequency of data pulls
 
     this.crawlTimespanMS = this.crawlTimespan * 60000 // in miliseconds
     this.crawlIntervalMS = this.crawlInterval * 60000 // in miliseconds
 
+    this.trackUpdateTime = {}
+    this.pending = 0
+
     this.deleteAfterXDays = 14
+    this.pause = false
+  }
+
+  setPauseTrue () {
+    this.pause = true
+  }
+  setPauseFalse () {
+    this.pause = false
+  }
+  getTrackUpdateTime () {
+    return this.trackUpdateTime
+  }
+  getPending () {
+    return this.pending
   }
 
   async setupLoop () {
@@ -23,20 +40,28 @@ class Auction {
     let crawlStagger = this.crawlTimespanMS / ahl.length
     ahl.forEach((ah, i) => {
       new LockedInterval(() => {
-        this._updateAuctionHouse(ah.ahid).catch(e => {
+        if (this.pause) return false
+        this.pending++
+        this._updateAuctionHouse(ah.ahid, false).catch(e => {
+          this.pending--
           console.log(chalk.green('// Update auction house failed! Trying a second time.'))
           console.error(e)
-          this._updateAuctionHouse(ah.ahid).catch(console.error)
-        })
+          this._updateAuctionHouse(ah.ahid, true).catch(console.error)
+        }).then(() => this.pending--)
       }, this.crawlIntervalMS, i * crawlStagger)
     })
     return true
   }
 
-  async _updateAuctionHouse (ahid) {
-    console.log(chalk.magenta('_updateAuctionHouse: ') + ahid)
+  async _updateAuctionHouse (ahid, forceUpdate) {
+    let startTime = Date.now()
     let db = await kaisBattlepets.getDB()
-    let auctionsLive = await wow.getAuctions(ahid)
+    let auctionsLive = null
+    if (forceUpdate) auctionsLive = await wow.getAuctions(ahid)
+    else auctionsLive = await wow.getAuctionsIfModified(ahid)
+    if (auctionsLive === null) return false
+    let wowApiTime = Date.now()
+    console.log(chalk.magenta('_updateAuctionHouse: ') + ahid)
     auctionsLive = auctionsLive.filter(auc => {
       return typeof auc.petSpeciesId !== 'undefined'
     })
@@ -47,6 +72,7 @@ class Auction {
       auction.aid = 'AUC' + md5(auction.auc + auction.owner).toUpperCase()
       auction.ahid = ahid
       auction.lastSeen = Date.now()
+      auction.firstSeen = Date.now()
     })
 
     // Identify old and new
@@ -86,7 +112,7 @@ class Auction {
       auction.live = auctionsLiveMap.includes(auction.aid)
       if (!auction.live) {
         // auction has been sold canceled or expired.
-        if (auction.lastSeen < Date.now() - (1000*60*60*2)) {
+        if (auction.lastSeen < Date.now() - (1000*60*60*2.1)) {
           auction.status = 'timeskip'
         } else if (auction.timeLeft === 'SHORT' || auction.timeLeft === 'MEDIUM') {
           auction.status = 'expired'
@@ -101,6 +127,8 @@ class Auction {
     let auctionsMissing = auctionsOld.filter(a => !a.live)
     let auctionsMissingAid = auctionsMissing.map(a => a.aid)
     let auctionsNew = auctionsLive.filter(a => a.new)
+
+    let processTime = Date.now()
 
     // Add to database
     await db.collection('auctionsLive').createIndex('aid', {unique: true, name: 'aid'})
@@ -129,6 +157,8 @@ class Auction {
     var daysMS = this.deleteAfterXDays * 24 * 60 * 60 * 1000
     await db.collection('auctionsArchive').deleteMany({lastSeen: {$lte: Date.now() - daysMS}})
     console.log(chalk.green('_updateAuctionHouse: ') + ahid)
+    let endTime = Date.now()
+    this.trackUpdateTime[ahid] = {request: wowApiTime - startTime, process: processTime - wowApiTime, datastore: endTime - processTime, found: auctionsNew.length, lost: auctionsMissing.length, time: Date.now()}
     return true
   }
 

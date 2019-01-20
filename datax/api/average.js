@@ -9,18 +9,29 @@ const LockedInterval = require('./lockedinterval.js')
 class Average {
   constructor () {
     this.daysToAverage = 14
+    this.pause = false
+  }
+
+  setPauseTrue () {
+    this.pause = true
+  }
+  setPauseFalse () {
+    this.pause = false
   }
 
   async setupLoop () {
     await this._updateAverageUpdate()
     new LockedInterval(() => {
+      if (this.pause) return false
       this._updateAverageUpdate().catch(console.error)
     }, 1000*60*60*6, 0)
     new LockedInterval(() => {
+      if (this.pause) return false
       this._updateOldest().catch(console.error)
     }, 1000*60, 0)
     await this._ensureAuctionHouseHealth()
     new LockedInterval(() => {
+      if (this.pause) return false
       this._updateAuctionHouseHealth().catch(console.error)
     }, 1000*60, 1000*30)
     return true
