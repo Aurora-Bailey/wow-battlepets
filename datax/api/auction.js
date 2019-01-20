@@ -28,7 +28,7 @@ class Auction {
     this.pause = false
   }
   getTrackUpdateTime () {
-    return this.trackUpdateTime
+    return Object.keys(this.trackUpdateTime).map(key => this.trackUpdateTime[key])
   }
   getPending () {
     return this.pending
@@ -43,7 +43,7 @@ class Auction {
         if (this.pause) return false
         this.pending++
         this._updateAuctionHouse(ah.ahid, false).catch(e => {
-          this.pending--
+          // this.pending--
           console.log(chalk.green('// Update auction house failed!')) //  Trying a second time.
           console.error(e)
           // this._updateAuctionHouse(ah.ahid, true).catch(console.error)
@@ -158,7 +158,7 @@ class Auction {
     await db.collection('auctionsArchive').deleteMany({lastSeen: {$lte: Date.now() - daysMS}})
     console.log(chalk.green('_updateAuctionHouse: ') + ahid)
     let endTime = Date.now()
-    this.trackUpdateTime[ahid] = {request: wowApiTime - startTime, process: processTime - wowApiTime, datastore: endTime - processTime, found: auctionsNew.length, lost: auctionsMissing.length, time: Date.now()}
+    this.trackUpdateTime[ahid] = {ahid: ahid, request: wowApiTime - startTime, process: processTime - wowApiTime, datastore: endTime - processTime, found: auctionsNew.length, lost: auctionsMissing.length, time: Date.now()}
     return true
   }
 

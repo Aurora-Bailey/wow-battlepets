@@ -46,7 +46,7 @@ app.get('/play', async function (req, res, next) {
   catch (e) { next(e) }
 })
 app.get('/timing', async function (req, res, next) {
-  try { res.json({data: auction.getTrackUpdateTime()}) }
+  try { res.json(auction.getTrackUpdateTime()) }
   catch (e) { next(e) }
 })
 app.get('/pending', async function (req, res, next) {
