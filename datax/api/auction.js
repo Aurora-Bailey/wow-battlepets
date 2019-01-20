@@ -44,9 +44,9 @@ class Auction {
         this.pending++
         this._updateAuctionHouse(ah.ahid, false).catch(e => {
           this.pending--
-          console.log(chalk.green('// Update auction house failed! Trying a second time.'))
+          console.log(chalk.green('// Update auction house failed!')) //  Trying a second time.
           console.error(e)
-          this._updateAuctionHouse(ah.ahid, true).catch(console.error)
+          // this._updateAuctionHouse(ah.ahid, true).catch(console.error)
         }).then(() => this.pending--)
       }, this.crawlIntervalMS, i * crawlStagger)
     })
