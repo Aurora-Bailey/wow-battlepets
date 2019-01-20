@@ -65,7 +65,8 @@ class Wow {
     let previousLastModified = await this._getAuctionHouseLastModified(ahid)
     if (previousLastModified >= lastModified) return null // Auction has not changed since last request
     // New content is available
-    console.log(chalk.cyan(`wow-api: `) + chalk.yellow(`${auctionHouse.regionTag} ${auctionHouse.slug} ${ahid}`) + ' ' + chalk.white(url))
+    console.log(chalk.cyan(`wow-api: `) + chalk.yellow(`${auctionHouse.regionTag} ${auctionHouse.slug} ${ahid} ${lastModified - previousLastModified}ms`))
+    console.log(chalk.cyan(`wow-api: `) + chalk.white(url))
     let response_auction = await axios.get(url)
     this._setAuctionHouseLastModified (ahid, lastModified)
     return response_auction.data.auctions
