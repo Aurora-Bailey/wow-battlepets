@@ -37,6 +37,7 @@
               <td>{{ props.item.found }}</td>
               <td>{{ props.item.lost }}</td>
               <td>{{ msToTimeString(Date.now() - props.item.time) }}</td>
+              <td>{{ props.item.error }}</td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -103,7 +104,8 @@
           {text: 'Store', value: 'datastore'},
           {text: 'Found', value: 'found'},
           {text: 'Lost', value: 'lost'},
-          {text: 'Time', value: 'time'}
+          {text: 'Time', value: 'time'},
+          {text: 'Error', value: 'error'}
         ]
       }
     },

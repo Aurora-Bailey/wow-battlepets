@@ -46,7 +46,7 @@ class Auction {
           // this.pending--
           console.log(chalk.green('// Update auction house failed!')) //  Trying a second time.
           console.error(e)
-          this.trackUpdateTime[ahid] = {error: `${e.config.url} ${e.response.status} ${e.response.statusText} ${e.response.data}`, ahid: ahid, request: wowApiTime - startTime, process: processTime - wowApiTime, datastore: endTime - processTime, found: auctionsNew.length, lost: auctionsMissing.length, time: Date.now()}
+          this.trackUpdateTime[ah.ahid] = {error: `${e.config.url} ${e.response.status} ${e.response.statusText} ${e.response.data}`, ahid: ah.ahid, request: 0, process: 0, datastore: 0, found: 0, lost: 0, time: Date.now()}
           // this._updateAuctionHouse(ah.ahid, true).catch(console.error)
         }).then(() => this.pending--)
       }, this.crawlIntervalMS, i * crawlStagger)
