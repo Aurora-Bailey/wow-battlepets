@@ -1,6 +1,7 @@
 const realm = require('./api/realm.js')
 const auction = require('./api/auction.js')
 const average = require('./api/average.js')
+const fs = require('fs')
 
 class Harvest {
   constructor () {
@@ -11,7 +12,8 @@ class Harvest {
     await realm.buildRealmDatabase()
     await auction.setupLoop()
     await average.setupLoop()
-    return 'Running!'
+    let lastCommitMessage = fs.readFileSync('../.git/COMMIT_EDITMSG')
+    return `Running! COMMIT_EDITMSG: "${lastCommitMessage}"`
   }
 }
 
