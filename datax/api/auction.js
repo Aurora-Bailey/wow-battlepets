@@ -46,6 +46,7 @@ class Auction {
           // this.pending--
           console.log(chalk.green('// Update auction house failed!')) //  Trying a second time.
           console.error(e)
+          this.trackUpdateTime[ahid] = {error: `${e.config.url} ${e.response.status} ${e.response.statusText} ${e.response.data}`, ahid: ahid, request: wowApiTime - startTime, process: processTime - wowApiTime, datastore: endTime - processTime, found: auctionsNew.length, lost: auctionsMissing.length, time: Date.now()}
           // this._updateAuctionHouse(ah.ahid, true).catch(console.error)
         }).then(() => this.pending--)
       }, this.crawlIntervalMS, i * crawlStagger)
@@ -112,7 +113,7 @@ class Auction {
       auction.live = auctionsLiveMap.includes(auction.aid)
       if (!auction.live) {
         // auction has been sold canceled or expired.
-        if (auction.lastSeen < Date.now() - (1000*60*60*2.1)) {
+        if (auction.lastSeen < Date.now() - (1000*60*60*2.5)) {
           auction.status = 'timeskip'
         } else if (auction.timeLeft === 'SHORT' || auction.timeLeft === 'MEDIUM') {
           auction.status = 'expired'

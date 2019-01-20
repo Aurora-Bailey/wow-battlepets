@@ -121,7 +121,6 @@
       async requestPending (event) {
         this.pending = 0
         let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/pending`)
-        console.log(p.data)
         this.pending = p.data
       },
       msToTimeString (ms) {
