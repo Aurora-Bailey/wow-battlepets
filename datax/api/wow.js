@@ -65,7 +65,7 @@ class Wow {
     let previousLastModified = await this._getAuctionHouseLastModified(ahid)
     if (previousLastModified >= lastModified) return null // Auction has not changed since last request
     // New content is available
-    console.log(chalk.cyan(`wow-api: `) + chalk.yellow(`${auctionHouse.regionTag} ${auctionHouse.slug} ${ahid} ${lastModified - previousLastModified}ms`))
+    console.log(chalk.cyan(`wow-api: `) + chalk.yellow(`${auctionHouse.regionTag} ${auctionHouse.slug} ${ahid} ${this._msToTimeString(lastModified - previousLastModified)}`))
     console.log(chalk.cyan(`wow-api: `) + chalk.white(url))
     let response_auction = await axios.get(url)
     this._setAuctionHouseLastModified (ahid, lastModified)
@@ -111,6 +111,20 @@ class Wow {
     console.log(chalk.cyan(`wow-api: `) + chalk.white(`https://${region.toLowerCase()}.api.blizzard.com/wow/character/${realm}/${character}?fields=pets`))
     let response = await axios.get(`https://${region.toLowerCase()}.api.blizzard.com/wow/character/${realm}/${character}?fields=pets`, {headers: {'Authorization': "bearer " + token}})
     return response.data.pets.collected
+  }
+
+  _msToTimeString (ms) {
+    let str = ''
+    let hours = Math.floor(ms / (1000*60*60))
+    ms = ms % (1000*60*60)
+    let minutes = Math.floor(ms / (1000*60))
+    ms = ms % (1000*60)
+    let seconds = Math.floor(ms / (1000))
+    ms = ms % (1000)
+    if (hours) return `${hours}h ${minutes}m ${seconds}s`
+    if (minutes) return `${minutes}m ${seconds}s`
+    if (seconds) return `${seconds}s`
+    return `${ms}ms`
   }
 }
 
