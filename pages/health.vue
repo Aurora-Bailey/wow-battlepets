@@ -133,8 +133,8 @@
         ]
       }
     },
-    async asyncData ({ params, $axios }) {
-      let { data } = await $axios.get(`http://54.244.210.52:3303/health`)
+    async asyncData ({ params, $axios, store }) {
+      let { data } = await $axios.get(`http://${store.state.server}/health`)
       return {listingsRaw: data}
     },
     methods: {

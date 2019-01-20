@@ -115,8 +115,8 @@
         autoMatch: 1
       }
     },
-    async asyncData ({ params, $axios }) {
-      let { data } = await $axios.get(`http://54.244.210.52:3303/selltime`)
+    async asyncData ({ params, $axios, store }) {
+      let { data } = await $axios.get(`http://${store.state.server}/selltime`)
       return { data }
     }
   }

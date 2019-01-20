@@ -95,6 +95,7 @@
           { icon: 'person_add', title: 'Name', to: '/name' },
           { icon: 'local_hospital', title: 'AH Health', to: '/health' },
           { icon: 'timer', title: 'Sell Time', to: '/selltime' },
+          { icon: 'cloud', title: 'Server', to: '/server' },
           { icon: 'casino', title: 'Simulate Sell', to: '/simsell' }
         ],
         miniVariant: false,
