@@ -69,6 +69,11 @@ class Wow {
       `Last Update:${chalk.yellow(this._msToTimeString(lastModified - previousLastModified))} Delay:${chalk.cyan(this._msToTimeString(Date.now() - lastModified))}`)
     console.log(chalk.cyan(`wow-api: `) + chalk.white(url))
     let response_auction = await axios.get(url)
+    if (!Array.isArray(response_auction.data.auctions)) {
+      console.log('not array')
+      throw {config: {url: ''}, response: {status: '', statusText: '', data: 'Not array.'}}
+      //{error: `${e.config.url} ${e.response.status} ${e.response.statusText} ${e.response.data}`
+    }
     this._setAuctionHouseLastModified (ahid, lastModified)
     return response_auction.data.auctions
 
