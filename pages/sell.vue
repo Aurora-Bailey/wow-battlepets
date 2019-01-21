@@ -50,6 +50,9 @@
       <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Settings</v-card-title>
         <v-card-text>
+          <div>
+            <v-btn color="success" @click="matchAll">Match All</v-btn>
+          </div>
           <v-radio-group label="Auction Length" row v-model="auctionLength">
             <v-radio :key="1" label="12H" :value="1"></v-radio>
             <v-radio :key="2" label="24H" :value="2"></v-radio>
@@ -183,6 +186,7 @@
               item.match = false
               item.selected = false
             }
+            if (item.sellAt[item.sellIndex].competition === 0) item.selected = true
           }
         })
       }
@@ -191,6 +195,13 @@
       async requestData (event) {
         this.listingsRaw = []
         this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/sell/${this.realm}/${this.character}/${this.sellRealmsString}`)
+      },
+      matchAll (event) {
+        this.listingsRaw.forEach(item => {
+          item.match = true
+          item.selected = true
+          if (item.sellAt[item.sellIndex].competition === 0) item.match = false
+        })
       },
       addSellRealm (event) {
         this.sellRealms.push({ahid: ''})
