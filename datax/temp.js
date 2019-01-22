@@ -19,7 +19,7 @@ class Test {
 
   async process (limit) {
     let db = await kaisBattlepets.getDB()
-    let documents = await db.collection('auctionsArchive').find({firstSeen: {$exists: false}}, {projection: {_id: 1, limit}}).toArray()
+    let documents = await db.collection('auctionsArchive').find({firstSeen: {$exists: false}}, {projection: {_id: 1}, limit}).toArray()
     console.log("data loaded.")
     for (var i = 0; i < documents.length; i++) {
       let singleDocument = documents[i]
