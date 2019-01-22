@@ -7,8 +7,19 @@ class Test {
   }
 
   async start () {
+    for (var i = 0; i < 100; i++) {
+      let limit = 100000
+      let done = await this.process(limit)
+      console.log(done, i)
+      await this._wait(5000)
+    }
+
+    return 'done'
+  }
+
+  async process (limit) {
     let db = await kaisBattlepets.getDB()
-    let documents = await db.collection('auctionsArchive').find({}, {projection: {_id: 1}}).toArray()
+    let documents = await db.collection('auctionsArchive').find({firstSeen: {$exists: false}}, {projection: {_id: 1, limit}}).toArray()
     for (var i = 0; i < documents.length; i++) {
       let singleDocument = documents[i]
       let timestamp = this._timeFromObjectId(singleDocument._id.toString())

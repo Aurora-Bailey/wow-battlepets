@@ -45,3 +45,11 @@ $ npm run generate
 
 
 For detailed explanation on how things work, check out the [Nuxt.js](https://github.com/nuxt/nuxt.js) and [Vuetify.js](https://vuetifyjs.com/) documentation.
+
+
+pet average
+pet live
+pet archive
+sell simulator
+shrinkage
+undercut detection
