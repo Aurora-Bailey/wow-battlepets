@@ -1,3 +1,5 @@
+const util = require('util')
+const exec = util.promisify(require('child_process').exec)
 const realm = require('./api/realm.js')
 const auction = require('./api/auction.js')
 const average = require('./api/average.js')
@@ -52,6 +54,19 @@ app.get('/timing', async function (req, res, next) {
 app.get('/pending', async function (req, res, next) {
   try { res.json({data: auction.getPending()}) }
   catch (e) { next(e) }
+})
+app.get('/gitpull', async function (req, res, next) {
+  try {
+    const { stdout, stderr } = await exec('git pull')
+    res.json({stdout, stderr})
+  } catch (e) { next(e) }
+})
+app.get('/restart', async function (req, res, next) {
+  try {
+    const { server_stdout, server_stderr } = await exec('pm2 restart server')
+    const { harvest_stdout, harvest_stderr } = await exec('pm2 restart harvest')
+    res.json({ harvest_stdout, harvest_stderr, server_stdout, server_stderr } )
+  } catch (e) { next(e) }
 })
 
 app.get('*', async function (req, res, next) {
