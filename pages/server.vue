@@ -10,6 +10,13 @@
           <v-btn color="primary" @click="requestPause">Pause</v-btn>
           <v-btn color="primary" @click="requestPlay">Play</v-btn>
           <v-btn color="primary" @click="requestPending">Pending {{pending}}</v-btn>
+          <v-btn color="primary" @click="requestGitPull">Git Pull</v-btn>
+          <v-btn color="primary" @click="requestRestart">Restart</v-btn>
+        </v-card-text>
+      </v-card>
+      <v-card class="mt-5" v-if="consoleOut !== ''">
+        <v-card-text>
+          {{ consoleOut }}
         </v-card-text>
       </v-card>
       <v-card class="mt-5">
@@ -93,6 +100,7 @@
     },
     data () {
       return {
+        consoleOut: '',
         pending: 0,
         region: 'US',
         listingsRaw: [],
@@ -124,6 +132,16 @@
         this.pending = 0
         let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/pending`)
         this.pending = p.data
+      },
+      async requestGitPull (event) {
+        this.consoleOut = ''
+        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/gitpull`)
+        this.consoleOut = p.data
+      },
+      async requestRestart (event) {
+        this.consoleOut = ''
+        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/restart`)
+        this.consoleOut = p.data
       },
       msToTimeString (ms) {
         let str = ''
