@@ -69,6 +69,12 @@ app.get('/restart', async function (req, res, next) {
     const harvest = await exec('pm2 restart harvest')
   } catch (e) { next(e) }
 })
+app.get('/pm2list', async function (req, res, next) {
+  try {
+    const { stdout, stderr } = await exec('pm2 list')
+    res.json({ data: stdout + stderr } )
+  } catch (e) { next(e) }
+})
 app.get('/version', async function (req, res, next) {
   try {
     res.json({ data: "0.1.24.17"} )
