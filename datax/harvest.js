@@ -71,7 +71,7 @@ app.get('/restart', async function (req, res, next) {
 })
 app.get('/version', async function (req, res, next) {
   try {
-    res.json({ data: "1.14.8"} )
+    res.json({ data: "0.1.24.17"} )
   } catch (e) { next(e) }
 })
 
