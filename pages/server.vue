@@ -4,24 +4,6 @@
       <div class="text-xs-center">
         <img src="/v.png" alt="Vuetify.js" class="mb-5" />
       </div>
-      <v-card>
-        <v-card-title class="headline">Commands</v-card-title>
-        <v-card-text>
-          <v-btn color="warning" @click="requestPause">Pause</v-btn>
-          <v-btn color="primary" @click="requestPlay">Play</v-btn>
-          <v-btn color="primary" @click="requestPending">Pending</v-btn>
-          <v-btn color="primary" @click="requestPm2list">Pm2 List</v-btn>
-          <v-btn color="primary" @click="requestVersion">Version</v-btn>
-          <v-btn color="primary" @click="requestGitPull">Git Pull</v-btn>
-          <v-btn color="error" @click="requestRestart">Restart</v-btn>
-        </v-card-text>
-      </v-card>
-      <v-card class="mt-5" v-if="consoleOut !== ''">
-        <v-card-title class="headline">Console Log</v-card-title>
-        <v-card-text>
-          <code>{{ consoleOut }}</code>
-        </v-card-text>
-      </v-card>
       <v-card class="mt-5">
         <v-card-title class="headline">Server Region</v-card-title>
         <v-card-text>
@@ -103,8 +85,6 @@
     },
     data () {
       return {
-        consoleOut: '',
-        pending: 0,
         region: 'US',
         listingsRaw: [],
         pagination: {descending: false, page: 0, rowsPerPage: -1, sortBy: 'sellRate'},
@@ -125,37 +105,6 @@
       return {listingsRaw: data}
     },
     methods: {
-      async requestPause (event) {
-        this.$axios.$get(`http://${this.$store.state.harvestServer}/pause`)
-      },
-      async requestPlay (event) {
-        this.$axios.$get(`http://${this.$store.state.harvestServer}/play`)
-      },
-      async requestPending (event) {
-        this.consoleOut = ''
-        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/pending`)
-        this.consoleOut = 'Pending: ' + p.data
-      },
-      async requestGitPull (event) {
-        this.consoleOut = ''
-        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/gitpull`)
-        this.consoleOut = p.data
-      },
-      async requestRestart (event) {
-        this.consoleOut = ''
-        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/restart`)
-        this.consoleOut = p.data
-      },
-      async requestVersion (event) {
-        this.consoleOut = ''
-        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/version`)
-        this.consoleOut = p.data
-      },
-      async requestPm2list (event) {
-        this.consoleOut = ''
-        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/pm2list`)
-        this.consoleOut = p.data
-      },
       msToTimeString (ms) {
         let str = ''
         let hours = Math.floor(ms / (1000*60*60))

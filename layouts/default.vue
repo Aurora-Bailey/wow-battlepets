@@ -96,6 +96,7 @@
           { icon: 'local_hospital', title: 'AH Health', to: '/health' },
           { icon: 'timer', title: 'Sell Time', to: '/selltime' },
           { icon: 'cloud', title: 'Server', to: '/server' },
+          { icon: 'cloud_upload', title: 'Server Commands', to: '/servercommands' },
           { icon: 'casino', title: 'Simulate Sell', to: '/simsell' }
         ],
         miniVariant: false,
