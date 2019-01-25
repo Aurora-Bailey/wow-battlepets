@@ -65,7 +65,7 @@ app.get('/restart', async function (req, res, next) {
   try {
     const { server_stdout, server_stderr } = await exec('pm2 restart server')
     const { harvest_stdout, harvest_stderr } = await exec('pm2 restart harvest')
-    res.json({ data: harvest_stdout + harvest_stderr + ' ' + server_stdout + server_stderr } )
+    res.json({ data: harvest_stdout + harvest_stderr + '\n' + server_stdout + server_stderr } )
   } catch (e) { next(e) }
 })
 app.get('/version', async function (req, res, next) {
