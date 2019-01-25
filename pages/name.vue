@@ -8,6 +8,8 @@
         <v-card-title class="headline">View listing across all realms</v-card-title>
         <v-card-text>
           <v-text-field label="Character Name" v-model="character"></v-text-field>
+          <v-text-field label="Hours" v-model="hours"></v-text-field>
+          <v-text-field label="Status" v-model="status"></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -101,6 +103,8 @@
     },
     data () {
       return {
+        status: '',
+        hours: 48,
         character: 'Vitrachi',
         listingsRaw: [],
         pagination: {descending: true, page: 0, rowsPerPage: -1, sortBy: 'lastSeen'},
@@ -120,7 +124,7 @@
     methods: {
       async requestData (event) {
         this.listingsRaw = []
-        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/name/${this.character}`)
+        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/name/${this.character}?hours=${this.hours}${this.status === ''? '':'&status='+this.status}`)
       },
       msToTimeString (ms) {
         let str = ''
