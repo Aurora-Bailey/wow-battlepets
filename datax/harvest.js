@@ -64,8 +64,9 @@ app.get('/gitpull', async function (req, res, next) {
 app.get('/restart', async function (req, res, next) {
   try {
     const server = await exec('pm2 restart server')
+    res.json({ data: server.stdout + server.stderr } )
+    // turns out killing the server also kills this task lol...
     const harvest = await exec('pm2 restart harvest')
-    res.json({ data: harvest.stdout + harvest.stderr + '\n' + server.stdout + server.stderr } )
   } catch (e) { next(e) }
 })
 app.get('/version', async function (req, res, next) {
