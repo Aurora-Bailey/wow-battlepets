@@ -68,6 +68,11 @@ app.get('/restart', async function (req, res, next) {
     res.json({ data: harvest_stdout + harvest_stderr + ' ' + server_stdout + server_stderr } )
   } catch (e) { next(e) }
 })
+app.get('/version', async function (req, res, next) {
+  try {
+    res.json({ data: "1.14.8"} )
+  } catch (e) { next(e) }
+})
 
 app.get('*', async function (req, res, next) {
   res.status(404).send("page not found")

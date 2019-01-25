@@ -9,14 +9,16 @@
         <v-card-text>
           <v-btn color="primary" @click="requestPause">Pause</v-btn>
           <v-btn color="primary" @click="requestPlay">Play</v-btn>
-          <v-btn color="primary" @click="requestPending">Pending {{pending}}</v-btn>
+          <v-btn color="primary" @click="requestPending">Pending</v-btn>
+          <v-btn color="primary" @click="requestVersion">Version</v-btn>
           <v-btn color="primary" @click="requestGitPull">Git Pull</v-btn>
-          <v-btn color="primary" @click="requestRestart">Restart</v-btn>
+          <v-btn color="warning" @click="requestRestart">Restart</v-btn>
         </v-card-text>
       </v-card>
       <v-card class="mt-5" v-if="consoleOut !== ''">
+        <v-card-title class="headline">Console Log</v-card-title>
         <v-card-text>
-          {{ consoleOut }}
+          <code>{{ consoleOut }}</code>
         </v-card-text>
       </v-card>
       <v-card class="mt-5">
@@ -129,9 +131,9 @@
         this.$axios.$get(`http://${this.$store.state.harvestServer}/play`)
       },
       async requestPending (event) {
-        this.pending = 0
+        this.consoleOut = ''
         let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/pending`)
-        this.pending = p.data
+        this.consoleOut = 'Pending: ' + p.data
       },
       async requestGitPull (event) {
         this.consoleOut = ''
@@ -141,6 +143,11 @@
       async requestRestart (event) {
         this.consoleOut = ''
         let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/restart`)
+        this.consoleOut = p.data
+      },
+      async requestVersion (event) {
+        this.consoleOut = ''
+        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/version`)
         this.consoleOut = p.data
       },
       msToTimeString (ms) {
