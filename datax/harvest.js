@@ -63,9 +63,9 @@ app.get('/gitpull', async function (req, res, next) {
 })
 app.get('/restart', async function (req, res, next) {
   try {
-    const { server_stdout, server_stderr } = await exec('pm2 restart server')
-    const { harvest_stdout, harvest_stderr } = await exec('pm2 restart harvest')
-    res.json({ data: harvest_stdout + harvest_stderr + '\n' + server_stdout + server_stderr } )
+    const server = await exec('pm2 restart server')
+    const harvest = await exec('pm2 restart harvest')
+    res.json({ data: harvest.stdout + harvest.stderr + '\n' + server.stdout + server.stderr } )
   } catch (e) { next(e) }
 })
 app.get('/version', async function (req, res, next) {
