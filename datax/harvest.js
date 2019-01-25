@@ -58,14 +58,14 @@ app.get('/pending', async function (req, res, next) {
 app.get('/gitpull', async function (req, res, next) {
   try {
     const { stdout, stderr } = await exec('git pull')
-    res.json({stdout, stderr})
+    res.json({data: stdout + stderr})
   } catch (e) { next(e) }
 })
 app.get('/restart', async function (req, res, next) {
   try {
     const { server_stdout, server_stderr } = await exec('pm2 restart server')
     const { harvest_stdout, harvest_stderr } = await exec('pm2 restart harvest')
-    res.json({ harvest_stdout, harvest_stderr, server_stdout, server_stderr } )
+    res.json({ data: harvest_stdout + harvest_stderr + ' ' + server_stdout + server_stderr } )
   } catch (e) { next(e) }
 })
 
