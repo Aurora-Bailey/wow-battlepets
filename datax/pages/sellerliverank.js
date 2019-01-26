@@ -33,7 +33,7 @@ class SellerLiveRank {
       let ahids = Object.keys(playerName)
 
       Object.keys(playerName).forEach(index => {
-        let ahid = playerName[realmIndex]
+        let ahid = playerName[index]
         pets += ahid.pets
         buyout += ahid.buyout
         level += ahid.level
