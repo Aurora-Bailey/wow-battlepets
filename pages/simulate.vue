@@ -56,6 +56,7 @@
               <td><display-gold :value="props.item.sellBuyGold"></display-gold></td>
               <td><display-gold :value="props.item.sellBuyGoldLeft"></display-gold></td>
               <td><display-gold :value="props.item.sellGold"></display-gold></td>
+              <td>{{ props.item.gain }}%</td>
             </template>
           </v-data-table>
         </v-card-text>
@@ -132,7 +133,8 @@
           {text: 'Name', value: 'ahid'},
           {text: 'Sell Buy', value: 'sellBuyGold'},
           {text: 'Sell Buy Leftover', value: 'sellBuyGoldLeft'},
-          {text: 'Sell', value: 'sellGold'}
+          {text: 'Sell', value: 'sellGold'},
+          {text: 'Gain', value: 'gain'}
         ]
       }
     },

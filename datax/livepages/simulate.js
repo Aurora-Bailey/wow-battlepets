@@ -147,14 +147,17 @@ class Simulate {
           buyStartTime = endTime
         }
 
-
+        let sellGold = parseInt(this._mean(byCycle.map(item => item.goldMade)))
+        let sellBuyGold = parseInt(this._mean(byCycle.map(item => item.boughtPotential)))
+        let sellBuyGoldLeft = parseInt(this._mean(byCycle.map(item => item.goldLeft)))
 
         send({
           m: 'ahstats',
           ahid,
-          sellGold: parseInt(this._mean(byCycle.map(item => item.goldMade))),
-          sellBuyGold: parseInt(this._mean(byCycle.map(item => item.boughtPotential))),
-          sellBuyGoldLeft: parseInt(this._mean(byCycle.map(item => item.goldLeft))),
+          sellGold,
+          sellBuyGold,
+          sellBuyGoldLeft,
+          gain: ((sellBuyGold + sellBuyGoldLeft) / sellGold) * 100
           d: byCycle
         })
 
