@@ -9,6 +9,9 @@ class Simulate {
   }
 
   async process (query, send) {
+    Object.keys(query).forEach(key => {
+      if (!isNaN(query[key])) query[key] = parseInt(query[key])
+    })
 
     // {psid: {psid, level, price, sold, quality}}
     send({m: 'state', d: 'pulling users pets from blizzard'})
