@@ -75,4 +75,10 @@ app.get('/selltime', async function (req, res, next) {
   catch (e) { next(e) }
 })
 
+const sellerliverank = require('./pages/sellerliverank.js')
+app.get('/sellerliverank', async function (req, res, next) {
+  try { res.json(await sellerliverank.request(Object.assign(req.params, req.query))) }
+  catch (e) { next(e) }
+})
+
 app.listen(3303)
