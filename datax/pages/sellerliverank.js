@@ -51,7 +51,14 @@ class SellerLiveRank {
       }
     })
 
+    // sort
     groupByOwnerArray.sort((a, b) => b.buyouttotal - a.buyouttotal)
+
+    // inject rank
+    groupByOwnerArray = groupByOwnerArray.map((item, index) => {
+      item.rank = index + 1
+      return item
+    })
 
     return {data: groupByOwnerArray.slice(0, 1000)}
   }
