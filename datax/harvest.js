@@ -61,12 +61,23 @@ app.get('/gitpull', async function (req, res, next) {
     res.json({data: stdout + stderr})
   } catch (e) { next(e) }
 })
-app.get('/restart', async function (req, res, next) {
+app.get('/restart/harvest', async function (req, res, next) {
+  try {
+    res.json({ data: 'restarting harvest server...' } )
+    // turns out killing the server also kills this task lol...
+    const harvest = await exec('pm2 restart harvest')
+  } catch (e) { next(e) }
+})
+app.get('/restart/server', async function (req, res, next) {
   try {
     const server = await exec('pm2 restart server')
     res.json({ data: server.stdout + server.stderr } )
-    // turns out killing the server also kills this task lol...
-    const harvest = await exec('pm2 restart harvest')
+  } catch (e) { next(e) }
+})
+app.get('/restart/live', async function (req, res, next) {
+  try {
+    const live = await exec('pm2 restart live')
+    res.json({ data: live.stdout + live.stderr } )
   } catch (e) { next(e) }
 })
 app.get('/pm2list', async function (req, res, next) {

@@ -13,7 +13,9 @@
           <v-btn color="primary" @click="requestPm2list">Pm2 List</v-btn>
           <v-btn color="primary" @click="requestVersion">Version</v-btn>
           <v-btn color="primary" @click="requestGitPull">Git Pull</v-btn>
-          <v-btn color="error" @click="requestRestart">Restart</v-btn>
+          <v-btn color="error" @click="requestRestartHarvest">Restart Harvest</v-btn>
+          <v-btn color="error" @click="requestRestartServer">Restart Server</v-btn>
+          <v-btn color="error" @click="requestRestartLive">Restart Live</v-btn>
         </v-card-text>
       </v-card>
       <v-card class="mt-5" v-if="consoleOut !== ''">
@@ -94,9 +96,19 @@
         let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/gitpull`)
         this.consoleOut = p.data
       },
-      async requestRestart (event) {
+      async requestRestartHarvest (event) {
         this.consoleOut = ''
-        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/restart`)
+        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/restart/harvest`)
+        this.consoleOut = p.data
+      },
+      async requestRestartServer (event) {
+        this.consoleOut = ''
+        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/restart/server`)
+        this.consoleOut = p.data
+      },
+      async requestRestartLive (event) {
+        this.consoleOut = ''
+        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/restart/live`)
         this.consoleOut = p.data
       },
       async requestVersion (event) {
