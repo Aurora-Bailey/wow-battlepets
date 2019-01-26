@@ -157,7 +157,7 @@ class Simulate {
           sellGold,
           sellBuyGold,
           sellBuyGoldLeft,
-          gain: ((sellBuyGold + sellBuyGoldLeft) / sellGold) * 100,
+          gain: parseInt(((sellBuyGold + sellBuyGoldLeft) / sellGold) * 100),
           d: byCycle
         })
 
