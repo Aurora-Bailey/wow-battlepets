@@ -12,6 +12,12 @@ class SellerLiveRank {
     let db = await kaisBattlepets.getDB()
     let realm = await db.collection('auctionsLive').find({}, {projection: {_id: 0, ahid: 1, owner: 1, ownerRealm: 1, buyout: 1, petLevel: 1, petQualityId: 1, median: 1}}).toArray()
 
+    let regionLookup = await db.collection('auctionHouseIndex').find({}, {projection: {_id: 0, ahid: 1, regionTag: 1}}).toArray()
+    regionLookup = regionLookup.reduce((a, v) => {
+      a[v.ahid] = v.regionTag
+      return a
+    }, {})
+
     // {owner: {ahid: {pets, buyout, level, quality}}}
     let groupByOwner = realm.reduce((a, v) => {
       if (typeof a[v.owner] === 'undefined') a[v.owner] = {}
@@ -36,10 +42,9 @@ class SellerLiveRank {
       let regions = {}
 
       ahids.forEach(ahid => {
-        let ah = await lib.auctionHouse(ahid)
-        regions[ah.regionTag] = true
+        let r = regionLookup[ahid]
+        regions[r] = true
       })
-
 
       Object.keys(playerName).forEach(index => {
         let ahid = playerName[index]
