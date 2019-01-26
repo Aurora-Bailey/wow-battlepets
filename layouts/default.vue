@@ -97,7 +97,8 @@
           { icon: 'timer', title: 'Sell Time', to: '/selltime' },
           { icon: 'cloud', title: 'Server', to: '/server' },
           { icon: 'cloud_upload', title: 'Server Commands', to: '/servercommands' },
-          { icon: 'casino', title: 'Simulate Sell', to: '/simsell' }
+          { icon: 'casino', title: 'Simulate Sell', to: '/simsell' },
+          { icon: 'casino', title: 'Simulate', to: '/simulate' }
         ],
         miniVariant: false,
         right: true,

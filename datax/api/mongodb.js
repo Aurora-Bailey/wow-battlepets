@@ -2,7 +2,7 @@ const {MongoClient} = require('mongodb')
 
 class Mongo {
   constructor(dbName) {
-    this._url = 'mongodb://localhost:27017' //'mongodb://54.244.210.52:27017'//
+    this._url = 'mongodb://54.244.210.52:27017'//'mongodb://localhost:27017' //
     this._dbName = dbName
     this._db = false
     this._client = false
