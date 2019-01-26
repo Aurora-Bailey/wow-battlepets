@@ -18,13 +18,14 @@
             <template slot="items" slot-scope="props">
               <td>{{ props.item.rank }}</td>
               <td>{{ props.item.owner }}</td>
-              <td>{{ auctionHouseRegionLookup[props.item.ahids[0]] }}</td>
+              <td>{{ props.item.regions }}</td>
               <td>{{ props.item.pets }}</td>
               <td><display-gold :value="props.item.buyouttotal"></display-gold></td>
               <td><display-gold :value="props.item.buyoutavg"></display-gold></td>
+              <td><display-gold :value="props.item.mediantotal"></display-gold></td>
               <td>{{ props.item.level }}</td>
               <td>{{ props.item.quality }}</td>
-              <td>{{ props.item.ahids.length }}</td>
+              <td>{{ props.item.ahids }}</td>
               <!-- <td><v-chip v-for="ahid in props.item.ahids">{{ auctionHouseNameLookup[ahid] }}</v-chip></td> -->
             </template>
           </v-data-table>
@@ -73,10 +74,11 @@
         listingsHeadings: [
           {text: 'Rank', value: 'rank'},
           {text: 'Name', value: 'owner'},
-          {text: 'Region', value: 'rank'},
+          {text: 'Regions', value: 'regions'},
           {text: 'Pets', value: 'pets'},
           {text: 'Total', value: 'buyouttotal'},
           {text: 'Average', value: 'buyoutavg'},
+          {text: 'My Estimate', value: 'mediantotal'},
           {text: 'Level', value: 'level'},
           {text: 'Quality', value: 'quality'},
           {text: 'Auction Houses', value: 'ahids'}

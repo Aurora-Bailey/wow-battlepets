@@ -69,7 +69,7 @@ class SellerLiveRank {
     })
 
     // sort
-    groupByOwnerArray.sort((a, b) => b.median - a.median)
+    groupByOwnerArray.sort((a, b) => b.mediantotal - a.mediantotal)
 
     // inject rank
     groupByOwnerArray = groupByOwnerArray.map((item, index) => {
