@@ -38,6 +38,8 @@ class Simulate {
             startTime += 60000
           }
 
+          send({m: 'state', d: 'processing ' + ahid + ' stage 1'})
+
           // Inject our auctions
           let auctionCycles = 0
           let sellStartTime = startTime
@@ -72,6 +74,8 @@ class Simulate {
             return a
           }, {})
 
+          send({m: 'state', d: 'processing ' + ahid + ' stage 2'})
+
           // loop through item by item
           let ourItemsSold = []
           Object.keys(splitByPsid).forEach(key => {
@@ -96,6 +100,8 @@ class Simulate {
               }
             })
           })
+
+          send({m: 'state', d: 'processing ' + ahid + ' stage 3'})
 
           // by cycle
           let byCycle = new Array(auctionCycles)
