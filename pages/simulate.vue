@@ -73,7 +73,7 @@
 
   export default {
     mounted () {
-      socket = new WebSocket('ws://localhost:3305')
+      socket = new WebSocket(`ws://${this.$store.state.liveServer}`)
       socket.json = (obj) => { socket.send(JSON.stringify(obj)) }
       socket.addEventListener('message', (event) => {
         let obj = JSON.parse(event.data)

@@ -75,16 +75,4 @@ app.get('/selltime', async function (req, res, next) {
   catch (e) { next(e) }
 })
 
-const simsell = require('./pages/simsell.js')
-app.get('/simsell/:rid/:name', async function (req, res, next) {
-  try { res.json(await simsell.request(Object.assign(req.params, req.query))) }
-  catch (e) { next(e) }
-})
-
-const simsellbuy = require('./pages/simsellbuy.js')
-app.get('/simsellbuy/:rid/:name', async function (req, res, next) {
-  try { res.json(await simsellbuy.request(Object.assign(req.params, req.query))) }
-  catch (e) { next(e) }
-})
-
 app.listen(3303)

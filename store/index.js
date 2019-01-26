@@ -3,7 +3,8 @@ export const state = () => ({
   realmIndex: {},
   petIndex: {},
   server: '54.244.210.52:3303',
-  harvestServer: '54.244.210.52:3304'
+  harvestServer: '54.244.210.52:3304',
+  liveServer: '54.244.210.52:3305'
 })
 
 export const mutations = {
