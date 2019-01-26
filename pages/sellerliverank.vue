@@ -1,6 +1,6 @@
 <template>
   <v-layout column justify-center align-center>
-    <v-flex xs12 sm8 md6>
+    <v-flex xs12 sm12 md12>
       <div class="text-xs-center">
         <img src="/v.png" alt="Vuetify.js" class="mb-5" />
       </div>
@@ -20,13 +20,12 @@
               <td>{{ props.item.owner }}</td>
               <td>{{ props.item.regions }}</td>
               <td>{{ props.item.pets }}</td>
+              <td><display-gold :value="props.item.mediantotal"></display-gold></td>
               <td><display-gold :value="props.item.buyouttotal"></display-gold></td>
               <td><display-gold :value="props.item.buyoutavg"></display-gold></td>
-              <td><display-gold :value="props.item.mediantotal"></display-gold></td>
               <td>{{ props.item.level }}</td>
               <td>{{ props.item.quality }}</td>
               <td>{{ props.item.ahids }}</td>
-              <!-- <td><v-chip v-for="ahid in props.item.ahids">{{ auctionHouseNameLookup[ahid] }}</v-chip></td> -->
             </template>
           </v-data-table>
         </v-card-text>
@@ -76,12 +75,12 @@
           {text: 'Name', value: 'owner'},
           {text: 'Regions', value: 'regions'},
           {text: 'Pets', value: 'pets'},
+          {text: 'My Estimate', value: 'mediantotal'},
           {text: 'Total', value: 'buyouttotal'},
           {text: 'Average', value: 'buyoutavg'},
-          {text: 'My Estimate', value: 'mediantotal'},
           {text: 'Level', value: 'level'},
           {text: 'Quality', value: 'quality'},
-          {text: 'Auction Houses', value: 'ahids'}
+          {text: 'AHs', value: 'ahids'}
         ]
       }
     },
