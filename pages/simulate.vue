@@ -140,6 +140,7 @@
     },
     methods: {
       async sendRequest (event) {
+        this.listings = []
         let {realm, character, sellMaxDiscount, buyMinProfit, buyMaxBuyout, buyMinSellRate, buyPetLevel, buyMinMarkup, buyRareOnly, auctionLength, startTimeGMT} = this
         socket.json({m: 'simulate', realm, character, sellMaxDiscount, buyMinProfit, buyMaxBuyout, buyMinSellRate, buyPetLevel, buyMinMarkup, buyRareOnly, auctionLength, startTimeGMT})
       }

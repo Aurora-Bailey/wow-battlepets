@@ -20,150 +20,154 @@ class Simulate {
 
     for (var index in auctionHouseList) {
       let ahid = auctionHouseList[index]
-      await (async () => {
-        // Pullin auction data
-        send({m: 'state', d: 'pulling data for ' + ahid})
-        let archive = await this.pullAuctionArchive(query, ahid)
-        send({m: 'state', d: 'processing ' + ahid})
+      try {
+        await (async () => {
+          // Pullin auction data
+          send({m: 'state', d: 'pulling data for ' + ahid})
+          let archive = await this.pullAuctionArchive(query, ahid)
+          send({m: 'state', d: 'processing ' + ahid})
 
-        // Get first lastSeen timestamp
-        let startTime = archive.reduce((a, v) => {
-          if (v.lastSeen < a) a = v.lastSeen
-          return a
-        }, Date.now())
+          // Get first lastSeen timestamp
+          let startTime = archive.reduce((a, v) => {
+            if (v.lastSeen < a) a = v.lastSeen
+            return a
+          }, Date.now())
 
-        // Loop to correct start time
-        while(parseInt((startTime % (1000*60*60*24)) / (1000*60*60)) !== query.startTimeGMT) {
-          startTime += 60000
-        }
+          // Loop to correct start time
+          while(parseInt((startTime % (1000*60*60*24)) / (1000*60*60)) !== query.startTimeGMT) {
+            startTime += 60000
+          }
 
-        // Inject our auctions
-        let auctionCycles = 0
-        let sellStartTime = startTime
-        while(sellStartTime + (1000*60*60*query.auctionLength) < Date.now()) {
-          let endTime = sellStartTime + (1000*60*60*query.auctionLength)
-          Object.keys(petsUnique).forEach(index => {
-            let pet = petsUnique[index]
-            archive.push({
-              buyout: pet.price,
-              petSpeciesId: pet.psid,
-              petLevel: pet.level,
-              petQualityId: pet.quality,
-              lastSeen: endTime,
-              firstSeen: sellStartTime,
-              status: "simsell",
-              cycle: auctionCycles,
-              profit: 1,
-              percent: 1,
-              soldNum: 1,
-              median: 1
+          // Inject our auctions
+          let auctionCycles = 0
+          let sellStartTime = startTime
+          while(sellStartTime + (1000*60*60*query.auctionLength) < Date.now()) {
+            let endTime = sellStartTime + (1000*60*60*query.auctionLength)
+            Object.keys(petsUnique).forEach(index => {
+              let pet = petsUnique[index]
+              archive.push({
+                buyout: pet.price,
+                petSpeciesId: pet.psid,
+                petLevel: pet.level,
+                petQualityId: pet.quality,
+                lastSeen: endTime,
+                firstSeen: sellStartTime,
+                status: "simsell",
+                cycle: auctionCycles,
+                profit: 1,
+                percent: 1,
+                soldNum: 1,
+                median: 1
+              })
+            })
+            auctionCycles++
+            sellStartTime = endTime
+          }
+
+          // {psid-level-quality: [buyout, petSpeciesId, petLevel, petQualityId, lastSeen, firstSeen, status]}
+          let splitByPsid = archive.reduce((a, v) => {
+            let key = '' + v.petSpeciesId + '-' + v.petLevel + '-' + v.petQualityId
+            if (typeof a[key] === 'undefined') a[key] = []
+            a[key].push(v)
+            return a
+          }, {})
+
+          // loop through item by item
+          let ourItemsSold = []
+          Object.keys(splitByPsid).forEach(key => {
+            let group = splitByPsid[key]
+            group.forEach(soldAuction => {
+              if (soldAuction.status === 'sold') {
+                group.forEach(checkAuction => {
+                  if (checkAuction.status !== 'simsell') return false // skip not our auction
+                  if (checkAuction.firstSeen > soldAuction.firstSeen
+                    && checkAuction.lastSeen > soldAuction.lastSeen
+                    && checkAuction.firstSeen < soldAuction.lastSeen) {
+                    let minPrice = checkAuction.buyout * (query.sellMaxDiscount/100)
+                    if (soldAuction.buyout > minPrice) {
+                      let price = Math.min(soldAuction.buyout, checkAuction.buyout)
+                      soldAuction.status = 'booted'
+                      checkAuction.status = 'simsold'
+                      checkAuction.simbuyout = price
+                      ourItemsSold.push(checkAuction)
+                    }
+                  }
+                })
+              }
             })
           })
-          auctionCycles++
-          sellStartTime = endTime
-        }
 
-        // {psid-level-quality: [buyout, petSpeciesId, petLevel, petQualityId, lastSeen, firstSeen, status]}
-        let splitByPsid = archive.reduce((a, v) => {
-          let key = '' + v.petSpeciesId + '-' + v.petLevel + '-' + v.petQualityId
-          if (typeof a[key] === 'undefined') a[key] = []
-          a[key].push(v)
-          return a
-        }, {})
-
-        // loop through item by item
-        let ourItemsSold = []
-        Object.keys(splitByPsid).forEach(key => {
-          let group = splitByPsid[key]
-          group.forEach(soldAuction => {
-            if (soldAuction.status === 'sold') {
-              group.forEach(checkAuction => {
-                if (checkAuction.status !== 'simsell') return false // skip not our auction
-                if (checkAuction.firstSeen > soldAuction.firstSeen
-                  && checkAuction.lastSeen > soldAuction.lastSeen
-                  && checkAuction.firstSeen < soldAuction.lastSeen) {
-                  let minPrice = checkAuction.buyout * (query.sellMaxDiscount/100)
-                  if (soldAuction.buyout > minPrice) {
-                    let price = Math.min(soldAuction.buyout, checkAuction.buyout)
-                    soldAuction.status = 'booted'
-                    checkAuction.status = 'simsold'
-                    checkAuction.simbuyout = price
-                    ourItemsSold.push(checkAuction)
-                  }
-                }
-              })
-            }
-          })
-        })
-
-        // by cycle
-        let byCycle = new Array(auctionCycles)
-        for (var i = 0; i < byCycle.length; i++) {
-          byCycle[i] = {goldMade: 0, itemsSold: 0, goldLeft:0, itemsBought: 0, boughtPotential: 0}
-        }
-        ourItemsSold.forEach(item => {
-          byCycle[item.cycle].goldMade += item.simbuyout
-          byCycle[item.cycle].itemsSold++ //.push(item)
-        })
-
-        // buy pets
-        let buyLoopCount = 0
-        let buyStartTime = startTime
-        while(buyStartTime + (1000*60*60*query.auctionLength) < Date.now()) {
-          let endTime = buyStartTime + (1000*60*60*query.auctionLength)
-          let availableAuctions = archive.filter(item => item.firstSeen < endTime && item.lastSeen > endTime)
-          let preferedAuctions = availableAuctions.filter(item => {
-            let buy = true
-            if (item.profit <= query.buyMinProfit * 10000) buy = false
-            if (item.percent <= query.buyMinMarkup) buy = false
-            if (item.buyout >= query.buyMaxBuyout * 10000) buy = false
-            if (item.soldNum <= query.buyMinSellRate) buy = false
-            if (item.petLevel != query.buyPetLevel) buy = false
-            let quality = query.buyRareOnly ? 3:1
-            if (item.petQualityId < quality) buy = false
-            return buy
+          // by cycle
+          let byCycle = new Array(auctionCycles)
+          for (var i = 0; i < byCycle.length; i++) {
+            byCycle[i] = {goldMade: 0, itemsSold: 0, goldLeft:0, itemsBought: 0, boughtPotential: 0}
+          }
+          ourItemsSold.forEach(item => {
+            byCycle[item.cycle].goldMade += item.simbuyout
+            byCycle[item.cycle].itemsSold++ //.push(item)
           })
 
-          // sort by hightest percent profit
-          preferedAuctions.sort((a,b) => b.percent - a.percent)
+          // buy pets
+          let buyLoopCount = 0
+          let buyStartTime = startTime
+          while(buyStartTime + (1000*60*60*query.auctionLength) < Date.now()) {
+            let endTime = buyStartTime + (1000*60*60*query.auctionLength)
+            let availableAuctions = archive.filter(item => item.firstSeen < endTime && item.lastSeen > endTime)
+            let preferedAuctions = availableAuctions.filter(item => {
+              let buy = true
+              if (item.profit <= query.buyMinProfit * 10000) buy = false
+              if (item.percent <= query.buyMinMarkup) buy = false
+              if (item.buyout >= query.buyMaxBuyout * 10000) buy = false
+              if (item.soldNum <= query.buyMinSellRate) buy = false
+              if (item.petLevel != query.buyPetLevel) buy = false
+              let quality = query.buyRareOnly ? 3:1
+              if (item.petQualityId < quality) buy = false
+              return buy
+            })
+
+            // sort by hightest percent profit
+            preferedAuctions.sort((a,b) => b.percent - a.percent)
 
 
-          // buy items
-          let goldThisCycle = byCycle[buyLoopCount].goldMade
-          let goldPotential = 0
-          let itemsBought = []
-          preferedAuctions.forEach(item => {
-            if (item.buyout < goldThisCycle) {
-              itemsBought.push(item)
-              goldThisCycle -= item.buyout
-              goldPotential += item.median
-            }
+            // buy items
+            let goldThisCycle = byCycle[buyLoopCount].goldMade
+            let goldPotential = 0
+            let itemsBought = []
+            preferedAuctions.forEach(item => {
+              if (item.buyout < goldThisCycle) {
+                itemsBought.push(item)
+                goldThisCycle -= item.buyout
+                goldPotential += item.median
+              }
+            })
+            byCycle[buyLoopCount].goldLeft = goldThisCycle
+            byCycle[buyLoopCount].boughtPotential = goldPotential
+            byCycle[buyLoopCount].itemsBought = itemsBought.length
+
+            buyLoopCount++
+            buyStartTime = endTime
+          }
+
+          let sellGold = parseInt(this._mean(byCycle.map(item => item.goldMade)))
+          let sellBuyGold = parseInt(this._mean(byCycle.map(item => item.boughtPotential)))
+          let sellBuyGoldLeft = parseInt(this._mean(byCycle.map(item => item.goldLeft)))
+
+          send({
+            m: 'ahstats',
+            ahid,
+            sellGold,
+            sellBuyGold,
+            sellBuyGoldLeft,
+            gain: parseInt(((sellBuyGold + sellBuyGoldLeft) / sellGold) * 100),
+            d: byCycle
           })
-          byCycle[buyLoopCount].goldLeft = goldThisCycle
-          byCycle[buyLoopCount].boughtPotential = goldPotential
-          byCycle[buyLoopCount].itemsBought = itemsBought.length
 
-          buyLoopCount++
-          buyStartTime = endTime
-        }
+          //
 
-        let sellGold = parseInt(this._mean(byCycle.map(item => item.goldMade)))
-        let sellBuyGold = parseInt(this._mean(byCycle.map(item => item.boughtPotential)))
-        let sellBuyGoldLeft = parseInt(this._mean(byCycle.map(item => item.goldLeft)))
-
-        send({
-          m: 'ahstats',
-          ahid,
-          sellGold,
-          sellBuyGold,
-          sellBuyGoldLeft,
-          gain: parseInt(((sellBuyGold + sellBuyGoldLeft) / sellGold) * 100),
-          d: byCycle
-        })
-
-        //
-
-      })()
+        })()
+      } catch (e) {
+        send({m: 'state', d: 'error'})
+      }
     }
 
     return true
