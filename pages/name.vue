@@ -35,6 +35,7 @@
               <td>{{ props.item.petLevel }}</td>
               <td><display-gold :value="props.item.buyout"></display-gold></td>
               <td><display-gold :value="props.item.median"></display-gold></td>
+              <td>{{ props.item.soldNum }}</td>
               <td>{{ msToTimeString(Date.now() - props.item.lastSeen) }}</td>
               <td :class="props.item.status">{{ props.item.status }}</td>
               <td>{{ props.item.timeLeft }}</td>
@@ -115,6 +116,7 @@
           {text: 'Level', value: 'petLevel'},
           {text: 'Buyout', value: 'buyout'},
           {text: 'Suggested Price', value: 'median'},
+          {text: 'Sell Rate', value: 'soldNum'},
           {text: 'Last Seen', value: 'lastSeen'},
           {text: 'Status', value: 'status'},
           {text: 'Time Left', value: 'timeLeft'}
