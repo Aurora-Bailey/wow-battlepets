@@ -12,9 +12,11 @@ class Collection {
     query.rareonly = query.rareonly === "false" ? false : true
     query.level = query.level || 1
     query.level = query.level == 25 ? 25:1
-    query.maxbuyout = parseInt(query.maxbuyout) || 10000000000
-    query.minprofit = parseInt(query.minprofit) || 1000000
-    query.minmarkup = parseInt(query.minmarkup) || 50
+    query.maxbuyout = parseInt(query.maxbuyout) || 0
+    query.minprofit = parseInt(query.minprofit) || 0
+    query.minmarkup = parseInt(query.minmarkup) || 0
+    query.minsellrate = parseInt(query.minsellrate) || 0
+    query.maxmultiples = parseInt(query.maxmultiples) || 0
     query.rid = parseInt(query.rid)
     let buyAt = query.buyat.split('-')
     let db = await kaisBattlepets.getDB()
@@ -47,10 +49,19 @@ class Collection {
     for (var psid in petList) {
       if (!petList.hasOwnProperty(psid)) continue
       let numOwned = petList[psid]
-      if (numOwned === 3) continue
-      let buyable = await db.collection('auctionsLive').find({petSpeciesId: parseInt(psid), ahid: {$in: buyAt}, petLevel: query.level, petQualityId: query.rareonly ? 3 : {$exists: true}, buyout: {$lte: query.maxbuyout, $ne: 0}, profit: {$gte: query.minprofit}, percent: {$gte: query.minmarkup}}, {
+      if (numOwned >= query.maxmultiples) continue
+      let buyable = await db.collection('auctionsLive').find({
+        petSpeciesId: parseInt(psid),
+        ahid: {$in: buyAt},
+        soldNum: {$gte: query.minsellrate},
+        petLevel: query.level,
+        petQualityId: query.rareonly ? 3 : {$exists: true},
+        buyout: {$lte: query.maxbuyout, $ne: 0},
+        profit: {$gte: query.minprofit},
+        percent: {$gte: query.minmarkup}
+      }, {
         sort: {buyout: 1},
-        limit: 3 - numOwned,
+        limit: query.maxmultiples - numOwned,
         projection: {_id: 0, ahid: 1, auc: 1, buyout: 1, median: 1, percent: 1, profit: 1, soldNum: 1, petQualityId: 1, petLevel: 1, petBreedId: 1, petSpeciesId: 1}
       }).toArray()
       buyable.forEach(b => { returnList.push(b) })
