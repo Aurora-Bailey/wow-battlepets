@@ -8,9 +8,11 @@
         <v-card-title class="headline">Buy pets from many realms</v-card-title>
         <v-card-text>
           <h3>Buy options</h3>
+          <v-text-field label="Maximum Multiples" v-model="maxMultiples"></v-text-field>
           <v-text-field label="Maximum Buyout (gold)" v-model="maxBuyout"></v-text-field>
           <v-text-field label="Minimum Profit (gold)" v-model="minProfit"></v-text-field>
           <v-text-field label="Minimum Markup (percent)" v-model="minMarkup"></v-text-field>
+          <v-text-field label="Minimum Sell Rate" v-model="minSellRate"></v-text-field>
           <v-radio-group label="Pet Level" row v-model="level">
             <v-radio :key="1" label="1" :value="1"></v-radio>
             <v-radio :key="25" label="25" :value="25"></v-radio>
@@ -136,9 +138,11 @@
     },
     data () {
       return {
-        maxBuyout: 5000,
-        minProfit: 500,
+        maxBuyout: 1000000,
+        minProfit: 1500,
         minMarkup: 100,
+        minSellRate: 200,
+        maxMultiples: 3,
         rareonly: true,
         level: 1,
         region: 'US',
@@ -164,7 +168,7 @@
     methods: {
       async requestData (event) {
         this.listingsRaw = []
-        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/multibuy/${this.realm}/${this.character}/${this.buyRealmsString}?maxbuyout=${this.maxBuyout * 10000}&minprofit=${this.minProfit * 10000}&minmarkup=${this.minMarkup}&rareonly=${this.rareonly}&level=${this.level}`)
+        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/multibuy/${this.realm}/${this.character}/${this.buyRealmsString}?maxbuyout=${this.maxBuyout * 10000}&minprofit=${this.minProfit * 10000}&minmarkup=${this.minMarkup}&rareonly=${this.rareonly}&level=${this.level}&minsellrate=${this.minSellRate}&maxmultiples=${this.maxMultiples}`)
       },
       addBuyRealm (event) {
         this.buyRealms.push({ahid: ''})
