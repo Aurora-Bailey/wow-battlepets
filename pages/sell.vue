@@ -64,6 +64,8 @@
             <v-radio :key="3" label="80%" :value="0.8"></v-radio>
             <v-radio :key="4" label="70%" :value="0.7"></v-radio>
             <v-radio :key="5" label="60%" :value="0.6"></v-radio>
+            <v-radio :key="6" label="50%" :value="0.5"></v-radio>
+            <v-radio :key="7" label="40%" :value="0.4"></v-radio>
           </v-radio-group>
         </v-card-text>
       </v-card>
