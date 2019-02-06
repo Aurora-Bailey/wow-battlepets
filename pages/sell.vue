@@ -67,6 +67,7 @@
             <v-radio :key="6" label="50%" :value="0.5"></v-radio>
             <v-radio :key="7" label="40%" :value="0.4"></v-radio>
           </v-radio-group>
+          <v-text-field label="Discount (1-0)" v-model="discount"></v-text-field>
         </v-card-text>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
@@ -137,7 +138,7 @@
             sa.ahname = this.auctionHouseNameLookup[sa.ahid]
           })
 
-          let price = item.match ? Math.floor(item.sellAt[item.sellIndex].competition -1) : item.sellAt[item.sellIndex].price
+          let price = item.match ? Math.floor(item.sellAt[item.sellIndex].competition * 0.99) : item.sellAt[item.sellIndex].price * parseFloat(this.discount)
           let undercut = item.match ? 'match' : item.sellAt[item.sellIndex].undercut
           list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image}, item.sellAt[item.sellIndex], {price, undercut}))
         })
@@ -156,6 +157,7 @@
     },
     data () {
       return {
+        discount: 1,
         autoMatch: 1,
         auctionLength: 3,
         region: 'US',
