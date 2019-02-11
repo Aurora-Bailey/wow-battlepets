@@ -53,3 +53,4 @@ pet archive
 sell simulator
 shrinkage
 undercut detection
+push from linux
