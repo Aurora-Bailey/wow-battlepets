@@ -16,6 +16,7 @@
           <v-btn color="error" @click="requestRestartHarvest">Restart Harvest</v-btn>
           <v-btn color="error" @click="requestRestartServer">Restart Server</v-btn>
           <v-btn color="error" @click="requestRestartLive">Restart Live</v-btn>
+          <v-btn color="error" @click="requestRestartNuxt">Restart Nuxt</v-btn>
         </v-card-text>
       </v-card>
       <v-card class="mt-5" v-if="consoleOut !== ''">
@@ -109,6 +110,11 @@
       async requestRestartLive (event) {
         this.consoleOut = ''
         let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/restart/live`)
+        this.consoleOut = p.data
+      },
+      async requestRestartNuxt (event) {
+        this.consoleOut = ''
+        let p = await this.$axios.$get(`http://${this.$store.state.harvestServer}/restart/nuxt`)
         this.consoleOut = p.data
       },
       async requestVersion (event) {

@@ -80,6 +80,13 @@ app.get('/restart/live', async function (req, res, next) {
     res.json({ data: live.stdout + live.stderr } )
   } catch (e) { next(e) }
 })
+app.get('/restart/nuxt', async function (req, res, next) {
+  try {
+    const build = await exex('npm run build')
+    const nuxt = await exec('pm2 restart nuxt')
+    res.json({ data: nuxt.stdout + nuxt.stderr } )
+  } catch (e) { next(e) }
+})
 app.get('/pm2list', async function (req, res, next) {
   try {
     const { stdout, stderr } = await exec('pm2 list')
