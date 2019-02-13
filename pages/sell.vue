@@ -140,7 +140,7 @@
 
           let defaultPrice = Math.floor((item.sellAt[item.sellIndex].price * parseFloat(this.discount))/10000)*10000
           let matchPrice = Math.floor((Math.floor(item.sellAt[item.sellIndex].competition * 0.999))/10000)*10000
-          if (defaultPrice > matchPrice) defaultPrice = matchPrice + 10
+          if (defaultPrice > matchPrice && matchPrice > 1) defaultPrice = matchPrice + 10
 
           let price = item.match ? matchPrice + 5 : defaultPrice
           let undercut = item.match ? 'match' : item.sellAt[item.sellIndex].competition > price
