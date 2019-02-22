@@ -22,7 +22,7 @@
           <v-btn color="primary" @click="requestData">Continue</v-btn>
         </v-card-actions>
       </v-card>
-      <v-card v-if="listings.length > 0" class="mt-5">
+      <v-card class="mt-5">
         <v-card-text>
           {{ state }}
         </v-card-text>
