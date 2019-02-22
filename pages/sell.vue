@@ -99,6 +99,8 @@
 </style>
 
 <script>
+  var socket = null
+
   export default {
     mounted () {
       socket = new WebSocket(`ws://${this.$store.state.liveServer}`)
