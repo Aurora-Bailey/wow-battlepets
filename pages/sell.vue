@@ -110,7 +110,7 @@
         if (obj.m === 'state') {
           this.state = obj.d
         } else if (obj.m === 'response') {
-          this.listings = obj.d
+          this.listingsRaw = obj.d
         }
       });
     },
