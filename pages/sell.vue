@@ -23,6 +23,11 @@
         </v-card-actions>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
+        <v-card-text>
+          {{ state }}
+        </v-card-text>
+      </v-card>
+      <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Sell collection </v-card-title>
         <v-card-text>
           <v-data-table
@@ -95,6 +100,21 @@
 
 <script>
   export default {
+    mounted () {
+      socket = new WebSocket(`ws://${this.$store.state.liveServer}`)
+      socket.json = (obj) => { socket.send(JSON.stringify(obj)) }
+      socket.addEventListener('message', (event) => {
+        let obj = JSON.parse(event.data)
+        if (obj.m === 'state') {
+          this.state = obj.d
+        } else if (obj.m === 'response') {
+          this.listings = obj.d
+        }
+      });
+    },
+    beforeDestroy () {
+      if (socket && socket.close) socket.close()
+    },
     computed: {
       realmIndex () { return this.$store.state.realmIndex },
       petIndex () { return this.$store.state.petIndex },
@@ -161,6 +181,7 @@
     },
     data () {
       return {
+        state: '',
         discount: 1,
         autoMatch: 1,
         auctionLength: 3,
@@ -202,7 +223,7 @@
     methods: {
       async requestData (event) {
         this.listingsRaw = []
-        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/sell/${this.realm}/${this.character}/${this.sellRealmsString}`)
+        socket.json({m: 'sell', rid: this.realm, name: this.character, sellat: this.sellRealmsString})
       },
       matchAll (event) {
         this.listingsRaw.forEach(item => {
