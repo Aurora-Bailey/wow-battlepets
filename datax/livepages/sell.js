@@ -21,7 +21,7 @@ class Sell {
     for (var petIndex in pets) {
       let pet = pets[petIndex]
       pet.sellAt = []
-      send({m: 'state', d: 'processing psid: ' + pet.stats.speciesId})
+      send({m: 'state', d: 'processing psid: ' + pet.stats.speciesId + `(${petIndex})/${pets.length}`})
       for (var sellIndex in sellAt) {
         let ahid = sellAt[sellIndex]
 
