@@ -225,7 +225,7 @@
     methods: {
       async requestData (event) {
         this.listingsRaw = []
-        socket.json({m: 'multibuy', rid: this.realm, name: this.character, buyat: this.buyRealmsString, maxbuyout: this.maxBuyout, minprofit: this.minProfit, minmarkup: this.minMarkup, rareonly: this.rareonly, level: this.level, minsellrate: this.minSellRate, maxmultiples: this.maxMultiples})
+        socket.json({m: 'multibuy', rid: this.realm, name: this.character, buyat: this.buyRealmsString, maxbuyout: this.maxBuyout * 10000, minprofit: this.minProfit * 10000, minmarkup: this.minMarkup, rareonly: this.rareonly, level: this.level, minsellrate: this.minSellRate, maxmultiples: this.maxMultiples})
       },
       addBuyRealm (event) {
         this.buyRealms.push({ahid: ''})
