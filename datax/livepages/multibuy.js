@@ -20,7 +20,6 @@ class MultiBuy {
     query.rid = parseInt(query.rid)
     let buyAt = query.buyat.split('-')
     let db = await kaisBattlepets.getDB()
-    send({m: 'state', d: JSON.stringify(query)})
 
     // get pets from blizzard
     send({m: 'state', d: 'get user pets from blizzard'})
@@ -56,16 +55,6 @@ class MultiBuy {
       let numOwned = petList[psid]
       if (numOwned >= query.maxmultiples) continue
       send({m: 'state', d: `processing pet: ${psid} (${count}/${petInfo.length})`})
-      send({m: 'state', d: JSON.stringify({
-        petSpeciesId: parseInt(psid),
-        ahid: {$in: buyAt},
-        soldNum: {$gte: query.minsellrate},
-        petLevel: query.level,
-        petQualityId: query.rareonly ? 3 : {$exists: true},
-        buyout: {$lte: query.maxbuyout, $ne: 0},
-        profit: {$gte: query.minprofit},
-        percent: {$gte: query.minmarkup}
-      })})
       let buyable = await db.collection('auctionsLive').find({
         petSpeciesId: parseInt(psid),
         ahid: {$in: buyAt},
