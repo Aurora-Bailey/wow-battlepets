@@ -27,6 +27,15 @@
             <v-icon slot="append-outer" @click="removeBuyRealm(index)">cancel</v-icon>
           </v-autocomplete>
           <v-btn color="success" @click="addBuyRealm" small fab><v-icon>add</v-icon></v-btn>
+          <v-btn color="primary" @click="showIngest = !showIngest" small fab><v-icon>view_agenda</v-icon></v-btn>
+          <div v-if="showIngest">
+            <v-textarea
+            outline
+            label="New line separated list"
+            v-model="ingestRealmsText"
+            ></v-textarea>
+            <v-btn color="primary" @click="ingestRealms"><v-icon>send</v-icon></v-btn>
+          </div>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -150,6 +159,8 @@
     },
     data () {
       return {
+        ingestRealmsText: '',
+        showIngest: false,
         maxBuyout: 1000000,
         minProfit: 1500,
         minMarkup: 100,
@@ -188,6 +199,17 @@
       },
       removeBuyRealm (index) {
         this.buyRealms.splice(index, 1)
+      },
+      ingestRealms () {
+        let realms = this.ingestRealmsText.replace(/\n/gi, '-').split('-')
+        realms.forEach(realm => {
+          for (var index in this.realmListAHID) {
+            if (this.realmListAHID[index].text === realm && this.realmListAHID[index].region === this.region) {
+              this.buyRealms.push({ahid: this.realmListAHID[index].value})
+            }
+          }
+        })
+        this.ingestRealmsText = ''
       }
     }
   }
