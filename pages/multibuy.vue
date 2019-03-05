@@ -50,7 +50,7 @@
               <td>{{ props.item.ahname }}</td>
               <td>{{ props.item.petLevel }}</td>
               <td><display-gold :value="props.item.buyout"></display-gold></td>
-              <td><display-gold :value="props.item.median"></display-gold></td>
+              <td><display-gold :value="props.item.suggestedPrice"></display-gold></td>
               <td><display-gold :value="props.item.profit"></display-gold></td>
               <td>{{ Math.round(props.item.percent) }}%</td>
               <td>{{ props.item.soldNum }}</td>
@@ -60,15 +60,24 @@
         </v-card-text>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
-        <v-card-title class="headline">Wow commands </v-card-title>
+        <v-card-title class="headline">Settings</v-card-title>
         <v-card-text>
-          <div v-for="list in listingsByRealm">
-            <h2>{{list[0].ahname}}</h2>
-            <br>
-            <span v-for="item in list" v-if="item.buy">{{`QueryAuctionItems("${item.name}") print("${item.name} ${item.petLevel} ${item.buyout/10000}")|`}}</span>
-            <br>
-            <br>
-          </div>
+          <v-text-field label="Selling Discount" v-model="sellDiscount"></v-text-field>
+        </v-card-text>
+      </v-card>
+      <v-card v-if="listings.length > 0" class="mt-4"  v-for="list in listingsByRealm">
+        <v-card-title class="headline">{{list[0].ahname}}</v-card-title>
+        <v-card-text>
+          Buyout: <display-gold :value="list.reduce((a, v) => { if (v.buy) a += v.buyout; return a;}, 0)"></display-gold>
+          <br>
+          Profit: <display-gold :value="list.reduce((a, v) => { if (v.buy) a += v.profit; return a;}, 0)"></display-gold>
+          <br>
+          Num: {{list.length}}
+          <br>
+          <br>
+          <hr>
+          <br>
+          <code><span v-for="item in list" v-if="item.buy">{{`QueryAuctionItems("${item.name}") print("${item.name} ${item.petLevel} ${item.buyout/10000}")|`}}</span></code>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -96,6 +105,7 @@
           ahLookup[realm.ahid].push(realm.name)
         })
         Object.keys(ahLookup).forEach(index => {
+          ahLookup[index].sort()
           ahLookup[index] = ahLookup[index].join(', ')
         })
         return ahLookup
@@ -131,7 +141,9 @@
         this.listingsRaw.forEach(item => {
           let petInfo = this.petIndex[item.petSpeciesId]
           let ahname = this.auctionHouseNameLookup[item.ahid]
-          list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image, ahname}))
+          let suggestedPrice = Math.round(item.median * parseFloat(this.sellDiscount))
+          let profit = (suggestedPrice * 0.95)  - item.buyout
+          list.push(Object.assign(item, {name: petInfo.name, image: petInfo.image, ahname, suggestedPrice, profit}))
         })
         return list
       }
@@ -142,6 +154,7 @@
         minProfit: 1500,
         minMarkup: 100,
         minSellRate: 200,
+        sellDiscount: 1,
         maxMultiples: 3,
         rareonly: true,
         level: 1,
@@ -157,7 +170,7 @@
           {text: 'Realm', value: 'ahname'},
           {text: 'Level', value: 'petLevel'},
           {text: 'Buyout', value: 'buyout'},
-          {text: 'Suggested Price', value: 'median'},
+          {text: 'Suggested Price', value: 'suggestedPrice'},
           {text: 'Profit', value: 'profit'},
           {text: 'Markup', value: 'percent'},
           {text: 'Sold', value: 'soldNum'},
