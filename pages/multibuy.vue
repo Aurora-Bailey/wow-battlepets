@@ -42,6 +42,11 @@
           <v-btn color="primary" @click="requestData">Continue</v-btn>
         </v-card-actions>
       </v-card>
+      <v-card class="mt-5">
+        <v-card-text>
+          {{ state }}
+        </v-card-text>
+      </v-card>
       <v-card v-if="listings.length > 0" class="mt-5">
         <v-card-title class="headline">Live auction listings</v-card-title>
         <v-card-text>
@@ -107,7 +112,24 @@
 </style>
 
 <script>
+  var socket = null
+
   export default {
+    mounted () {
+      socket = new WebSocket(`ws://${this.$store.state.liveServer}`)
+      socket.json = (obj) => { socket.send(JSON.stringify(obj)) }
+      socket.addEventListener('message', (event) => {
+        let obj = JSON.parse(event.data)
+        if (obj.m === 'state') {
+          this.state = obj.d
+        } else if (obj.m === 'response') {
+          this.listingsRaw = obj.d
+        }
+      });
+    },
+    beforeDestroy () {
+      if (socket && socket.close) socket.close()
+    },
     computed: {
       realmIndex () { return this.$store.state.realmIndex },
       petIndex () { return this.$store.state.petIndex },
@@ -171,6 +193,7 @@
       return {
         ingestRealmsText: '',
         showIngest: false,
+        state: '',
         maxBuyout: 1000000,
         minProfit: 1500,
         minMarkup: 100,
@@ -202,7 +225,7 @@
     methods: {
       async requestData (event) {
         this.listingsRaw = []
-        this.listingsRaw = await this.$axios.$get(`http://${this.$store.state.server}/multibuy/${this.realm}/${this.character}/${this.buyRealmsString}?maxbuyout=${this.maxBuyout * 10000}&minprofit=${this.minProfit * 10000}&minmarkup=${this.minMarkup}&rareonly=${this.rareonly}&level=${this.level}&minsellrate=${this.minSellRate}&maxmultiples=${this.maxMultiples}`)
+        socket.json({m: 'multibuy', rid: this.realm, name: this.character, buyat: this.buyRealmsString, maxbuyout: this.maxBuyout, minprofit: this.minProfit, minmarkup: this.minMarkup, rareonly: this.rareonly, level: this.level, minsellrate: this.minSellRate, maxmultiples: this.maxMultiples})
       },
       addBuyRealm (event) {
         this.buyRealms.push({ahid: ''})

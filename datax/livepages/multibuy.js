@@ -20,6 +20,7 @@ class MultiBuy {
     query.rid = parseInt(query.rid)
     let buyAt = query.buyat.split('-')
     let db = await kaisBattlepets.getDB()
+    send({m: 'state', d: JSON.stringify(query)})
 
     // get pets from blizzard
     send({m: 'state', d: 'get user pets from blizzard'})
