@@ -3,12 +3,12 @@ const kaisBattlepets = new MongoDB('kaisBattlepets')
 const wow = require('../api/wow.js')
 const lib = require('../api/lib.js')
 
-class Collection {
+class MultiBuy {
   constructor () {
 
   }
   // ?rareonly=false ?level=25
-  async request (query) {
+  async process (query, send) {
     query.rareonly = query.rareonly === "false" ? false : true
     query.level = query.level || 1
     query.level = query.level == 25 ? 25:1
@@ -22,6 +22,7 @@ class Collection {
     let db = await kaisBattlepets.getDB()
 
     // get pets from blizzard
+    send({m: 'state', d: 'get user pets from blizzard'})
     let petsOwned = await wow.getCharacterPets(query.rid, query.name)
     petsOwned = petsOwned.map(pet => {
       return {
@@ -32,6 +33,7 @@ class Collection {
     })
 
     // Build list of all pets
+    send({m: 'state', d: 'get pet info'})
     let petList = {}
     let petInfo = await db.collection('petInfo').find({}, {projection: {_id: 0, speciesId: 1}}).toArray()
     petInfo.forEach(pet => {
@@ -46,10 +48,13 @@ class Collection {
 
     // Find pets to buy
     let returnList = []
+    let count = 0
     for (var psid in petList) {
+      count++
       if (!petList.hasOwnProperty(psid)) continue
       let numOwned = petList[psid]
       if (numOwned >= query.maxmultiples) continue
+      send({m: 'state', d: `processing pet: ${psid} (${count}/${petInfo.length})`})
       let buyable = await db.collection('auctionsLive').find({
         petSpeciesId: parseInt(psid),
         ahid: {$in: buyAt},
@@ -67,8 +72,9 @@ class Collection {
       buyable.forEach(b => { returnList.push(b) })
     }
     returnList.map(item => item.buy = true)
-    return returnList
+    send({m: 'response', d: returnList})
+    return true
   }
 }
 
-module.exports = new Collection()
+module.exports = new MultiBuy()
