@@ -80,6 +80,8 @@
           Buyout: <display-gold :value="listings.reduce((a, v) => { if (v.buy) a += v.buyout; return a;}, 0)"></display-gold>
           <br>
           Profit: <display-gold :value="listings.reduce((a, v) => { if (v.buy) a += v.profit; return a;}, 0)"></display-gold>
+          <br>
+          Num: {{listings.length}}
         </v-card-text>
       </v-card>
       <v-card v-if="listings.length > 0" class="mt-4"  v-for="list in listingsByRealm">
