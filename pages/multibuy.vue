@@ -74,6 +74,14 @@
           <v-text-field label="Selling Discount" v-model="sellDiscount"></v-text-field>
         </v-card-text>
       </v-card>
+      <v-card v-if="listings.length > 0" class="mt-5">
+        <v-card-title class="headline">All Realms</v-card-title>
+        <v-card-text>
+          Buyout: <display-gold :value="listings.reduce((a, v) => { if (v.buy) a += v.buyout; return a;}, 0)"></display-gold>
+          <br>
+          Profit: <display-gold :value="listings.reduce((a, v) => { if (v.buy) a += v.profit; return a;}, 0)"></display-gold>
+        </v-card-text>
+      </v-card>
       <v-card v-if="listings.length > 0" class="mt-4"  v-for="list in listingsByRealm">
         <v-card-title class="headline">{{list[0].ahname}}</v-card-title>
         <v-card-text>
