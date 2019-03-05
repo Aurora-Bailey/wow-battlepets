@@ -1,6 +1,3 @@
-/*
-Depriciated see livepages
-*/
 const MongoDB = require('../api/mongodb.js')
 const kaisBattlepets = new MongoDB('kaisBattlepets')
 const wow = require('../api/wow.js')
