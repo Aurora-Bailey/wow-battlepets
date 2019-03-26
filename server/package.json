@@ -5,7 +5,7 @@
   "author": "Brad Thompson <gbradthompson@gmail.com>",
   "private": true,
   "scripts": {
-    "start": "nuxt"
+    "start": "pm2 start ~/wow-battlepets/pm2_ecosystem.json"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
