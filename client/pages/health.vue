@@ -134,7 +134,7 @@
       }
     },
     async asyncData ({ params, $axios, store }) {
-      let { data } = await $axios.get(`http://${store.state.server}/health`)
+      let { data } = await $axios.get(`http://${process.server ? this.state.server.replace(this.state.publicIp, 'localhost') : store.state.server}/health`)
       return {listingsRaw: data}
     },
     methods: {
