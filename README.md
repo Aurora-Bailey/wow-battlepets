@@ -53,7 +53,37 @@ $ npm run generate
 5. SSH into instance
 
 
-To start server run
+### Configure EC2 instance
+##### Update
 ```
+sudo apt update; sudo apt upgrade -y; sudo reboot;
+```
+
+##### Install Node and MongoDB
+```
+sudo apt install -y nodejs; sudo apt install -y npm; sudo apt install -y mongodb;
+```
+
+##### Pull code from git
+```
+sudo apt install -y git; git clone https://github.com/gbradthompson/wow-battlepets.git
+```
+
+##### Install packages
+```
+(cd ~/wow-battlepets/server; npm install)
+(cd ~/wow-battlepets/client; npm install)
+```
+
+##### Run nuxt build
+```
+(cd ~/wow-battlepets/client; npm run build)
+```
+
+##### Setup pm2
+```
+sudo npm install pm2 -g
+pm2 startup (run script outpun into console)
+pm2 save
 pm2 pm2_ecosystem
 ```
