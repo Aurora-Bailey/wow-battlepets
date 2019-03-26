@@ -2,19 +2,19 @@
   "apps" : [{
     "name": "harvest",
     "script": "./harvest.js",
-    "cwd": "~/wow-battlepets/server"
+    "cwd": "./server"
   },{
     "name": "server",
     "script": "./server.js",
-    "cwd": "~/wow-battlepets/server"
+    "cwd": "./server"
   },{
     "name": "live",
     "script": "./live.js",
-    "cwd": "~/wow-battlepets/server"
+    "cwd": "./server"
   },{
     "name": "nuxt",
     "script": "./node_modules/nuxt/bin/nuxt.js",
-    "cwd": "~/wow-battlepets/client",
+    "cwd": "./client",
     "args": "start",
   }]
 }
