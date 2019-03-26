@@ -1,0 +1,20 @@
+{
+  "apps" : [{
+    "name": "harvest",
+    "script": "./harvest",
+    "cwd": "./server"
+  },{
+    "name": "server",
+    "script": "./server",
+    "cwd": "./server"
+  },{
+    "name": "live",
+    "script": "./live",
+    "cwd": "./server"
+  },{
+    "name": "nuxt",
+    "script": "./node_modules/nuxt/bin/nuxt",
+    "cwd": "./client",
+    "args": "start",
+  }]
+}

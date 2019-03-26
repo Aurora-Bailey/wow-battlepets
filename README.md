@@ -44,13 +44,16 @@ $ npm run generate
 ```
 
 
-For detailed explanation on how things work, check out the [Nuxt.js](https://github.com/nuxt/nuxt.js) and [Vuetify.js](https://vuetifyjs.com/) documentation.
+### Create EC2 instance
+
+1. Create EC2 spot instance (m3.medium spot instance at 90% discount)
+2. Select Ubuntu 18.04
+3. Set EBS size to 20 GB
+4. Security group - allow everything from your ip (for testing)
+5. SSH into instance
 
 
-pet average
-pet live
-pet archive
-sell simulator
-shrinkage
-undercut detection
-push from linux
+To start server run
+```
+pm2 pm2_ecosystem
+```
