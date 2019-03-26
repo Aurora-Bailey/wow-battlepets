@@ -15,13 +15,29 @@ sudo apt update; sudo apt upgrade -y; sudo reboot;
 
 ##### Install Node and MongoDB
 ```
-sudo apt install -y nodejs; sudo apt install -y npm; sudo apt install -y mongodb;
+cd ~; curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh; sudo bash nodesource_setup.sh; sudo apt install -y nodejs; sudo apt install -y build-essential; sudo apt install -y mongodb;
 ```
 
 ##### Pull code from git
 ```
 sudo apt install -y git; git clone https://github.com/gbradthompson/wow-battlepets.git
 ```
+
+##### Update server IP address
+```
+vim ~/wow-battlepets/client/store/index.js
+```
+Replace with the ip of your ec2 instance
+```
+{
+  realmIndex: {},
+  petIndex: {},
+  server: '<ec2 ip address>:3303',
+  harvestServer: '<ec2 ip address>:3304',
+  liveServer: '<ec2 ip address>:3305'
+}
+```
+[esc] :wq to exit and save
 
 ##### Install packages
 ```
@@ -45,8 +61,8 @@ Insert
   "client_id":"<blizzard api client id>",
   "client_secret":"<blizzard api client secret>"
 }
-[esc] :wq to exit and save
 ```
+[esc] :wq to exit and save
 
 ##### Setup pm2
 ```
