@@ -34,6 +34,20 @@ sudo apt install -y git; git clone https://github.com/gbradthompson/wow-battlepe
 (cd ~/wow-battlepets/client; npm run build)
 ```
 
+
+##### Setup credentials
+```
+vim ~/wow-battlepets/server/api/credentials.json
+```
+Insert
+```
+{
+  "client_id":"<blizzard api client id>",
+  "client_secret":"<blizzard api client secret>"
+}
+[esc] :wq to exit and save
+```
+
 ##### Setup pm2
 ```
 sudo npm install pm2 -g
