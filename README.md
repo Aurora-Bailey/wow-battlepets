@@ -41,15 +41,13 @@ Replace with the ip of your ec2 instance
 
 ##### Install packages
 ```
-(cd ~/wow-battlepets/server; npm install)
-(cd ~/wow-battlepets/client; npm install)
+(cd ~/wow-battlepets/server; npm install); (cd ~/wow-battlepets/client; npm install)
 ```
 
 ##### Run nuxt build
 ```
 (cd ~/wow-battlepets/client; npm run build)
 ```
-
 
 ##### Setup credentials
 ```
@@ -69,5 +67,5 @@ Insert
 sudo npm install pm2 -g
 pm2 startup (run script outpun into console)
 pm2 save
-pm2 pm2_ecosystem
+pm2 start ~/wow-battlepets/pm2_ecosystem.json
 ```
