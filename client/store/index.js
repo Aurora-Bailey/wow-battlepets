@@ -4,9 +4,9 @@ export const state = () => ({
   realmIndex: {},
   petIndex: {},
   publicIp: config.ipAddress,
-  server: this.publicIp + ':3303',
-  harvestServer: this.publicIp + ':3304',
-  liveServer: this.publicIp + ':3305'
+  server: config.ipAddress + ':3303',
+  harvestServer: config.ipAddress + ':3304',
+  liveServer: config.ipAddress + ':3305'
 })
 
 export const mutations = {
