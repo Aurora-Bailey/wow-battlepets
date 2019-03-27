@@ -63,4 +63,9 @@ pm2 save
 pm2 start ~/wow-battlepets/pm2_ecosystem.json
 ```
 
+##### Check to see if its working
+```
+http://<your servers ip address>:3000
+```
+
 ### The server will take about 7-24 hours to pull all the data to fully initialize!
