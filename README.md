@@ -1,3 +1,9 @@
+## wow-battlepets
+This application uses the World of Warcraft auction API to find battle pets that can be bought cheap and sold on more expensive servers.
+
+![wow-battlepets screenshot](/ScreenShot.PNG)
+
+## Build a new server
 ### Create EC2 instance
 
 1. Create EC2 spot instance (m3.medium spot instance at 90% discount)
