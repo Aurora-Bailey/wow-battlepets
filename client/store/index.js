@@ -1,8 +1,9 @@
+const config = require('../config.json')
 
 export const state = () => ({
   realmIndex: {},
   petIndex: {},
-  publicIp: '54.244.210.52',
+  publicIp: config.ipAddress,
   server: this.publicIp + ':3303',
   harvestServer: this.publicIp + ':3304',
   liveServer: this.publicIp + ':3305'

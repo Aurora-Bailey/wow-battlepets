@@ -25,16 +25,16 @@ sudo apt install -y git; git clone https://github.com/gbradthompson/wow-battlepe
 
 ##### Update server IP address
 ```
-vim ~/wow-battlepets/client/store/index.js
+vim ~/wow-battlepets/config.json
 ```
-Replace with the ip of your ec2 instance
+Fill in with your crentials
 ```
 {
-  realmIndex: {},
-  petIndex: {},
-  server: '<ec2 ip address>:3303',
-  harvestServer: '<ec2 ip address>:3304',
-  liveServer: '<ec2 ip address>:3305'
+  "ipAddress": "123.456.789.012",
+  "blizzardAPI": {
+    "client_id":"<blizzard client id>",
+    "client_secret":"<blizzard client secret>"
+  }
 }
 ```
 [esc] :wq to exit and save
@@ -48,19 +48,6 @@ Replace with the ip of your ec2 instance
 ```
 (cd ~/wow-battlepets/client; npm run build)
 ```
-
-##### Setup credentials
-```
-vim ~/wow-battlepets/server/api/credentials.json
-```
-Insert
-```
-{
-  "client_id":"<blizzard api client id>",
-  "client_secret":"<blizzard api client secret>"
-}
-```
-[esc] :wq to exit and save
 
 ##### Setup pm2
 ```

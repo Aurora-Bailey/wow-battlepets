@@ -2,7 +2,7 @@ const MongoDB = require('./mongodb.js')
 const kaisBattlepets = new MongoDB('kaisBattlepets')
 const lib = require('./lib.js')
 const axios = require('axios')
-const credentials = require('./credentials.json')
+const config = require('../../config.json')
 const chalk = require('chalk')
 
 class Wow {
@@ -18,7 +18,7 @@ class Wow {
     let response = await axios.post(
       'https://us.battle.net/oauth/token',
       `grant_type=client_credentials`,
-      {auth: {username: credentials.client_id, password: credentials.client_secret}}
+      {auth: {username: config.blizzardAPI.client_id, password: config.blizzardAPI.client_secret}}
     )
     this.token = response.data.access_token
     this.token_expires = (Date.now()/1000) + response.data.expires_in - 300

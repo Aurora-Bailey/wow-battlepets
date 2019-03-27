@@ -1,0 +1,7 @@
+{
+  "ipAddress": "123.456.789.012",
+  "blizzardAPI": {
+    "client_id":"<blizzard client id>",
+    "client_secret":"<blizzard client secret>"
+  }
+}
