@@ -33,7 +33,7 @@ sudo apt install -y git; git clone https://github.com/gbradthompson/wow-battlepe
 ```
 vim ~/wow-battlepets/config.json
 ```
-Fill in with your crentials
+Fill in with your credentials
 ```
 {
   "ipAddress": "123.456.789.012",
