@@ -56,3 +56,5 @@ pm2 startup (run script outpun into console)
 pm2 save
 pm2 start ~/wow-battlepets/pm2_ecosystem.json
 ```
+
+### The server will take about 7-24 hours to pull all the data to fully initialize!
