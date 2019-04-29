@@ -1,0 +1,7 @@
+## Interface: 80000
+## Title: Kais Battle Pets
+## Author: Kyros
+## Version: 0.1
+
+main.lua
+main.xml
