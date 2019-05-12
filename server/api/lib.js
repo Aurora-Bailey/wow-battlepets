@@ -16,8 +16,8 @@ class Lib {
   /// Realm
   */
   async realmAuctionHouse (realmId) {
-    if (this.cacheRealmAuctionHouse[realmId]) console.log(chalk.yellow('(m)') + chalk.magenta('realmAuctionHouse: ') + realmId)
-    else console.log(chalk.magenta('realmAuctionHouse: ') + realmId)
+    // if (this.cacheRealmAuctionHouse[realmId]) console.log(chalk.yellow('(m)') + chalk.magenta('realmAuctionHouse: ') + realmId)
+    // else console.log(chalk.magenta('realmAuctionHouse: ') + realmId)
     if (this.cacheRealmAuctionHouse[realmId]) return this.cacheRealmAuctionHouse[realmId]
 
     // find acution house
@@ -97,13 +97,13 @@ class Lib {
   }
 
   async auctionHouseList() {
-    if (this.cacheAuctionHouseList) console.log(chalk.yellow('(m)') + chalk.magenta('auctionHouseList:'))
-    else console.log(chalk.magenta('auctionHouseList:'))
+    // if (this.cacheAuctionHouseList) console.log(chalk.yellow('(m)') + chalk.magenta('auctionHouseList:'))
+    // else console.log(chalk.magenta('auctionHouseList:'))
 
     if (this.cacheAuctionHouseList) return this.cacheAuctionHouseList
 
     let db = await kaisBattlepets.getDB()
-    let ahi = await db.collection('auctionHouseIndex').find({}, {sort: {ahid: 1}, projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
+    let ahi = await db.collection('auctionHouseIndex').find({regionTag: "US"}, {sort: {ahid: 1}, projection: {_id: 0, ahid: 1, slug: 1, regionTag: 1}}).toArray()
     this.cacheAuctionHouseList = ahi
     return ahi
   }
