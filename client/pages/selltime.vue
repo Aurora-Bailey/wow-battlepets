@@ -116,7 +116,7 @@
       }
     },
     async asyncData ({ params, $axios, store }) {
-      let { data } = await $axios.get(`http://${process.server ? this\.store\.state\.server.replace(this\.store\.state\.publicIp, 'localhost') : store.state.server}/selltime`)
+      let { data } = await $axios.get(`http://${process.server ? store.state.server.replace(store.state.publicIp, 'localhost') : store.state.server}/selltime`)
       return { data }
     }
   }
