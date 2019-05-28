@@ -101,7 +101,7 @@
       }
     },
     async asyncData ({ params, $axios, store }) {
-      let { data } = await $axios.get(`http://${process.server ? store.state.havestServer.replace(store.state.publicIp, 'localhost') : store.state.harvestServer}/timing`)
+      let { data } = await $axios.get(`http://${process.server ? store.state.harvestServer.replace(store.state.publicIp, 'localhost') : store.state.harvestServer}/timing`)
       return {listingsRaw: data}
     },
     methods: {
