@@ -85,7 +85,7 @@
       }
     },
     async asyncData ({ params, $axios, store }) {
-      let { data } = await $axios.get(`http://${process.server ? this.state.server.replace(this.state.publicIp, 'localhost') : store.state.server}/sellerliverank`)
+      let { data } = await $axios.get(`http://${process.server ? this\.store\.state\.server.replace(this\.store\.state\.publicIp, 'localhost') : store.state.server}/sellerliverank`)
       return {listings: data.data}
     }
   }
