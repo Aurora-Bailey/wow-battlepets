@@ -8,8 +8,8 @@ const LockedInterval = require('./lockedinterval.js')
 
 class Auction {
   constructor () {
-    this.crawlTimespan = 4 // minutes, stagger the request across time
-    this.crawlInterval = 5 // minutes, frequency of data pulls
+    this.crawlTimespan = 30 // minutes, stagger the request across time
+    this.crawlInterval = 30 // minutes, frequency of data pulls
 
     this.crawlTimespanMS = this.crawlTimespan * 60000 // in miliseconds
     this.crawlIntervalMS = this.crawlInterval * 60000 // in miliseconds
@@ -61,7 +61,7 @@ class Auction {
     let db = await kaisBattlepets.getDB()
     let auctionsLive = null
     if (forceUpdate) auctionsLive = await wow.getAuctions(ahid)
-    else auctionsLive = await wow.getAuctionsIfModified(ahid)
+    else auctionsLive = await wow.getAuctions(ahid)
     if (auctionsLive === null) return false
     let wowApiTime = Date.now()
     console.log(chalk.magenta('_updateAuctionHouse: ') + ahid)

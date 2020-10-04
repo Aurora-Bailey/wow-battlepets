@@ -9,6 +9,7 @@ class Lib {
     this.cacheSpeciesAverageRegion = {}
     this.cacheAuctionHouseHealth = {}
     this.cacheAuctionHouse = {}
+    this.cacheAuctionHouseRealmId = {}
     this.cacheAuctionHouseList = null
   }
 
@@ -94,6 +95,16 @@ class Lib {
     if (ahi === null) throw 'Auction house not found!'
     this.cacheAuctionHouse[ahid] = ahi
     return ahi
+  }
+
+  async auctionHouseRealmId(slug) {
+    if (this.cacheAuctionHouseRealmId[slug]) return this.cacheAuctionHouseRealmId[slug]
+
+    let db = await kaisBattlepets.getDB()
+    let ahi = await db.collection('realmIndex').findOne({slug: slug}, {projection: {_id: 0, id: 1}})
+    if (ahi === null) throw 'Auction house not found!'
+    this.cacheAuctionHouseRealmId[slug] = ahi.id
+    return ahi.id
   }
 
   async auctionHouseList() {

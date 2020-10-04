@@ -25,6 +25,11 @@ class Wow {
     return this.token
   }
 
+  async checkToken (token) {
+    let response = await axios.post(`https://${region.toLowerCase()}.api.blizzard.com/oauth/check_token`)
+    return response
+  }
+
   async getRealmIndex (region) {
     let token = await this.authenticate()
     console.log(chalk.cyan(`wow-api: `) + chalk.white(`https://${region.toLowerCase()}.api.blizzard.com/data/wow/realm/?namespace=dynamic-${region.toLowerCase()}`))
@@ -48,36 +53,13 @@ class Wow {
 
   async getAuctions (ahid) {
     let auctionHouse = await lib.auctionHouse(ahid)
+    let realmId = await lib.auctionHouseRealmId(auctionHouse.slug)
     let token = await this.authenticate()
-    console.log(chalk.cyan(`wow-api: `) + chalk.red('(forced) ') + chalk.white(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`))
-    let response_token = await axios.get(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`, {headers: {'Authorization': "bearer " + token}})
-    let response_auction = await axios.get(response_token.data.files[0].url)
+    console.log(chalk.cyan(`wow-api: `) + chalk.red('(forced) ') + chalk.white(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/data/wow/connected-realm/${encodeURIComponent(realmId)}/auctions?namespace=dynamic-us&locale=en_US`))
+    let response_auction = await axios.get(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/data/wow/connected-realm/${encodeURIComponent(realmId)}/auctions?namespace=dynamic-us&locale=en_US`, {headers: {'Authorization': "bearer " + token}})
     return response_auction.data.auctions
   }
 
-  async getAuctionsIfModified (ahid) {
-    let auctionHouse = await lib.auctionHouse(ahid)
-    let token = await this.authenticate()
-    // console.log(chalk.cyan(`wow-api: `) + chalk.white(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`))
-    let response_token = await axios.get(`https://${auctionHouse.regionTag.toLowerCase()}.api.blizzard.com/wow/auction/data/${encodeURIComponent(auctionHouse.slug)}`, {headers: {'Authorization': "bearer " + token}})
-    let {lastModified, url} = response_token.data.files[0]
-    // Return null if content has not been modified
-    let previousLastModified = await this._getAuctionHouseLastModified(ahid)
-    if (previousLastModified >= lastModified) return null // Auction has not changed since last request
-    // New content is available
-    console.log(chalk.cyan(`wow-api: `) + chalk.yellow(`${auctionHouse.regionTag} ${auctionHouse.slug} ${ahid} `) +
-      `Last Update:${chalk.yellow(this._msToTimeString(lastModified - previousLastModified))} Delay:${chalk.cyan(this._msToTimeString(Date.now() - lastModified))}`)
-    console.log(chalk.cyan(`wow-api: `) + chalk.white(url))
-    let response_auction = await axios.get(url)
-    if (!Array.isArray(response_auction.data.auctions)) {
-      console.log('not array')
-      throw {config: {url: ''}, response: {status: '', statusText: '', data: 'Not array.'}}
-      //{error: `${e.config.url} ${e.response.status} ${e.response.statusText} ${e.response.data}`
-    }
-    this._setAuctionHouseLastModified (ahid, lastModified)
-    return response_auction.data.auctions
-
-  }
   async _getAuctionHouseLastModified (ahid) {
     if (this.auctionHouseLastModified[ahid]) return this.auctionHouseLastModified[ahid]
     let db = await kaisBattlepets.getDB()
